@@ -1,0 +1,33 @@
+# --- Java (Almacén) ---
+almacen/**/target/
+almacen/**/*.class
+almacen/**/.classpath
+almacen/**/.project
+almacen/**/.settings/
+*.jar
+!almacen/**/lib/*.jar
+
+# --- Python (Verificador) ---
+verificador/**/__pycache__/
+verificador/**/*.pyc
+verificador/**/.venv/
+verificador/**/venv/
+verificador/**/*.egg-info/
+
+# --- C# / .NET (Simulador) ---
+simulador/**/bin/
+simulador/**/obj/
+simulador/**/*.user
+
+# --- Bases de datos / credenciales locales ---
+**/*.env
+**/appsettings.local.json
+**/config.local.*
+**/bitacora/*.log
+**/bitacora/*.txt
+
+# --- Sistema operativo / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
