@@ -1,0 +1,123 @@
+package almacen.almacen2.servicio;
+
+import almacen.almacen2.datos.Proveedor;
+import almacen.almacen2.datos.ProveedorParser;
+import almacen.almacen2.datos.TipoTransaccionProveedor;
+import almacen.almacen2.validaciones.ProveedorValidador;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.List;
+
+/**
+ * Servicio de la historia ALMACEN2 
+ *
+ * Es la pieza que ORQUESTA todo lo hecho hasta ahora:
+ *   1. Recibe la trama (String de 270 caracteres) desde el socket.
+ *   2. obtiene un Proveedor + el tipo
+ *      de transaccion.
+ *   3. Valida el FORMATO con ProveedorValidador. Si
+ *      falla, responde "DATO INVALIDO" de una vez, sin gastar una
+ *      consulta a SQL Server.
+ *   4. Si el formato esta bien, llama al prodedimiento almacenado
+ *      sp_proveedor_mantenimiento y hace el
+ *      INSERT o UPDATE.
+ *   5. Devuelve el texto EXACTO que el socket debe mandar de vuelta en
+ *      la trama de respuesta (EXITOSO, DUPLICADO, DATO INVALIDO,
+ *      PROVEEDOR INVALIDO o ERROR).
+ *
+ * Esta clase NO abre su propia conexion a la base de datos: recibe una
+ * Connection ya abierta por quien la use 
+ */
+public class ProveedorServicio {
+
+    private final ProveedorParser parser;
+    private final ProveedorValidador validador;
+    private final Connection conexion;
+
+    public ProveedorServicio(Connection conexion) {
+        this.parser = new ProveedorParser();
+        this.validador = new ProveedorValidador();
+        this.conexion = conexion;
+    }
+
+    /**
+     * Procesa una trama completa de ALMACEN2 y devuelve el texto de
+     * respuesta que el socket debe enviar de vuelta.
+     *
+     * Nunca lanza una excepcion hacia afuera: cualquier problema
+     * inesperado (trama mal formada, error de SQL, etc.) se atrapa aqui
+     * mismo y se traduce a uno de los textos de respuesta que pide el
+     * PDF, tal como exige el criterio "Ante cualquier otro error debe
+     * responder ERROR."
+     */
+    public String procesar(String tramaCruda) {
+        ProveedorParser.TramaProveedor tramaParseada;
+
+        // Paso 1: Si la trama viene con un largo incorrecto o
+        // con un tipo de transaccion / estado invalido, el parser lanza
+        // IllegalArgumentException - se atrapa aqui y se responde
+        // DATO INVALIDO.
+        try {
+            tramaParseada = parser.parsear(tramaCruda);
+        } catch (IllegalArgumentException e) {
+            return "DATO INVALIDO";
+        }
+
+        Proveedor proveedor = tramaParseada.getProveedor();
+        TipoTransaccionProveedor tipoTransaccion = tramaParseada.getTipoTransaccion();
+
+        // Paso 2: validar formato (sin tocar la base de datos).
+        List<String> errores = validador.validar(proveedor);
+        if (!errores.isEmpty()) {
+            // Aqui es donde, cuando exista la bitacora 
+            // se registraria el detalle de "errores" antes de
+            // responder.
+            return "DATO INVALIDO";
+        }
+
+        // Paso 3: el formato ya esta validado, ahora se delega a la base
+        // de datos para revisar duplicados
+        // (Ingreso) o existencia (Modificacion).
+        try {
+            return ejecutarStoredProcedure(tipoTransaccion, proveedor);
+        } catch (SQLException e) {
+            // Cualquier error de conexion, de sintaxis SQL, o similar,
+            // cae aqui. Se agarra para que el socket siempre reciba
+            // un texto de respuesta valido y nunca se caiga por una
+            // excepcion sin atrapar.
+            return "ERROR";
+        }
+    }
+
+    /**
+     * Llama al procedimiento almacenado sp_proveedor_mantenimiento y traduce su
+     * parametro de salida
+     */
+    private String ejecutarStoredProcedure(TipoTransaccionProveedor tipoTransaccion,
+                                            Proveedor proveedor) throws SQLException {
+        String sql = "{call sp_proveedor_mantenimiento(?, ?, ?, ?, ?, ?, ?, ?)}";
+
+        try (CallableStatement llamada = conexion.prepareCall(sql)) {
+            // Parametros de entrada, en el mismo orden que el CREATE
+            // PROCEDURE de la base de datos.
+            llamada.setString(1, tipoTransaccion.getCodigoTrama());
+            llamada.setString(2, proveedor.getCedulaJuridica());
+            llamada.setString(3, proveedor.getNombre());
+            llamada.setString(4, proveedor.getNombreContacto());
+            llamada.setString(5, proveedor.getTelefono());
+            llamada.setString(6, proveedor.getCorreo());
+            llamada.setString(7, proveedor.getEstado().getCodigoTrama());
+
+            // Parametro de salida: aqui es donde el procedimiento almacenado deja
+            // escrito EXITOSO / DUPLICADO / PROVEEDOR INVALIDO / etc.
+            llamada.registerOutParameter(8, Types.VARCHAR);
+
+            llamada.execute();
+
+            return llamada.getString(8);
+        }
+    }
+}
