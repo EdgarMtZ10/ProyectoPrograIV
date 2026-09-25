@@ -1,33 +1,16 @@
 # --- Java (Almacén) ---
-almacen/**/target/
-almacen/**/*.class
-almacen/**/.classpath
-almacen/**/.project
-almacen/**/.settings/
-*.jar
-!almacen/**/lib/*.jar
+almacen 1 - Josue     
+almacen 2 - Edgar
+almacen 3 - Edgar
+almacen 4 - Edgar
+almacen 5 - Josue
 
 # --- Python (Verificador) ---
-verificador/**/__pycache__/
-verificador/**/*.pyc
-verificador/**/.venv/
-verificador/**/venv/
-verificador/**/*.egg-info/
+verificador 1 - Jean Carlo
+verificador 2 - Jean Carlo
+verificador 3 - Jean Carlo
 
 # --- C# / .NET (Simulador) ---
-simulador/**/bin/
-simulador/**/obj/
-simulador/**/*.user
+simulador - Josue
 
-# --- Bases de datos / credenciales locales ---
-**/*.env
-**/appsettings.local.json
-**/config.local.*
-**/bitacora/*.log
-**/bitacora/*.txt
 
-# --- Sistema operativo / editor ---
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
