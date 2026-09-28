@@ -42,12 +42,6 @@ public enum EstadoProveedor {
      * el caracter "1" o "2" tal cual, se guarda ya validado como
      * EstadoProveedor.ACTIVO o EstadoProveedor.INACTIVO.
      *
-     * @param codigoTrama el caracter recibido, tal cual vino en la trama
-     * @return el enum correspondiente
-     * @throws IllegalArgumentException si el caracter no es "1" ni "2".
-     *         Esta excepcion NO se le muestra al usuario final: la capa de
-     *         servicio (que se hara en la siguiente parte) debe atraparla
-     *         y responder "DATO INVALIDO"
      */
     public static EstadoProveedor fromCodigoTrama(String codigoTrama) {
         for (EstadoProveedor estado : values()) {
