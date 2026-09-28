@@ -1,16 +1,46 @@
-# --- Java (Almacén) ---
-almacen 1 - Josue     
-almacen 2 - Edgar
-almacen 3 - Edgar
-almacen 4 - Edgar
-almacen 5 - Josue
+.DS_Store
+Thumbs.db
+desktop.ini
 
-# --- Python (Verificador) ---
-verificador 1 - Jean Carlo
-verificador 2 - Jean Carlo
-verificador 3 - Jean Carlo
+# ==========================================
+# Java 
+# ==========================================
+*.class
+*.jar
+/bin/
+/out/
+/target/
+/build/
 
-# --- C# / .NET (Simulador) ---
-simulador - Josue
+# ==========================================
+# Python (Verificador)
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.env
 
+# ==========================================
+# C# / .NET (Simulador)
+# ==========================================
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+.vs/
 
+# ==========================================
+# Entornos de Desarrollo (IDEs)
+# ==========================================
+# VS Code
+.vscode/
+
+.project
+.classpath
+.settings/
+
+.idea/
+*.iml

@@ -1,1 +1,0 @@
-A cargo de Edgar
