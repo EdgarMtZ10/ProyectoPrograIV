@@ -2,7 +2,7 @@
 -- Historias: ALMACEN1, ALMACEN2, ALMACEN3, ALMACEN4
 -- =====================================================================
 
---Creación Condicional de la Base de Datos 
+--Creacion Condicional de la Base de Datos 
 IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'NovaOnlineAlmacen')
 BEGIN
     CREATE DATABASE NovaOnlineAlmacen;
@@ -97,9 +97,9 @@ CREATE TABLE salida_detalle (
 );
 GO
 
--- =====================================================================
+
 -- TRIGGERS
--- =====================================================================
+
 
 CREATE OR ALTER TRIGGER TR_compra_detalle_sube_inventario
 ON compra_detalle
@@ -372,6 +372,59 @@ BEGIN
     END CATCH
 END;
 GO
+
+--
+-- Trigger: crea inventario en cero al insertar producto
+CREATE OR ALTER TRIGGER TR_producto_insert_inventario
+ON producto
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO inventario (no_producto, cantidad_actual)
+    SELECT no_producto, 0
+    FROM inserted;
+END;
+GO
+
+-- ALMACEN1 - Ingreso de producto
+CREATE OR ALTER PROCEDURE sp_ingresar_producto
+    @no_producto VARCHAR(10),
+    @nombre VARCHAR(90),
+    @precio DECIMAL(8,2),
+    @resultado VARCHAR(20) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @resultado = 'ERROR';
+
+    BEGIN TRY
+        IF (@no_producto IS NULL OR @no_producto LIKE '%[^0-9]%'
+            OR @nombre IS NULL OR LTRIM(RTRIM(@nombre)) = ''
+            OR @nombre NOT LIKE '%[^0-9]%'
+            OR @precio IS NULL OR @precio <= 0)
+        BEGIN
+            SET @resultado = 'DATO INVALIDO';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM producto WHERE no_producto = @no_producto)
+        BEGIN
+            SET @resultado = 'DUPLICADO';
+            RETURN;
+        END
+
+        INSERT INTO producto (no_producto, nombre, precio)
+        VALUES (@no_producto, @nombre, @precio);
+
+        SET @resultado = 'EXITOSO';
+    END TRY
+    BEGIN CATCH
+        SET @resultado = 'ERROR';
+    END CATCH
+END;
+GO
+--
 
 -- ALMACEN4 - sp_salida_detalle_agregar 
 CREATE OR ALTER PROCEDURE sp_salida_detalle_agregar
