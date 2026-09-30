@@ -44,7 +44,7 @@ public class CompraServicio {
         try {
             tramaParseada = parser.parsear(tramaCruda);
         } catch (IllegalArgumentException e) {
-            return "DATO INVÁLIDO";
+            return "DATO INVALIDO";
         }
 
         Compra compra = tramaParseada.getCompra();// Extrae el objeto Compra del resultado del parser
@@ -52,7 +52,7 @@ public class CompraServicio {
         //Validación de reglas de negocio (sin tocar BD)
         List<String> errores = validador.validar(compra);
         if (!errores.isEmpty()) {
-            return "DATO INVÁLIDO";
+            return "DATO INVALIDO";
         }
 
         // Ejecución en base de datos con manejo de Transacciones
