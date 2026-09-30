@@ -59,7 +59,6 @@ public class ProveedorValidador {
         validarTextoNoNumerico(proveedor.getNombreContacto(), "El nombre de contacto", errores);
         validarTelefono(proveedor.getTelefono(), errores);
         validarCorreo(proveedor.getCorreo(), errores);
-        validarEstado(proveedor.getEstado(), errores);
 
         return errores;
     }
@@ -100,17 +99,6 @@ public class ProveedorValidador {
     private void validarCorreo(String correo, List<String> errores) {
         if (correo == null || !PATRON_CORREO.matcher(correo).matches()) {
             errores.add("El correo electronico no tiene un formato valido.");
-        }
-    }
-
-    /**
-     * Valida que el estado del proveedor sea "Activo". Cualquier otro estado es
-     * invalido para un proveedor nuevo. Esta validacion es independiente de la
-     * validacion de los otros campos
-     */
-    private void validarEstado(EstadoProveedor estado, List<String> errores) {
-        if (estado != EstadoProveedor.ACTIVO) {
-            errores.add("El estado debe ser Activo.");
         }
     }
 }
