@@ -1,14 +1,13 @@
 package almacen.almacen2.datos;
 
 /**
- * Representa el campo "Estado" de la trama de ALMACEN2.
+ * Representa el campo para Estado  en la trama.
  *
-    Define este campo como 1 caracter con dos valores posibles:
+    Va a definir este campo como 1 caracter con dos valores posibles:
  *   1 = Activo
  *   2 = Inactivo
  *
- * En vez de manejar ese caracter como un String se encierra 
- * en un enum, obliga a usar solo uno de
+ * Se encierra en un enum, que obliga a usar solo uno de
  * estos dos valores en el resto del programa.
  */
 public enum EstadoProveedor {
