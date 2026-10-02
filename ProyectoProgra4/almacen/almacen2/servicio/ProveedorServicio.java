@@ -11,13 +11,10 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
-import almacen.bitacora.Bitacora;
+import almacen.almacen5.Bitacora;
 
 /**
- * Servicio de la historia ALMACEN2 
- *
- * Es la pieza que ORQUESTA todo lo hecho hasta ahora:
- *   1. Recibe la trama (String de 270 caracteres) desde el socket.
+ *   1. Recibe la trama de 270 caracteres desde el socket.
  *   2. obtiene un Proveedor + el tipo
  *      de transaccion.
  *   3. Valida el FORMATO con ProveedorValidador. Si
@@ -26,12 +23,9 @@ import almacen.bitacora.Bitacora;
  *   4. Si el formato esta bien, llama al prodedimiento almacenado
  *      sp_proveedor_mantenimiento y hace el
  *      INSERT o UPDATE.
- *   5. Devuelve el texto EXACTO que el socket debe mandar de vuelta en
+ *   5. Devuelve el texto que el socket debe mandar de vuelta en
  *      la trama de respuesta (EXITOSO, DUPLICADO, DATO INVALIDO,
  *      PROVEEDOR INVALIDO o ERROR).
- *
- * Esta clase NO abre su propia conexion a la base de datos: recibe una
- * Connection ya abierta por quien la use 
  */
 public class ProveedorServicio {
 
@@ -48,17 +42,11 @@ public class ProveedorServicio {
     /**
      * Procesa una trama completa de ALMACEN2 y devuelve el texto de
      * respuesta que el socket debe enviar de vuelta.
-     *
-     * Nunca lanza una excepcion hacia afuera: cualquier problema
-     * inesperado (trama mal formada, error de SQL, etc.) se atrapa aqui
-     * mismo y se traduce a uno de los textos de respuesta que pide el
-     * PDF, tal como exige el criterio "Ante cualquier otro error debe
-     * responder ERROR."
      */
     public String procesar(String tramaCruda) {
         ProveedorParser.TramaProveedor tramaParseada;
 
-        // Paso 1: Si la trama viene con un largo incorrecto o
+        // Si la trama viene con un largo incorrecto o
         // con un tipo de transaccion / estado invalido, el parser lanza
         // IllegalArgumentException - se atrapa aqui y se responde
         // DATO INVALIDO.
@@ -71,16 +59,15 @@ public class ProveedorServicio {
         Proveedor proveedor = tramaParseada.getProveedor();
         TipoTransaccionProveedor tipoTransaccion = tramaParseada.getTipoTransaccion();
 
-        // Paso 2: validar formato (sin tocar la base de datos).
+        //validar formato (sin tocar la base de datos).
         List<String> errores = validador.validar(proveedor);
         if (!errores.isEmpty()) {
-            // Aqui es donde, cuando exista la bitacora 
-            // se registraria el detalle de "errores" antes de
+            // se registrara el detalle de errores antes de
             // responder.
             return "DATO INVALIDO";
         }
 
-        // Paso 3: el formato ya esta validado, ahora se delega a la base
+        // el formato ya esta validado, ahora se delega a la base
         // de datos para revisar duplicados
         // (Ingreso) o existencia (Modificacion).
                 String resultado;
@@ -122,8 +109,10 @@ public class ProveedorServicio {
             return llamada.getString(8);
         }
     }
+        //finalmente, se registra la transaccion en la bitacora.
         private void registrarBitacora(String tipoTransaccion, Proveedor proveedor) {
         String json = String.format(
+            // Se escapan las comillas dobles de los nombres y se registra el estado como su codigo de trama.
             "{\"Transaccion\": \"%s\", \"Cedula Juridica\": \"%s\", \"Nombre\": \"%s\", " +
             "\"Nombre Contacto\": \"%s\", \"Telefono\": \"%s\", \"Correo\": \"%s\", \"Estado\": \"%s\"}",
             tipoTransaccion,

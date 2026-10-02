@@ -6,7 +6,7 @@ desktop.ini
 # Java 
 # ==========================================
 *.class
-*.jar
+!lib/*.jar
 /bin/
 /out/
 /target/

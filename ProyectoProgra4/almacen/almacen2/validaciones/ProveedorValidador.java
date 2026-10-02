@@ -10,14 +10,6 @@ import java.util.regex.Pattern;
 
 /**
  * Valida las reglas de negocio de un Proveedor,
- * SIN tocar la base de datos.
- *
- * Es importante entender por que esta clase no valida que el proveedor no
- * debe existir previamente paara ingresaar ni el proveedor debe existir
- * esas dos reglas necesitan consultar la base de
- * datos,esta clase funciona sola, sin conexion a
- * SQL Server
- *
  * cubre unicamente las validaciones de FORMATO:
  *   - cedula juridica: solo digitos, tamano correcto
  *   - nombre / nombre de contacto: no vacios, no numericos
@@ -27,18 +19,17 @@ import java.util.regex.Pattern;
  */
 public class ProveedorValidador {
 
-    // Cedula juridica en Costa Rica para efectos de esta trama: exactamente
-    // 10 digitos, sin letras ni espacios (el trim del parser ya deberia
-    // haber quitado espacios, aqui solo se revisa que sean todos numeros).
+    // Cedula juridica
+    // 10 digitos, sin letras ni espacios 
     private static final Pattern PATRON_CEDULA_JURIDICA = Pattern.compile("^\\d{10}$");
 
-    // Un texto es "puramente numerico" si, una vez quitados los espacios,
+    // Un texto que es de solo numeros si, una vez quitados los espacios,
     // esta formado solo por digitos del 0 al 9. Se usa para rechazar nombres
     // con numeros tanto en el nombre de la empresa como en el del
     // contacto.
     private static final Pattern PATRON_SOLO_NUMEROS = Pattern.compile("^\\d+$");
 
-    // Telefono de Costa Rica exactamente 8 digitos, y el primer digito debe ser 2,3,4,5,6,7 u 8.
+    // Telefono de exactamente 8 digitos, y el primer digito debe ser 2,3,4,5,6,7 u 8.
     private static final Pattern PATRON_TELEFONO_CR = Pattern.compile("^[24-8]\\d{7}$");
 
     // Formato de correo generico 
@@ -71,6 +62,7 @@ public class ProveedorValidador {
         return validar(proveedor).isEmpty();
     }
 
+    //validaciones individuales de cada campo, para poder dar mensajes de error
     private void validarCedulaJuridica(String cedulaJuridica, List<String> errores) {
         if (cedulaJuridica == null || !PATRON_CEDULA_JURIDICA.matcher(cedulaJuridica).matches()) {
             errores.add("La cedula juridica debe tener exactamente 10 digitos numericos.");
@@ -90,12 +82,14 @@ public class ProveedorValidador {
         }
     }
 
+    // Valida que el telefono sea un numero valido de Costa Rica (8 digitos, primer digito 2-8)
     private void validarTelefono(String telefono, List<String> errores) {
         if (telefono == null || !PATRON_TELEFONO_CR.matcher(telefono).matches()) {
             errores.add("El telefono debe ser un numero valido de Costa Rica (8 digitos).");
         }
     }
 
+    // Valida que el correo tenga un formato de correo valido
     private void validarCorreo(String correo, List<String> errores) {
         if (correo == null || !PATRON_CORREO.matcher(correo).matches()) {
             errores.add("El correo electronico no tiene un formato valido.");

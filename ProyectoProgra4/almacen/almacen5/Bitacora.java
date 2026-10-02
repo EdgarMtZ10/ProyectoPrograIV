@@ -1,4 +1,4 @@
-package almacen.bitacora;
+package almacen.almacen5;
 
 import java.io.FileWriter;
 import java.io.IOException;

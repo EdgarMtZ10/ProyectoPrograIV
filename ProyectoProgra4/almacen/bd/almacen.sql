@@ -1,5 +1,5 @@
 -- =====================================================================
--- Historias: ALMACEN1, ALMACEN2, ALMACEN3, ALMACEN4
+-- Historias del ALMACEN1, ALMACEN2, ALMACEN3, ALMACEN4
 -- =====================================================================
 
 --Creacion Condicional de la Base de Datos 
@@ -13,7 +13,7 @@ USE NovaOnlineAlmacen;
 GO
 
 -- =====================================================================
--- TABLAS (Ejecutar una sola vez por entorno nuevo)
+-- TABLAS que se ejecutan una sola vez por entorno nuevo
 -- =====================================================================
 
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[producto]') AND type in (N'U'))
@@ -140,7 +140,7 @@ END;
 GO
 
 -- =====================================================================
--- PROCEDIMIENTOS ALMACENADOS (CREATE OR ALTER para actualizar)
+-- Procedimientos almacenados con:CREATE OR ALTER para actualizar
 -- =====================================================================
 
 -- ALMACEN1 - Modificar Producto
