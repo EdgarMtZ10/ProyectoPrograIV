@@ -27,7 +27,7 @@ public class ProductoParser {
     private static final int TAMANO_TRAMA = 109;
 
     /*
-      Convierte la trama en un objeto TramaProducto.
+      Convierte la trama en un objeto TramaProducto
      */
     public TramaProducto parsear(String trama) {
         if (trama == null || trama.length() != TAMANO_TRAMA) {
@@ -47,7 +47,7 @@ public class ProductoParser {
 
         BigDecimal precio;
         try {
-            // Los ultimos 2 digitos son decimales, ej. 01750000 -> 17500.00
+            // Los ultimos 2 digitos son decimales
             BigDecimal valorEntero = new BigDecimal(precioStr);
             precio = valorEntero.movePointLeft(2);
         } catch (NumberFormatException e) {

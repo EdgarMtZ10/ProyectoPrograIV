@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
+import almacen.bitacora.Bitacora;
+
 /**
  * Servicio de la historia ALMACEN2 
  *
@@ -81,15 +83,15 @@ public class ProveedorServicio {
         // Paso 3: el formato ya esta validado, ahora se delega a la base
         // de datos para revisar duplicados
         // (Ingreso) o existencia (Modificacion).
+                String resultado;
         try {
-            return ejecutarStoredProcedure(tipoTransaccion, proveedor);
+            resultado = ejecutarStoredProcedure(tipoTransaccion, proveedor);
         } catch (SQLException e) {
-            // Cualquier error de conexion, de sintaxis SQL, o similar,
-            // cae aqui. Se agarra para que el socket siempre reciba
-            // un texto de respuesta valido y nunca se caiga por una
-            // excepcion sin atrapar.
-            return "ERROR";
+            resultado = "ERROR";
         }
+
+        registrarBitacora(tipoTransaccion.getCodigoTrama(), proveedor);
+        return resultado;
     }
 
     /**
@@ -119,5 +121,19 @@ public class ProveedorServicio {
 
             return llamada.getString(8);
         }
+    }
+        private void registrarBitacora(String tipoTransaccion, Proveedor proveedor) {
+        String json = String.format(
+            "{\"Transaccion\": \"%s\", \"Cedula Juridica\": \"%s\", \"Nombre\": \"%s\", " +
+            "\"Nombre Contacto\": \"%s\", \"Telefono\": \"%s\", \"Correo\": \"%s\", \"Estado\": \"%s\"}",
+            tipoTransaccion,
+            proveedor.getCedulaJuridica(),
+            proveedor.getNombre().replace("\"", "\\\""),
+            proveedor.getNombreContacto().replace("\"", "\\\""),
+            proveedor.getTelefono(),
+            proveedor.getCorreo(),
+            proveedor.getEstado().getCodigoTrama()
+        );
+        Bitacora.getInstancia().registrar(json);
     }
 }

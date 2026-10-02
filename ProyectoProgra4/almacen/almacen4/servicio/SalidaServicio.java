@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
+import almacen.bitacora.Bitacora;
+
 /**
  * Servicio de salidas del almacen 4, parsea, valida formato, y si pasa, registra el
  * encabezado y luego cada producto, todo dentro de una sola transaccion
@@ -49,44 +51,52 @@ public class SalidaServicio {
             return "DATO INVALIDO";
         }
 
+                String resultado;
         try {
-            // si un producto falla (por ejemplo no hay stock
-            // suficiente), se revierte tambien el encabezado de la salida
-            // y los productos que ya se habian insertado antes.
             conexion.setAutoCommit(false);
 
             String resultadoCabecera = registrarCabecera(salida);
             if (!resultadoCabecera.equals("EXITOSO")) {
                 conexion.rollback();
-                return resultadoCabecera;
+                resultado = resultadoCabecera;
+                registrarBitacora(salida);
+                return resultado;
             }
+
+            String resultadoFinal = "EXITOSO";
+            boolean huboError = false;
 
             for (SalidaDetalle detalle : salida.getDetalles()) {
                 String resultadoDetalle = agregarDetalle(salida.getNumeroFactura(), detalle);
 
                 if (!resultadoDetalle.equals("EXITOSO")) {
                     conexion.rollback();
-                    return resultadoDetalle; // puede ser PRODUCTO INVALIDO o CANTIDAD INSUF
+                    resultadoFinal = resultadoDetalle;
+                    huboError = true;
+                    break;
                 }
             }
 
-            conexion.commit();
-            return "EXITOSO";
+            if (!huboError) {
+                conexion.commit();
+            }
+            resultado = resultadoFinal;
 
         } catch (SQLException e) {
             try {
                 conexion.rollback();
             } catch (SQLException rollbackEx) {
-                // se ignora: ya se va a responder ERROR de todas formas
             }
-            return "ERROR";
+            resultado = "ERROR";
         } finally {
             try {
                 conexion.setAutoCommit(true);
             } catch (SQLException e) {
-                // ignorado
             }
         }
+
+        registrarBitacora(salida);
+        return resultado;
     }
     
     //Metodos de acceso a BD
@@ -117,5 +127,29 @@ public class SalidaServicio {
 
             return llamada.getString(4);
         }
+    }
+
+        private void registrarBitacora(Salida salida) {
+        StringBuilder productosJson = new StringBuilder("[");
+        List<SalidaDetalle> detalles = salida.getDetalles();
+        for (int i = 0; i < detalles.size(); i++) {
+            SalidaDetalle d = detalles.get(i);
+            productosJson.append(String.format(
+                "{\"Numero producto\": \"%s\", \"Cantidad\": \"%d\"}",
+                d.getNoProducto(), d.getCantidad()
+            ));
+            if (i < detalles.size() - 1) {
+                productosJson.append(",");
+            }
+        }
+        productosJson.append("]");
+
+        String json = String.format(
+            "{\"Transaccion\": \"6\", \"Numero Factura\": \"%s\", \"Fecha Venta\": \"%s\", \"Productos\": %s}",
+            salida.getNumeroFactura(),
+            salida.getFechaVenta(),
+            productosJson
+        );
+        Bitacora.getInstancia().registrar(json);
     }
 }

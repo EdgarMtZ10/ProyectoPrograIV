@@ -10,14 +10,16 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
-/**
- * Servicio de Productos del almacen 1.
- *
- * Hace el flujo completo de un ingreso o modificacion de producto:
- * 1. Extrae los datos de la trama fija.
- * 2. Valida las reglas de negocio.
- * 3. Ejecuta la transaccion en la base de datos (segun el tipo).
- * 4. Devuelve el texto exacto de respuesta.
+import almacen.bitacora.Bitacora;
+
+/*
+  Servicio de Productos del almacen 1
+ 
+  Hace el flujo completo de un ingreso o modificacion de producto:
+  1. Extrae los datos de la trama fija.
+  2. Valida las reglas de negocio.
+  3. Ejecuta la transaccion en la base de datos (segun el tipo).
+  4. Devuelve el texto exacto de respuesta.
  */
 public class ProductoServicio {
 
@@ -38,7 +40,8 @@ public class ProductoServicio {
     /**
      * Procesa la trama completa y devuelve el resultado de la operacion.
      */
-    public String procesar(String tramaCruda) {
+    public String procesar(String tramaCruda)
+     {
         ProductoParser.TramaProducto tramaParseada;
 
         // Parseo de la trama (si la longitud o formato base falla, es DATO INVALIDO)
@@ -56,19 +59,24 @@ public class ProductoServicio {
             return "DATO INVALIDO";
         }
 
-        // Ejecucion en base de datos segun el tipo de transaccion
+                // Ejecucion en base de datos segun el tipo de transaccion
+        String resultado;
         try {
             if (tramaParseada.getTipoTransaccion().equals(TIPO_INGRESO)) {
-                return ingresarProducto(producto);
+                resultado = ingresarProducto(producto);
             } else if (tramaParseada.getTipoTransaccion().equals(TIPO_MODIFICACION)) {
-                return modificarProducto(producto);
+                resultado = modificarProducto(producto);
             } else {
-                return "DATO INVALIDO";
+                resultado = "DATO INVALIDO";
             }
         } catch (SQLException e) {
-            return "ERROR";
+            resultado = "ERROR";
         }
+
+        registrarBitacora(tramaParseada.getTipoTransaccion(), producto);
+        return resultado;
     }
+
 
     /**
      * Llama a sp_ingresar_producto para insertar un producto nuevo.
@@ -105,5 +113,15 @@ public class ProductoServicio {
 
             return llamada.getString(4);
         }
+    }
+    private void registrarBitacora(String tipoTransaccion, Producto producto) {
+        String json = String.format(
+            "{\"Transaccion\": \"%s\", \"No Producto\": \"%s\", \"Nombre\": \"%s\", \"Precio\": \"%s\"}",
+            tipoTransaccion,
+            producto.getNoProducto(),
+            producto.getNombre().replace("\"", "\\\""),
+            producto.getPrecio().toPlainString()
+        );
+        Bitacora.getInstancia().registrar(json);
     }
 }
