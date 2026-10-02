@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
-import almacen.bitacora.Bitacora;
+import almacen.almacen5.Bitacora;
 
 /*
   Servicio de Productos del almacen 1
@@ -101,8 +101,9 @@ public class ProductoServicio {
      * Llama a sp_modificar_producto para actualizar un producto existente.
      */
     private String modificarProducto(Producto producto) throws SQLException {
-        String sql = "{call sp_modificar_producto(?, ?, ?, ?)}";
+        String sql = "{call sp_modificar_producto(?, ?, ?, ?)}";// Llamada al procedimiento almacenado para modificar un producto
 
+        //se usa try-with-resources para asegurar que el CallableStatement se cierre automáticamente
         try (CallableStatement llamada = conexion.prepareCall(sql)) {
             llamada.setString(1, producto.getNoProducto());
             llamada.setString(2, producto.getNombre());
@@ -114,8 +115,10 @@ public class ProductoServicio {
             return llamada.getString(4);
         }
     }
-    private void registrarBitacora(String tipoTransaccion, Producto producto) {
+
+    private void registrarBitacora(String tipoTransaccion, Producto producto) {// Formato JSON para la bitacora
         String json = String.format(
+            // Se escapan las comillas dobles de los nombres y se registra el estado como su codigo de trama.
             "{\"Transaccion\": \"%s\", \"No Producto\": \"%s\", \"Nombre\": \"%s\", \"Precio\": \"%s\"}",
             tipoTransaccion,
             producto.getNoProducto(),

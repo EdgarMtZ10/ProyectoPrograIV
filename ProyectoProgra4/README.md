@@ -1,0 +1,2 @@
+Para iniciar el servidor, abrir la terminal en la raíz del proyecto y ejecutar el siguiente comando:
+java -cp "bin;lib\mssql-jdbc-13.6.0.jre11.jar" almacen.socket.Main 5000 localhost 1433 NovaOnlineAlmacen sa MiClave123

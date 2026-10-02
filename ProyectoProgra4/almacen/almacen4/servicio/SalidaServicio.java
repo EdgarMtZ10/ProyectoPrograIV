@@ -11,13 +11,15 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
-import almacen.bitacora.Bitacora;
+import almacen.almacen5.Bitacora;
 
 /**
- * Servicio de salidas del almacen 4, parsea, valida formato, y si pasa, registra el
- * encabezado y luego cada producto, todo dentro de una sola transaccion
- * manual porque la lista de productos viene en varias
- * llamadas separadas al stored procedure.
+    * Flujo de procesamiento:
+    * 1. Extrae los datos de la trama dinámica.
+    * 2. Valida las reglas de negocio.
+    * 3. Ejecuta la transacción en la base de datos.
+    * 4. Devuelve el texto exacto de respuesta. 
+    * 5. Registra la transacción en la bitácora en formato JSON.
  **/
 public class SalidaServicio {
 
@@ -46,6 +48,7 @@ public class SalidaServicio {
 
         Salida salida = tramaParseada.getSalida();
 
+        //muestra los errores de validación de reglas de negocio, si los hay. Si hay errores, devuelve "DATO INVALIDO".
         List<String> errores = validador.validar(salida);
         if (!errores.isEmpty()) {
             return "DATO INVALIDO";
@@ -66,6 +69,7 @@ public class SalidaServicio {
             String resultadoFinal = "EXITOSO";
             boolean huboError = false;
 
+            // Registrar cada detalle de la salida
             for (SalidaDetalle detalle : salida.getDetalles()) {
                 String resultadoDetalle = agregarDetalle(salida.getNumeroFactura(), detalle);
 
@@ -114,6 +118,7 @@ public class SalidaServicio {
         }
     }
     
+    //agrega un detalle de salida a la base de datos, llamando al procedimiento almacenado correspondiente. Devuelve el resultado del procedimiento.
     private String agregarDetalle(long numeroFactura, SalidaDetalle detalle) throws SQLException {
         String sql = "{call sp_salida_detalle_agregar(?, ?, ?, ?)}";
 
@@ -129,6 +134,7 @@ public class SalidaServicio {
         }
     }
 
+    //registra la transacción en la bitácora en formato JSON
         private void registrarBitacora(Salida salida) {
         StringBuilder productosJson = new StringBuilder("[");
         List<SalidaDetalle> detalles = salida.getDetalles();

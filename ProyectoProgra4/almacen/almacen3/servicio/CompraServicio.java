@@ -11,12 +11,10 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
-import almacen.bitacora.Bitacora;
+import almacen.almacen5.Bitacora;
 
-/**
- * Servicio de Compras del almacen 3.
- *
- * Hace el flujo completo de una compra:
+/*
+ *flujo de procesamiento:
  * 1. Extrae los datos de la trama dinámica.
  * 2. Valida las reglas de negocio.
  * 3. Ejecuta la transacción en la base de datos.
@@ -24,6 +22,7 @@ import almacen.bitacora.Bitacora;
  */
 public class CompraServicio {
 
+    // Atributos de la clase CompraServicio
     private final CompraParser parser;
     private final CompraValidador validador;
     private final Connection conexion;
@@ -62,6 +61,7 @@ public class CompraServicio {
         try {
             conexion.setAutoCommit(false);
 
+            // Registrar la cabecera de la compra
             String resultadoCabecera = registrarCabecera(compra);
             if (!resultadoCabecera.equals("EXITOSO")) {
                 conexion.rollback();
@@ -70,9 +70,11 @@ public class CompraServicio {
                 return resultado;
             }
 
+            //si la cabecera fue exitosa, registrar cada detalle de producto
             String resultadoFinal = "EXITOSO";
             boolean huboError = false;
 
+            // Registrar cada detalle de la compra
             for (CompraDetalle detalle : compra.getDetalles()) {
                 String resultadoDetalle = agregarDetalle(compra.getNumeroIngreso(), detalle);
 
@@ -102,6 +104,7 @@ public class CompraServicio {
             }
         }
 
+        // Registrar la transacción en la bitácora
         registrarBitacora(compra);
         return resultado;
     }
@@ -146,6 +149,7 @@ public class CompraServicio {
         }
     }
 
+        //registra la transacción en la bitácora en formato JSON
         private void registrarBitacora(Compra compra) {
         StringBuilder productosJson = new StringBuilder("[");
         List<CompraDetalle> detalles = compra.getDetalles();
@@ -161,6 +165,8 @@ public class CompraServicio {
         }
         productosJson.append("]");
 
+        // Formatear la información de la compra en JSON
+        // Se escapan las comillas dobles de los nombres y se registra el estado como su codigo de trama.
         String json = String.format(
             "{\"Transaccion\": \"5\", \"Numero Ingreso\": \"%s\", \"Fecha compra\": \"%s\", " +
             "\"Cedula Juridica\": \"%s\", \"Productos\": %s}",
