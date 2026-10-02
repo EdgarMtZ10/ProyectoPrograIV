@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
+import almacen.bitacora.Bitacora;
+
 /**
  * Servicio de Compras del almacen 3.
  *
@@ -56,48 +58,52 @@ public class CompraServicio {
         }
 
         // Ejecución en base de datos con manejo de Transacciones
+                String resultado;
         try {
-            // Apagamos el auto-commit para asegurar que si falla un producto, 
-            // no se guarde la cabecera ni los productos anteriores (todo o nada).
             conexion.setAutoCommit(false);
 
-            // Registrar la cabecera de la compra
             String resultadoCabecera = registrarCabecera(compra);
             if (!resultadoCabecera.equals("EXITOSO")) {
-                conexion.rollback(); // Deshacer en caso de PROVEEDOR INVÁLIDO o DATO INVÁLIDO
-                return resultadoCabecera; 
+                conexion.rollback();
+                resultado = resultadoCabecera;
+                registrarBitacora(compra);
+                return resultado;
             }
 
-            // Registrar cada producto en la tabla de detalles
+            String resultadoFinal = "EXITOSO";
+            boolean huboError = false;
+
             for (CompraDetalle detalle : compra.getDetalles()) {
                 String resultadoDetalle = agregarDetalle(compra.getNumeroIngreso(), detalle);
-                
+
                 if (!resultadoDetalle.equals("EXITOSO")) {
-                    conexion.rollback(); // Si un producto es PRODUCTO INVÁLIDO, se cancela toda la compra
-                    return resultadoDetalle;
+                    conexion.rollback();
+                    resultadoFinal = resultadoDetalle;
+                    huboError = true;
+                    break;
                 }
             }
 
-            // Si llegamos aquí, la cabecera y todos los productos se insertaron bien
-            conexion.commit();
-            return "EXITOSO";
+            if (!huboError) {
+                conexion.commit();
+            }
+            resultado = resultadoFinal;
 
         } catch (SQLException e) {
-            // Si ocurre un error a nivel de SQL 
             try {
                 conexion.rollback();
             } catch (SQLException rollbackEx) {
-                // Se ignora el error para devolver el error principal
             }
-            return "ERROR";
+            resultado = "ERROR";
         } finally {
-            // Siempre restauramos el comportamiento por defecto de la conexión
             try {
                 conexion.setAutoCommit(true);
             } catch (SQLException e) {
-                // Ignorado
             }
         }
+
+        registrarBitacora(compra);
+        return resultado;
     }
 
     /**
@@ -139,4 +145,31 @@ public class CompraServicio {
             return llamada.getString(4);
         }
     }
+
+        private void registrarBitacora(Compra compra) {
+        StringBuilder productosJson = new StringBuilder("[");
+        List<CompraDetalle> detalles = compra.getDetalles();
+        for (int i = 0; i < detalles.size(); i++) {
+            CompraDetalle d = detalles.get(i);
+            productosJson.append(String.format(
+                "{\"Numero producto\": \"%s\", \"Cantidad\": \"%d\"}",
+                d.getNoProducto(), d.getCantidad()
+            ));
+            if (i < detalles.size() - 1) {
+                productosJson.append(",");
+            }
+        }
+        productosJson.append("]");
+
+        String json = String.format(
+            "{\"Transaccion\": \"5\", \"Numero Ingreso\": \"%s\", \"Fecha compra\": \"%s\", " +
+            "\"Cedula Juridica\": \"%s\", \"Productos\": %s}",
+            compra.getNumeroIngreso(),
+            compra.getFechaCompra(),
+            compra.getCedulaJuridica(),
+            productosJson
+        );
+        Bitacora.getInstancia().registrar(json);
+    }
+
 }
