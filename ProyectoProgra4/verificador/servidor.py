@@ -5,6 +5,7 @@ import socket
 import threading
 import json
 from Logica import Verificador1
+from Logica import Verificador2
 
 from config import PUERTO
 from Logica import Verificador3 as bitacora 
@@ -56,10 +57,14 @@ def procesar(trama):
    except json.JSONDecodeError:
         return json.dumps({"status": "1"})
     
-   if isinstance(datos, dict) and "transaccion" in datos:
-        respuesta = Verificador1.procesar(datos)
+   if not isinstance(datos, dict):
+        respuesta = {"status":"1"}
+   elif datos.get("transaccion") == "compra":
+       respuesta = Verificador2.procesar(datos)
+   elif "transaccion" in datos:
+       respuesta = Verificador1.procesar(datos)
    else: 
-        respuesta = {"status": "1"}
+       respuesta = {"status": "1"}
    return json.dumps(respuesta, ensure_ascii=False)
 
 if __name__ == "__main__":

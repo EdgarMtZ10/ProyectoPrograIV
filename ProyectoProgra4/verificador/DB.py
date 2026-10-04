@@ -71,8 +71,8 @@ def modificar_cliente(id_cliente, sig_pais, nombre, prim_apellido, seg_apellido,
 def borrar_cliente(id_cliente):
     _ejectutar("SP_BORRAR_CLIENTE", [id_cliente])  
 
-def registar_compra(id_compra, id_cliente, fecha_compra, total_compra, num_tarjeta, 
-                    fecha_vencimiento, codigo_verificacion, id_producto, cantidad):
+def registrar_compra(id_compra, id_cliente, fecha_compra, total_compra, num_tarjeta, 
+                    fecha_vencimiento, codigo_verificacion, productos):
     """se registra compra y detalle en un solo proceso"""
     conexion = obtener_conexion()
     try: 
@@ -80,7 +80,7 @@ def registar_compra(id_compra, id_cliente, fecha_compra, total_compra, num_tarje
         cursor.callproc("SP_INSERTAR_COMPRA", [id_compra, id_cliente, fecha_compra, total_compra, num_tarjeta,
                                                fecha_vencimiento,codigo_verificacion])
         for id_producto, cantidad in id_producto: 
-            cursor.callproc("SP_INSERTAR_DETALLE_COMPRA", [id_compra, cantidad, id_producto])
+            cursor.callproc("SP_INSERTAR_DETALLE_COMPRA", (id_compra, id_producto, cantidad))
         
         conexion.commit() # si todo sale bien se guarda
     

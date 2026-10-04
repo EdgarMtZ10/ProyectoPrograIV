@@ -6,5 +6,6 @@ DB_CONFIG = {
     "password": "", # cambiar clave segun cada mysql local  
     "database":"SistemaVerificador"
 } 
-PUERTO = 5000
-
+PUERTO = 5001
+ALMACEN_HOST = "127.0.0.1"
+ALMACEN_PUERTO = 6000

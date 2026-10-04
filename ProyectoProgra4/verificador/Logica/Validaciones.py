@@ -1,6 +1,11 @@
 #validaciones de datos del verificador 
 import re 
 import unicodedata
+import base64
+import binascii
+from datetime import date, datetime
+from decimal import Decimal
+
 
 #Datos de referencia 
 
@@ -72,5 +77,31 @@ def direccion_valida(direccion):
     """comprueba si es texto no vacio"""
     return es_texto(direccion)
 
+def entero_positivo(texto, max_digitos):
+    """solo digitos, hasta max_digitos y mayor que cero"""
+    return bool(re.fullmatch(rf"[0-9]{{1,{max_digitos}}}", texto)) and int(texto) > 0
 
+def leer_fecha_de_hoy(texto):
+    """comprueba si la fecha es del mismo dia o regresa none"""
+    if not re.fullmatch(r"[0-9]{8}", texto):
+        return None
+    try: 
+        fecha = datetime.strptime(texto, "%Y%m%d").date()
+    except ValueError:
+        return None
+    return fecha if fecha == date.today() else None
 
+def leer_monto(texto):
+    """decimal si es positivo con maximo dos decimales"""
+    if not re.fullmatch(r"[0-9]+(\.[0-9]{1,2}) ?", texto):
+        return None
+    monto = Decimal(texto)
+    return monto if monto > 0 else None
+
+def parece_cifrado(texto):
+    """true si es base64 - AES"""
+    try: 
+        datos = base64.b64decode(texto, validate=True)
+    except (binascii.Error, ValueError):
+        return False
+    return len(datos) >= 16 and len(datos) % 16 == 0
