@@ -1,3 +1,4 @@
+
 CREATE DATABASE SistemaVerificador; 
 
 USE SistemaVerificador;

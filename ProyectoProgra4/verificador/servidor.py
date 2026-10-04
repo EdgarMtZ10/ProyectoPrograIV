@@ -3,6 +3,8 @@
 
 import socket
 import threading
+import json
+from Logica import Verificador1
 
 from config import PUERTO
 from Logica import Verificador3 as bitacora 
@@ -48,8 +50,17 @@ def atender_cliente(conexion, direccion):
 
 #marcador temporal 
 def procesar(trama): 
-    """TEMPORAL """
-    return "RECIBIDO"
+   """Convierte la trama a diccionario y la envia a la historia que corresponde"""
+   try: 
+       datos = json.loads(trama)
+   except json.JSONDecodeError:
+        return json.dumps({"status": "1"})
+    
+   if isinstance(datos, dict) and "transaccion" in datos:
+        respuesta = Verificador1.procesar(datos)
+   else: 
+        respuesta = {"status": "1"}
+   return json.dumps(respuesta, ensure_ascii=False)
 
 if __name__ == "__main__":
     main()

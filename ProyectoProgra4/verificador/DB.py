@@ -2,7 +2,7 @@
 
 import warnings
 import mysql.connector
-from ProyectoProgra4.verificador.config import DB_CONFIG
+from config import DB_CONFIG
 
 def obtener_conexion():
     return mysql.connector.connect(**DB_CONFIG)
@@ -26,7 +26,7 @@ def _consultar(procedimiento, parametros):
     Reciben el nombre del procedimiento y los parametros 
     de lectura      
     """
-    conexion = obtener_conexion
+    conexion = obtener_conexion()
     try: 
         cursor = conexion.cursor()
         cursor.callproc(procedimiento, parametros)
@@ -37,7 +37,7 @@ def _ejectutar(procedimiento, parametros):
     """Recibe el nombre del procedimiento y parametros 
     para ejecutar los parametros, si es correcto realiza commit y 
     si algo falla un rollback para no ingresar datos incompletos en la BD"""
-    conexion = obtener_conexion
+    conexion = obtener_conexion()
     try: 
         cursor = conexion.cursor()
         cursor.callproc(procedimiento, parametros)
