@@ -156,7 +156,7 @@
             this.Controls.Add(this.label1);
             this.Name = "FrmEntradaProducto";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Entrada de productos";
+            this.Text = "mantenimiento de productos";
             this.ResumeLayout(false);
             this.PerformLayout();
 
