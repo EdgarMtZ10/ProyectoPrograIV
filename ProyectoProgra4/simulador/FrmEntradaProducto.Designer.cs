@@ -44,7 +44,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(44, 66);
+            this.label1.Location = new System.Drawing.Point(21, 46);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(101, 13);
             this.label1.TabIndex = 0;
@@ -57,7 +57,7 @@
             "Ingreso",
             "",
             "Modificación"});
-            this.cmbTipoTransaccion.Location = new System.Drawing.Point(151, 58);
+            this.cmbTipoTransaccion.Location = new System.Drawing.Point(128, 38);
             this.cmbTipoTransaccion.Name = "cmbTipoTransaccion";
             this.cmbTipoTransaccion.Size = new System.Drawing.Size(121, 21);
             this.cmbTipoTransaccion.TabIndex = 1;
@@ -65,7 +65,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(44, 106);
+            this.label2.Location = new System.Drawing.Point(21, 86);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(104, 13);
             this.label2.TabIndex = 2;
@@ -73,7 +73,7 @@
             // 
             // txtNoProducto
             // 
-            this.txtNoProducto.Location = new System.Drawing.Point(151, 99);
+            this.txtNoProducto.Location = new System.Drawing.Point(128, 79);
             this.txtNoProducto.Name = "txtNoProducto";
             this.txtNoProducto.Size = new System.Drawing.Size(100, 20);
             this.txtNoProducto.TabIndex = 3;
@@ -81,7 +81,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(44, 140);
+            this.label3.Location = new System.Drawing.Point(21, 120);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(44, 13);
             this.label3.TabIndex = 4;
@@ -90,7 +90,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(44, 179);
+            this.label4.Location = new System.Drawing.Point(21, 159);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(37, 13);
             this.label4.TabIndex = 5;
@@ -98,21 +98,21 @@
             // 
             // txtNombre
             // 
-            this.txtNombre.Location = new System.Drawing.Point(95, 133);
+            this.txtNombre.Location = new System.Drawing.Point(72, 113);
             this.txtNombre.Name = "txtNombre";
             this.txtNombre.Size = new System.Drawing.Size(100, 20);
             this.txtNombre.TabIndex = 6;
             // 
             // txtPrecio
             // 
-            this.txtPrecio.Location = new System.Drawing.Point(95, 172);
+            this.txtPrecio.Location = new System.Drawing.Point(72, 152);
             this.txtPrecio.Name = "txtPrecio";
             this.txtPrecio.Size = new System.Drawing.Size(100, 20);
             this.txtPrecio.TabIndex = 7;
             // 
             // btnEnviar
             // 
-            this.btnEnviar.Location = new System.Drawing.Point(95, 229);
+            this.btnEnviar.Location = new System.Drawing.Point(72, 209);
             this.btnEnviar.Name = "btnEnviar";
             this.btnEnviar.Size = new System.Drawing.Size(75, 23);
             this.btnEnviar.TabIndex = 8;
@@ -123,7 +123,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(44, 306);
+            this.label5.Location = new System.Drawing.Point(64, 284);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(58, 13);
             this.label5.TabIndex = 9;
@@ -131,17 +131,18 @@
             // 
             // txtRespuesta
             // 
-            this.txtRespuesta.Location = new System.Drawing.Point(108, 299);
+            this.txtRespuesta.Location = new System.Drawing.Point(24, 316);
             this.txtRespuesta.Multiline = true;
             this.txtRespuesta.Name = "txtRespuesta";
             this.txtRespuesta.ReadOnly = true;
-            this.txtRespuesta.Size = new System.Drawing.Size(100, 20);
+            this.txtRespuesta.Size = new System.Drawing.Size(156, 55);
             this.txtRespuesta.TabIndex = 10;
             // 
             // FrmEntradaProducto
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ControlDark;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.txtRespuesta);
             this.Controls.Add(this.label5);

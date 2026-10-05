@@ -75,5 +75,10 @@ namespace simulador
                 return Encoding.UTF8.GetString(buffer, 0, bytesLeidos).Trim();
             }
         }
+
+        private void FrmProveedor_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
