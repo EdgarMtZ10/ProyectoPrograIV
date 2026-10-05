@@ -59,15 +59,15 @@ namespace simulador
             string fechaCifrada = Cifrar(txtFechaVencimiento.Text);
             string codigoCifrado = Cifrar(txtCodigoVerificacion.Text);
 
-            string fechaHoy = DateTime.Now.ToString("yyyy-MM-dd");
+            string fechaHoy = DateTime.Now.ToString("yyyyMMdd");
 
             return "{"
          + "\"transaccion\": \"compra\","
          + "\"numero_compra\": \"" + txtNumeroCompra.Text + "\","
-         + "\"identificador_cliente\": \"" + txtIdCliente.Text + "\","
+         + "\"id_cliente\": \"" + txtIdCliente.Text + "\","
          + "\"fecha_compra\": \"" + fechaHoy + "\","
          + "\"total_compra\": \"" + txtTotal.Text + "\","
-         + "\"numero_tarjeta\": \"" + tarjetaCifrada + "\","
+         + "\"num_tarjeta\": \"" + tarjetaCifrada + "\","
          + "\"fecha_vencimiento\": \"" + fechaCifrada + "\","
          + "\"codigo_verificacion\": \"" + codigoCifrado + "\","
          + "\"productos\": [{"
