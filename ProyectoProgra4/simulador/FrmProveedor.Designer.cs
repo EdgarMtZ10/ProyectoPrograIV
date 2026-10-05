@@ -77,7 +77,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(411, 73);
+            this.label4.Location = new System.Drawing.Point(39, 186);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(109, 13);
             this.label4.TabIndex = 3;
@@ -86,7 +86,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(411, 102);
+            this.label5.Location = new System.Drawing.Point(409, 73);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(52, 13);
             this.label5.TabIndex = 4;
@@ -95,7 +95,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(411, 134);
+            this.label6.Location = new System.Drawing.Point(394, 102);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(97, 13);
             this.label6.TabIndex = 5;
@@ -104,7 +104,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(43, 179);
+            this.label7.Location = new System.Drawing.Point(409, 134);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(43, 13);
             this.label7.TabIndex = 6;
@@ -135,7 +135,7 @@
             this.cmbTipoTransaccion.Items.AddRange(new object[] {
             "Ingreso",
             "Modificacion"});
-            this.cmbTipoTransaccion.Location = new System.Drawing.Point(158, 63);
+            this.cmbTipoTransaccion.Location = new System.Drawing.Point(154, 65);
             this.cmbTipoTransaccion.Name = "cmbTipoTransaccion";
             this.cmbTipoTransaccion.Size = new System.Drawing.Size(97, 21);
             this.cmbTipoTransaccion.TabIndex = 9;
@@ -146,7 +146,7 @@
             this.cmbEstado.Items.AddRange(new object[] {
             "Activo",
             "Inactivo"});
-            this.cmbEstado.Location = new System.Drawing.Point(154, 171);
+            this.cmbEstado.Location = new System.Drawing.Point(524, 131);
             this.cmbEstado.Name = "cmbEstado";
             this.cmbEstado.Size = new System.Drawing.Size(97, 21);
             this.cmbEstado.TabIndex = 10;
@@ -167,21 +167,21 @@
             // 
             // txtNombreContacto
             // 
-            this.txtNombreContacto.Location = new System.Drawing.Point(526, 66);
+            this.txtNombreContacto.Location = new System.Drawing.Point(154, 179);
             this.txtNombreContacto.Name = "txtNombreContacto";
             this.txtNombreContacto.Size = new System.Drawing.Size(101, 20);
             this.txtNombreContacto.TabIndex = 13;
             // 
             // txtTelefono
             // 
-            this.txtTelefono.Location = new System.Drawing.Point(526, 99);
+            this.txtTelefono.Location = new System.Drawing.Point(520, 66);
             this.txtTelefono.Name = "txtTelefono";
             this.txtTelefono.Size = new System.Drawing.Size(101, 20);
             this.txtTelefono.TabIndex = 14;
             // 
             // txtCorreo
             // 
-            this.txtCorreo.Location = new System.Drawing.Point(526, 131);
+            this.txtCorreo.Location = new System.Drawing.Point(524, 95);
             this.txtCorreo.Name = "txtCorreo";
             this.txtCorreo.Size = new System.Drawing.Size(101, 20);
             this.txtCorreo.TabIndex = 15;

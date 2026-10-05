@@ -80,7 +80,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(19, 202);
+            this.label4.Location = new System.Drawing.Point(26, 206);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(94, 13);
             this.label4.TabIndex = 3;
@@ -157,14 +157,14 @@
             // 
             // txtTotal
             // 
-            this.txtTotal.Location = new System.Drawing.Point(179, 145);
+            this.txtTotal.Location = new System.Drawing.Point(179, 157);
             this.txtTotal.Name = "txtTotal";
             this.txtTotal.Size = new System.Drawing.Size(100, 20);
             this.txtTotal.TabIndex = 12;
             // 
             // txtNumeroTarjeta
             // 
-            this.txtNumeroTarjeta.Location = new System.Drawing.Point(179, 174);
+            this.txtNumeroTarjeta.Location = new System.Drawing.Point(179, 199);
             this.txtNumeroTarjeta.Name = "txtNumeroTarjeta";
             this.txtNumeroTarjeta.Size = new System.Drawing.Size(100, 20);
             this.txtNumeroTarjeta.TabIndex = 13;
