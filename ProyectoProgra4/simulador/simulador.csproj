@@ -59,9 +59,7 @@
     <Compile Include="FrmEntradaProducto.Designer.cs">
       <DependentUpon>FrmEntradaProducto.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrmMenuPrincipal.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="FrmMenuPrincipal.cs" />
     <Compile Include="FrmMenuPrincipal.Designer.cs">
       <DependentUpon>FrmMenuPrincipal.cs</DependentUpon>
     </Compile>
