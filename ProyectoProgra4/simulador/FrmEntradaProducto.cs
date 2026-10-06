@@ -11,6 +11,8 @@ using System.Windows.Forms;
 
 namespace simulador
 {
+    [System.ComponentModel.DesignerCategory("Code")]
+
     public partial class FrmEntradaProducto : Form
     {
 

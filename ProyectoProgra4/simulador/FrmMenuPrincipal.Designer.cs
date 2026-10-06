@@ -1,16 +1,13 @@
-﻿namespace simulador
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace simulador
 {
     partial class FrmMenuPrincipal
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -20,12 +17,76 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+        private static readonly Color ColorFondo = Color.FromArgb(243, 245, 249);
+        private static readonly Color ColorPrimario = Color.FromArgb(37, 99, 235);
+        private static readonly Color ColorBotonFondo = Color.FromArgb(239, 246, 255);
+        private static readonly Color ColorBotonHover = Color.FromArgb(219, 234, 254);
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
+        private Panel CrearEncabezado(string titulo, string subtitulo)
+        {
+            Panel panel = new Panel();
+            panel.BackColor = ColorPrimario;
+            panel.Dock = DockStyle.Top;
+            panel.Height = 80;
+
+            Label lblTitulo = new Label();
+            lblTitulo.AutoSize = true;
+            lblTitulo.Text = titulo;
+            lblTitulo.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
+            lblTitulo.ForeColor = Color.White;
+            lblTitulo.Location = new Point(24, 12);
+
+            Label lblSubtitulo = new Label();
+            lblSubtitulo.AutoSize = true;
+            lblSubtitulo.Text = subtitulo;
+            lblSubtitulo.Font = new Font("Segoe UI", 9.5F);
+            lblSubtitulo.ForeColor = Color.FromArgb(219, 234, 254);
+            lblSubtitulo.Location = new Point(27, 50);
+
+            panel.Controls.Add(lblTitulo);
+            panel.Controls.Add(lblSubtitulo);
+            return panel;
+        }
+
+        private Panel CrearTarjeta(string titulo, int y, int alto)
+        {
+            Panel tarjeta = new Panel();
+            tarjeta.BackColor = Color.White;
+            tarjeta.Location = new Point(24, y);
+            tarjeta.Size = new Size(712, alto);
+
+            Label lblTitulo = new Label();
+            lblTitulo.AutoSize = true;
+            lblTitulo.Text = titulo;
+            lblTitulo.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            lblTitulo.ForeColor = ColorPrimario;
+            lblTitulo.Location = new Point(16, 10);
+            tarjeta.Controls.Add(lblTitulo);
+            return tarjeta;
+        }
+
+        private void CrearBoton(Panel tarjeta, string texto, int x, int tabIndex, EventHandler alHacerClic)
+        {
+            Button boton = new Button();
+            boton.Text = texto;
+            boton.Font = new Font("Segoe UI", 10.5F, FontStyle.Bold);
+            boton.ForeColor = ColorPrimario;
+            boton.BackColor = ColorBotonFondo;
+            boton.FlatStyle = FlatStyle.Flat;
+            boton.FlatAppearance.BorderColor = Color.FromArgb(191, 219, 254);
+            boton.FlatAppearance.BorderSize = 1;
+            boton.FlatAppearance.MouseOverBackColor = ColorBotonHover;
+            boton.Cursor = Cursors.Hand;
+            boton.TextAlign = ContentAlignment.MiddleLeft;
+            boton.Padding = new Padding(12, 0, 8, 0);
+            boton.Location = new Point(x, 46);
+            boton.Size = new Size(216, 80);
+            boton.TabIndex = tabIndex;
+            boton.UseVisualStyleBackColor = false;
+            boton.Click += alHacerClic;
+            tarjeta.Controls.Add(boton);
+        }
+
         private void InitializeComponent()
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -36,77 +97,81 @@
             this.frmMenuPrincipalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // menuStrip1
-            // 
-            this.menuStrip1.BackColor = System.Drawing.Color.SlateGray;
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mantenimientoDeProvedoresToolStripMenuItem,
-            this.entradaDeProductosToolStripMenuItem,
-            this.mantenimientoDeClientesToolStripMenuItem,
-            this.comprasToolStripMenuItem,
-            this.frmMenuPrincipalToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(800, 24);
-            this.menuStrip1.TabIndex = 4;
-            this.menuStrip1.Text = "menuStrip1";
-            // 
-            // mantenimientoDeProvedoresToolStripMenuItem
-            // 
+
+            // ---------- Barra de menu original (oculta, se conservan nombres y eventos) ----------
             this.mantenimientoDeProvedoresToolStripMenuItem.Name = "mantenimientoDeProvedoresToolStripMenuItem";
-            this.mantenimientoDeProvedoresToolStripMenuItem.Size = new System.Drawing.Size(179, 20);
             this.mantenimientoDeProvedoresToolStripMenuItem.Text = "Mantenimiento de provedores";
             this.mantenimientoDeProvedoresToolStripMenuItem.Click += new System.EventHandler(this.mantenimientoDeProvedoresToolStripMenuItem_Click);
-            // 
-            // entradaDeProductosToolStripMenuItem
-            // 
+
             this.entradaDeProductosToolStripMenuItem.Name = "entradaDeProductosToolStripMenuItem";
-            this.entradaDeProductosToolStripMenuItem.Size = new System.Drawing.Size(132, 20);
             this.entradaDeProductosToolStripMenuItem.Text = "Entrada de productos";
             this.entradaDeProductosToolStripMenuItem.Click += new System.EventHandler(this.entradaDeProductosToolStripMenuItem_Click);
-            // 
-            // mantenimientoDeClientesToolStripMenuItem
-            // 
+
             this.mantenimientoDeClientesToolStripMenuItem.Name = "mantenimientoDeClientesToolStripMenuItem";
-            this.mantenimientoDeClientesToolStripMenuItem.Size = new System.Drawing.Size(160, 20);
             this.mantenimientoDeClientesToolStripMenuItem.Text = "Mantenimiento de clientes";
             this.mantenimientoDeClientesToolStripMenuItem.Click += new System.EventHandler(this.mantenimientoDeClientesToolStripMenuItem_Click);
-            // 
-            // comprasToolStripMenuItem
-            // 
+
             this.comprasToolStripMenuItem.Name = "comprasToolStripMenuItem";
-            this.comprasToolStripMenuItem.Size = new System.Drawing.Size(67, 20);
             this.comprasToolStripMenuItem.Text = "Compras";
             this.comprasToolStripMenuItem.Click += new System.EventHandler(this.comprasToolStripMenuItem_Click);
-            // 
-            // frmMenuPrincipalToolStripMenuItem
-            // 
+
             this.frmMenuPrincipalToolStripMenuItem.Name = "frmMenuPrincipalToolStripMenuItem";
-            this.frmMenuPrincipalToolStripMenuItem.Size = new System.Drawing.Size(174, 20);
             this.frmMenuPrincipalToolStripMenuItem.Text = "Mantenimiento de productos";
             this.frmMenuPrincipalToolStripMenuItem.Click += new System.EventHandler(this.frmMenuPrincipalToolStripMenuItem_Click);
-            // 
-            // FrmMenuPrincipal
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.menuStrip1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                this.mantenimientoDeProvedoresToolStripMenuItem,
+                this.entradaDeProductosToolStripMenuItem,
+                this.mantenimientoDeClientesToolStripMenuItem,
+                this.comprasToolStripMenuItem,
+                this.frmMenuPrincipalToolStripMenuItem});
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.Visible = false;
+
+            // ---------- Encabezado ----------
+            Panel panelEncabezado = CrearEncabezado("Menú principal",
+                "Simulador Nova Online - elija la operación que desea probar");
+
+            // ---------- Tarjeta Almacen ----------
+            Panel tarjetaAlmacen = CrearTarjeta("Almacén", 100, 142);
+            CrearBoton(tarjetaAlmacen, "Mantenimiento de proveedores", 16, 0,
+                new System.EventHandler(this.mantenimientoDeProvedoresToolStripMenuItem_Click));
+            CrearBoton(tarjetaAlmacen, "Mantenimiento de productos", 248, 1,
+                new System.EventHandler(this.frmMenuPrincipalToolStripMenuItem_Click));
+            CrearBoton(tarjetaAlmacen, "Entrada de productos (compra)", 480, 2,
+                new System.EventHandler(this.entradaDeProductosToolStripMenuItem_Click));
+
+            // ---------- Tarjeta Verificador ----------
+            Panel tarjetaVerificador = CrearTarjeta("Verificador", 254, 142);
+            CrearBoton(tarjetaVerificador, "Mantenimiento de clientes", 16, 3,
+                new System.EventHandler(this.mantenimientoDeClientesToolStripMenuItem_Click));
+            CrearBoton(tarjetaVerificador, "Compras", 248, 4,
+                new System.EventHandler(this.comprasToolStripMenuItem_Click));
+
+            // ---------- Formulario ----------
+            this.AutoScaleDimensions = new SizeF(96F, 96F);
+            this.AutoScaleMode = AutoScaleMode.Dpi;
+            this.BackColor = ColorFondo;
+            this.ClientSize = new Size(760, 420);
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FrmMenuPrincipal";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = FormStartPosition.CenterScreen;
             this.Text = "Menu";
+
+            this.Controls.Add(tarjetaVerificador);
+            this.Controls.Add(tarjetaAlmacen);
+            this.Controls.Add(panelEncabezado);
+            this.Controls.Add(this.menuStrip1);
+
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
-        #endregion
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem mantenimientoDeProvedoresToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem entradaDeProductosToolStripMenuItem;

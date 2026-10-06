@@ -10,8 +10,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace simulador
-{
+namespace simulador { 
+
+      [System.ComponentModel.DesignerCategory("Code")]
+
+
     public partial class FrmCompraVerificador : Form
     {
 
