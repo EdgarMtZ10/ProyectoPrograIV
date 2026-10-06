@@ -76,6 +76,7 @@ namespace simulador
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.btnEnviar = new System.Windows.Forms.Button();
+            this.btnVolver = new System.Windows.Forms.Button();
             this.txtNumeroCompra = new System.Windows.Forms.TextBox();
             this.txtIdCliente = new System.Windows.Forms.TextBox();
             this.txtTotal = new System.Windows.Forms.TextBox();
@@ -107,8 +108,23 @@ namespace simulador
             lblSubtitulo.ForeColor = Color.FromArgb(219, 234, 254);
             lblSubtitulo.Location = new Point(27, 50);
 
+            // ---------- Botón Volver al Menú ----------
+            this.btnVolver.Text = "Volver al Menú";
+            this.btnVolver.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+            this.btnVolver.ForeColor = ColorPrimario;
+            this.btnVolver.BackColor = Color.White;
+            this.btnVolver.FlatStyle = FlatStyle.Flat;
+            this.btnVolver.FlatAppearance.BorderSize = 0;
+            this.btnVolver.Cursor = Cursors.Hand;
+            this.btnVolver.Location = new Point(590, 20);
+            this.btnVolver.Size = new Size(140, 40);
+            this.btnVolver.TabIndex = 10;
+            this.btnVolver.UseVisualStyleBackColor = false;
+            this.btnVolver.Click += new System.EventHandler(this.btnVolver_Click);
+
             panelEncabezado.Controls.Add(lblTitulo);
             panelEncabezado.Controls.Add(lblSubtitulo);
+            panelEncabezado.Controls.Add(this.btnVolver);
 
             // ---------- Tarjeta 1: datos de la compra ----------
             Panel tarjetaCompra = CrearTarjeta("Datos de la compra", 100, 112);
@@ -194,6 +210,7 @@ namespace simulador
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button btnEnviar;
+        private System.Windows.Forms.Button btnVolver;
         private System.Windows.Forms.TextBox txtNumeroCompra;
         private System.Windows.Forms.TextBox txtIdCliente;
         private System.Windows.Forms.TextBox txtTotal;

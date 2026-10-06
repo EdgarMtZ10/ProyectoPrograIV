@@ -143,7 +143,7 @@ namespace simulador
                 new System.EventHandler(this.entradaDeProductosToolStripMenuItem_Click));
 
             // ---------- Tarjeta Verificador ----------
-            Panel tarjetaVerificador = CrearTarjeta("Verificador", 254, 142);
+            Panel tarjetaVerificador = CrearTarjeta("Verificador", 258, 142);
             CrearBoton(tarjetaVerificador, "Mantenimiento de clientes", 16, 3,
                 new System.EventHandler(this.mantenimientoDeClientesToolStripMenuItem_Click));
             CrearBoton(tarjetaVerificador, "Compras", 248, 4,
@@ -153,7 +153,7 @@ namespace simulador
             this.AutoScaleDimensions = new SizeF(96F, 96F);
             this.AutoScaleMode = AutoScaleMode.Dpi;
             this.BackColor = ColorFondo;
-            this.ClientSize = new Size(760, 420);
+            this.ClientSize = new Size(760, 590);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MainMenuStrip = this.menuStrip1;

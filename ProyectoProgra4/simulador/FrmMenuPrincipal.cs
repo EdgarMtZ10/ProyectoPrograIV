@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace simulador
@@ -18,58 +11,56 @@ namespace simulador
             InitializeComponent();
         }
 
+        private void AbrirVentana(Form pantalla)
+        {
+            this.Hide(); // Oculta el menú principal en lugar de dejarlo acumulándose
+            pantalla.ShowDialog(); // Muestra la subventana de forma modal
+            this.Show(); // Al cerrar la subventana, el menú principal vuelve a aparecer limpio
+        }
+
         private void btnProveedores_Click(object sender, EventArgs e)
         {
-            FrmProveedor pantalla = new FrmProveedor();
-            pantalla.Show();
+            AbrirVentana(new FrmProveedor());
         }
 
         private void btnEntradaProductos_Click(object sender, EventArgs e)
         {
-            FrmEntradaProducto pantalla = new FrmEntradaProducto();
-            pantalla.Show();
+            AbrirVentana(new FrmEntradaProducto());
         }
 
         private void btnClientes_Click(object sender, EventArgs e)
         {
-            FrmCliente pantalla = new FrmCliente();
-            pantalla.Show();
+            AbrirVentana(new FrmCliente());
         }
 
         private void btnCompras_Click(object sender, EventArgs e)
         {
-            FrmCompraVerificador pantalla = new FrmCompraVerificador();
-            pantalla.Show();
+            AbrirVentana(new FrmCompraVerificador());
         }
 
         private void mantenimientoDeProvedoresToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FrmProveedor pantalla = new FrmProveedor();
-            pantalla.Show();
+            AbrirVentana(new FrmProveedor());
         }
 
         private void entradaDeProductosToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FrmCompraAlmacen pantalla = new FrmCompraAlmacen();
-            pantalla.Show();
+            AbrirVentana(new FrmCompraAlmacen());
         }
 
         private void mantenimientoDeClientesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FrmCliente pantalla = new FrmCliente();
-            pantalla.Show();
+            AbrirVentana(new FrmCliente());
         }
 
         private void comprasToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FrmCompraVerificador pantalla = new FrmCompraVerificador();
-            pantalla.Show();
+            AbrirVentana(new FrmCompraVerificador());
         }
 
         private void frmMenuPrincipalToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FrmEntradaProducto pantalla = new FrmEntradaProducto();
-            pantalla.Show();
+            AbrirVentana(new FrmEntradaProducto());
         }
     }
 }

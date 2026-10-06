@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace simulador
@@ -22,6 +16,12 @@ namespace simulador
         public FrmProveedor()
         {
             InitializeComponent();
+        }
+        private void btnVolver_Click(object sender, EventArgs e)
+        {
+            FrmMenuPrincipal menu = new FrmMenuPrincipal();
+            menu.Show();
+            this.Close(); // o this.Hide() dependiendo de tu lógica de ventanas
         }
 
         private void btnEnviar_Click(object sender, EventArgs e)

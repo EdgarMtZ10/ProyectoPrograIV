@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +25,7 @@ namespace simulador
         private DateTimePicker dtpFecha;
         private DataGridView dgvProductos;
         private Button btnEnviar;
+        private Button btnVolver;
 
         public FrmCompraAlmacen()
         {
@@ -35,6 +34,23 @@ namespace simulador
             // ---------- Encabezado ----------
             Panel panelEncabezado = CrearEncabezado("Entrada de productos",
                 "Simulador Nova Online - registrar una compra de productos a un proveedor");
+
+            // ---------- Botón Volver al Menú ----------
+            btnVolver = new Button();
+            btnVolver.Text = "Volver al Menú";
+            btnVolver.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+            btnVolver.ForeColor = ColorPrimario;
+            btnVolver.BackColor = Color.White;
+            btnVolver.FlatStyle = FlatStyle.Flat;
+            btnVolver.FlatAppearance.BorderSize = 0;
+            btnVolver.Cursor = Cursors.Hand;
+            btnVolver.Location = new Point(590, 20);
+            btnVolver.Size = new Size(140, 40);
+            btnVolver.TabIndex = 10;
+            btnVolver.UseVisualStyleBackColor = false;
+            btnVolver.Click += BtnVolver_Click;
+
+            panelEncabezado.Controls.Add(btnVolver);
 
             // ---------- Tarjeta 1: datos de la compra ----------
             Panel tarjetaCompra = CrearTarjeta("Datos de la compra", 100, 112);
@@ -98,7 +114,7 @@ namespace simulador
             lblRespuesta.Text = "Respuesta del almacén";
             lblRespuesta.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
             lblRespuesta.ForeColor = ColorTexto;
-            lblRespuesta.Location = new Point(24, 452);
+            lblRespuesta.Location = new Point(24, 476);
 
             txtRespuesta = new TextBox();
             txtRespuesta.Multiline = true;
@@ -108,7 +124,7 @@ namespace simulador
             txtRespuesta.ForeColor = ColorTexto;
             txtRespuesta.Font = new Font("Segoe UI", 10F);
             txtRespuesta.BorderStyle = BorderStyle.FixedSingle;
-            txtRespuesta.Location = new Point(24, 474);
+            txtRespuesta.Location = new Point(24, 498);
             txtRespuesta.Size = new Size(560, 72);
             txtRespuesta.TabStop = false;
 
@@ -122,7 +138,7 @@ namespace simulador
             btnEnviar.FlatAppearance.BorderSize = 0;
             btnEnviar.FlatAppearance.MouseOverBackColor = ColorPrimarioHover;
             btnEnviar.Cursor = Cursors.Hand;
-            btnEnviar.Location = new Point(600, 474);
+            btnEnviar.Location = new Point(600, 498);
             btnEnviar.Size = new Size(136, 72);
             btnEnviar.TabIndex = 4;
             btnEnviar.UseVisualStyleBackColor = false;
@@ -133,10 +149,10 @@ namespace simulador
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = ColorFondo;
-            ClientSize = new Size(760, 568);
+            ClientSize = new Size(760, 590);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
-            StartPosition = FormStartPosition.CenterParent;
+            StartPosition = FormStartPosition.CenterScreen;
 
             Controls.Add(btnEnviar);
             Controls.Add(txtRespuesta);
@@ -195,7 +211,7 @@ namespace simulador
         }
 
         private void AgregarCampo(Panel tarjeta, string texto, Control campo,
-                                  int x, int ancho, int tabIndex)
+                                int x, int ancho, int tabIndex)
         {
             Label etiqueta = new Label();
             etiqueta.AutoSize = true;
@@ -220,7 +236,15 @@ namespace simulador
             tarjeta.Controls.Add(campo);
         }
 
-        // ================= LOGICA (SIN CAMBIOS) =================
+        // ================= LOGICA =================
+
+        private void BtnVolver_Click(object sender, EventArgs e)
+        {
+            // Asume que tu menú principal se llama FrmMenuPrincipal
+            FrmMenuPrincipal menu = new FrmMenuPrincipal();
+            menu.Show();
+            this.Close();
+        }
 
         private async void BtnEnviar_Click(object sender, EventArgs e)
         {
@@ -241,8 +265,6 @@ namespace simulador
             }
         }
 
-        // tipo(1) + numeroIngreso(10) + fecha(10) + cedula(10)
-        // + por cada producto: noProducto(10) + cantidad(7)
         private string ArmarTrama()
         {
             var sb = new StringBuilder();
@@ -277,7 +299,6 @@ namespace simulador
                 cliente.ReceiveTimeout = 5000;
                 using (NetworkStream flujo = cliente.GetStream())
                 {
-                    // El almacen lee con readLine(), por eso el salto de linea
                     byte[] datos = Encoding.UTF8.GetBytes(trama + "\n");
                     flujo.Write(datos, 0, datos.Length);
 

@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -24,20 +20,31 @@ namespace simulador
             InitializeComponent();
         }
 
-        private void btnEnviar_Click(object sender, EventArgs e)
+        private async void btnEnviar_Click(object sender, EventArgs e)
         {
+            btnEnviar.Enabled = false;
             try
             {
                 string json = ArmarJson();
-                string respuesta = EnviarTrama(json);
-                txtRespuesta.Text = respuesta;
+                string respuesta = await Task.Run(() => EnviarTrama(json));
+                txtRespuesta.Text = Traducir(respuesta);
             }
             catch (Exception ex)
             {
                 txtRespuesta.Text = "Error de conexion: " + ex.Message;
             }
+            finally
+            {
+                btnEnviar.Enabled = true;
+            }
         }
 
+        private void btnVolver_Click(object sender, EventArgs e)
+        {
+            FrmMenuPrincipal menu = new FrmMenuPrincipal();
+            menu.Show();
+            this.Close(); // o this.Hide() dependiendo de tu lógica de ventanas
+        }
         private string ArmarJson()
         {
             string transaccion = cmbTransaccion.SelectedItem?.ToString() ?? "agregar";
@@ -73,6 +80,51 @@ namespace simulador
         private void FrmCliente_Load(object sender, EventArgs e)
         {
 
+        }
+
+        /// <summary>
+        /// Traduce el JSON crudo de Verificador1.py a un mensaje
+        /// entendible. A diferencia de la compra (status siempre
+        /// numerico), aqui el borrado con historial de compras devuelve
+        /// un STRING completo en vez de un numero
+        /// ("Error: cliente tiene historial de compras"), por eso la
+        /// comparacion no puede ser solo switch de numeros -- primero
+        /// se revisa ese caso especial de texto, y solo si no aplica se
+        /// interpreta como codigo numerico.
+        /// </summary>
+        private string Traducir(string respuestaJson)
+        {
+            Match coincidencia = Regex.Match(respuestaJson, "\"status\"\\s*:\\s*\"([^\"]+)\"");
+
+            if (!coincidencia.Success)
+            {
+                return "Respuesta inesperada del verificador: " + respuestaJson;
+            }
+
+            string status = coincidencia.Groups[1].Value;
+
+            // Caso especial: el borrado de un cliente con compras asociadas
+            // no devuelve un numero, devuelve este texto completo.
+            if (status.StartsWith("Error: cliente tiene historial", StringComparison.OrdinalIgnoreCase))
+            {
+                return "No se puede borrar: el cliente tiene compras registradas.";
+            }
+
+            switch (status)
+            {
+                case "OK":
+                    return "La operacion sobre el cliente se realizo correctamente.";
+                case "1":
+                    return "Los datos del cliente no son validos (revise identificacion, pais, nombre, correo, telefono o direccion).";
+                case "2":
+                    return "Ya existe un cliente con esa identificacion.";
+                case "3":
+                    return "No existe ningun cliente con esa identificacion.";
+                case "4":
+                    return "Ocurrio un error no controlado al procesar la solicitud.";
+                default:
+                    return "Respuesta desconocida del verificador: " + respuestaJson;
+            }
         }
     }
 }

@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace simulador { 
+namespace simulador
+{
 
-      [System.ComponentModel.DesignerCategory("Code")]
+    [System.ComponentModel.DesignerCategory("Code")]
 
 
     public partial class FrmCompraVerificador : Form
@@ -22,8 +19,12 @@ namespace simulador {
         private const int PUERTO_VERIFICADOR = 5001;
 
 
-        // Llave y IV fijos para pruebas - deben coincidir con lo que
-        // use el verificador para descifrar (confirmar con Jean).
+        // Llave y IV fijos para pruebas. NOTA: ya no hace falta que
+        // coincidan con nada del lado del Verificador -- se confirmo
+        // que Verificador2.py NUNCA descifra la tarjeta, solo valida
+        // que el texto "parezca" cifrado (Base64 valido, multiplo de
+        // 16 bytes) y lo guarda tal cual. Esta llave solo necesita
+        // producir un cifrado con esa forma, nada mas.
         private static readonly byte[] LLAVE_AES = Encoding.UTF8.GetBytes("12345678901234567890123456789012"); // 32 bytes
         private static readonly byte[] IV_AES = Encoding.UTF8.GetBytes("1234567890123456"); // 16 bytes
 
@@ -41,18 +42,29 @@ namespace simulador {
         {
 
         }
-
-        private void btnEnviar_Click(object sender, EventArgs e)
+        private void btnVolver_Click(object sender, EventArgs e)
         {
+            FrmMenuPrincipal menu = new FrmMenuPrincipal();
+            menu.Show();
+            this.Close(); // o this.Hide() dependiendo de tu lógica de ventanas
+        }
+
+        private async void btnEnviar_Click(object sender, EventArgs e)
+        {
+            btnEnviar.Enabled = false;
             try
             {
                 string json = ArmarJson();
-                string respuesta = EnviarTrama(json);
-                txtRespuesta.Text = respuesta;
+                string respuesta = await Task.Run(() => EnviarTrama(json));
+                txtRespuesta.Text = Traducir(respuesta);
             }
             catch (Exception ex)
             {
                 txtRespuesta.Text = "Error de conexion: " + ex.Message;
+            }
+            finally
+            {
+                btnEnviar.Enabled = true;
             }
         }
 
@@ -112,6 +124,40 @@ namespace simulador {
                 return Encoding.UTF8.GetString(buffer, 0, bytesLeidos).Trim();
             }
 
+        }
+
+        /// <summary>
+        /// Traduce el JSON crudo que devuelve el Verificador
+        /// ({"status": "OK"|"1"|"2"}) a un mensaje entendible para quien
+        /// esta probando el simulador. No se usa una libreria de JSON
+        /// completa porque la respuesta es siempre un solo campo
+        /// "status" -- una expresion regular simple es suficiente y no
+        /// agrega una dependencia nueva al proyecto.
+        /// </summary>
+        private string Traducir(string respuestaJson)
+        {
+            Match coincidencia = Regex.Match(respuestaJson, "\"status\"\\s*:\\s*\"([^\"]+)\"");
+
+            if (!coincidencia.Success)
+            {
+                // La respuesta no tiene la forma esperada -- se muestra
+                // tal cual para poder depurar que fue lo que llego.
+                return "Respuesta inesperada del verificador: " + respuestaJson;
+            }
+
+            string status = coincidencia.Groups[1].Value;
+
+            switch (status)
+            {
+                case "OK":
+                    return "La compra se registro correctamente.";
+                case "1":
+                    return "Los datos de la compra no son validos (revise numero de compra, cliente, tarjeta, producto y cantidad).";
+                case "2":
+                    return "El almacen rechazo la compra (verifique que el producto exista y tenga suficiente inventario).";
+                default:
+                    return "Respuesta desconocida del verificador: " + respuestaJson;
+            }
         }
     }
 }
