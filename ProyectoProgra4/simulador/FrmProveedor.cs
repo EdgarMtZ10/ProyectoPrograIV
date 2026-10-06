@@ -11,6 +11,8 @@ using System.Windows.Forms;
 
 namespace simulador
 {
+    [System.ComponentModel.DesignerCategory("Code")]
+
     public partial class FrmProveedor : Form
     {
         private const string HOST_ALMACEN = "127.0.0.1";

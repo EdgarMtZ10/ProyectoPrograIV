@@ -1,16 +1,13 @@
-﻿namespace simulador
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace simulador
 {
     partial class FrmProveedor
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -20,12 +17,88 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+        private static readonly Color ColorFondo = Color.FromArgb(243, 245, 249);
+        private static readonly Color ColorPrimario = Color.FromArgb(37, 99, 235);
+        private static readonly Color ColorPrimarioHover = Color.FromArgb(29, 78, 216);
+        private static readonly Color ColorTexto = Color.FromArgb(31, 41, 55);
+        private static readonly Color ColorSecundario = Color.FromArgb(107, 114, 128);
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
+        private Panel CrearEncabezado(string titulo, string subtitulo)
+        {
+            Panel panel = new Panel();
+            panel.BackColor = ColorPrimario;
+            panel.Dock = DockStyle.Top;
+            panel.Height = 80;
+
+            Label lblTitulo = new Label();
+            lblTitulo.AutoSize = true;
+            lblTitulo.Text = titulo;
+            lblTitulo.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
+            lblTitulo.ForeColor = Color.White;
+            lblTitulo.Location = new Point(24, 12);
+
+            Label lblSubtitulo = new Label();
+            lblSubtitulo.AutoSize = true;
+            lblSubtitulo.Text = subtitulo;
+            lblSubtitulo.Font = new Font("Segoe UI", 9.5F);
+            lblSubtitulo.ForeColor = Color.FromArgb(219, 234, 254);
+            lblSubtitulo.Location = new Point(27, 50);
+
+            panel.Controls.Add(lblTitulo);
+            panel.Controls.Add(lblSubtitulo);
+            return panel;
+        }
+
+        private Panel CrearTarjeta(string titulo, int y, int alto)
+        {
+            Panel tarjeta = new Panel();
+            tarjeta.BackColor = Color.White;
+            tarjeta.Location = new Point(24, y);
+            tarjeta.Size = new Size(712, alto);
+
+            Label lblTitulo = new Label();
+            lblTitulo.AutoSize = true;
+            lblTitulo.Text = titulo;
+            lblTitulo.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            lblTitulo.ForeColor = ColorPrimario;
+            lblTitulo.Location = new Point(16, 10);
+            tarjeta.Controls.Add(lblTitulo);
+            return tarjeta;
+        }
+
+        private void ConfigurarCampo(Panel tarjeta, Label etiqueta, Control campo,
+                                     string texto, int x, int fila, int ancho, int tabIndex)
+        {
+            etiqueta.AutoSize = true;
+            etiqueta.Text = texto;
+            etiqueta.Font = new Font("Segoe UI", 9F);
+            etiqueta.ForeColor = ColorSecundario;
+            etiqueta.Location = new Point(x, 46 + fila * 76);
+
+            campo.Font = new Font("Segoe UI", 10.5F);
+            campo.ForeColor = ColorTexto;
+            campo.Location = new Point(x, 68 + fila * 76);
+            campo.Width = ancho;
+            campo.TabIndex = tabIndex;
+
+            TextBox caja = campo as TextBox;
+            if (caja != null)
+            {
+                caja.BorderStyle = BorderStyle.FixedSingle;
+            }
+
+            ComboBox combo = campo as ComboBox;
+            if (combo != null)
+            {
+                combo.DropDownStyle = ComboBoxStyle.DropDownList;
+                combo.FlatStyle = FlatStyle.Flat;
+                combo.BackColor = Color.White;
+            }
+
+            tarjeta.Controls.Add(etiqueta);
+            tarjeta.Controls.Add(campo);
+        }
+
         private void InitializeComponent()
         {
             this.label1 = new System.Windows.Forms.Label();
@@ -36,7 +109,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.btnEnviar = new System.Windows.Forms.Button();
             this.cmbTipoTransaccion = new System.Windows.Forms.ComboBox();
             this.cmbEstado = new System.Windows.Forms.ComboBox();
             this.txtCedulaJuridica = new System.Windows.Forms.TextBox();
@@ -45,190 +117,83 @@
             this.txtTelefono = new System.Windows.Forms.TextBox();
             this.txtCorreo = new System.Windows.Forms.TextBox();
             this.txtRespuesta = new System.Windows.Forms.TextBox();
+            this.btnEnviar = new System.Windows.Forms.Button();
             this.SuspendLayout();
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(32, 73);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(104, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Tipo de transacción:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(32, 102);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(84, 13);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Cédula Jurídica:";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(43, 134);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(47, 13);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "Nombre:";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(411, 73);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(109, 13);
-            this.label4.TabIndex = 3;
-            this.label4.Text = "Nombre del contacto:";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(411, 102);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(52, 13);
-            this.label5.TabIndex = 4;
-            this.label5.Text = "Teléfono:";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(411, 134);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(97, 13);
-            this.label6.TabIndex = 5;
-            this.label6.Text = "Correo Electrónico:";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(43, 179);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(43, 13);
-            this.label7.TabIndex = 6;
-            this.label7.Text = "Estado:";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(310, 301);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(61, 13);
-            this.label8.TabIndex = 7;
-            this.label8.Text = "Respuesta:\t";
-            // 
-            // btnEnviar
-            // 
-            this.btnEnviar.Location = new System.Drawing.Point(313, 216);
-            this.btnEnviar.Name = "btnEnviar";
-            this.btnEnviar.Size = new System.Drawing.Size(75, 23);
-            this.btnEnviar.TabIndex = 8;
-            this.btnEnviar.Text = "Enviar";
-            this.btnEnviar.UseVisualStyleBackColor = true;
-            this.btnEnviar.Click += new System.EventHandler(this.btnEnviar_Click);
-            // 
-            // cmbTipoTransaccion
-            // 
-            this.cmbTipoTransaccion.FormattingEnabled = true;
+
+            Panel panelEncabezado = CrearEncabezado("Mantenimiento de proveedores",
+                "Simulador Nova Online - ingreso y modificación de proveedores en el almacén");
+
             this.cmbTipoTransaccion.Items.AddRange(new object[] {
-            "Ingreso",
-            "Modificacion"});
-            this.cmbTipoTransaccion.Location = new System.Drawing.Point(158, 63);
-            this.cmbTipoTransaccion.Name = "cmbTipoTransaccion";
-            this.cmbTipoTransaccion.Size = new System.Drawing.Size(97, 21);
-            this.cmbTipoTransaccion.TabIndex = 9;
-            // 
-            // cmbEstado
-            // 
-            this.cmbEstado.FormattingEnabled = true;
+                "Ingreso",
+                "Modificacion"});
+
             this.cmbEstado.Items.AddRange(new object[] {
-            "Activo",
-            "Inactivo"});
-            this.cmbEstado.Location = new System.Drawing.Point(154, 171);
-            this.cmbEstado.Name = "cmbEstado";
-            this.cmbEstado.Size = new System.Drawing.Size(97, 21);
-            this.cmbEstado.TabIndex = 10;
-            // 
-            // txtCedulaJuridica
-            // 
-            this.txtCedulaJuridica.Location = new System.Drawing.Point(154, 92);
-            this.txtCedulaJuridica.Name = "txtCedulaJuridica";
-            this.txtCedulaJuridica.Size = new System.Drawing.Size(101, 20);
-            this.txtCedulaJuridica.TabIndex = 11;
-            // 
-            // txtNombre
-            // 
-            this.txtNombre.Location = new System.Drawing.Point(154, 127);
-            this.txtNombre.Name = "txtNombre";
-            this.txtNombre.Size = new System.Drawing.Size(101, 20);
-            this.txtNombre.TabIndex = 12;
-            // 
-            // txtNombreContacto
-            // 
-            this.txtNombreContacto.Location = new System.Drawing.Point(526, 66);
-            this.txtNombreContacto.Name = "txtNombreContacto";
-            this.txtNombreContacto.Size = new System.Drawing.Size(101, 20);
-            this.txtNombreContacto.TabIndex = 13;
-            // 
-            // txtTelefono
-            // 
-            this.txtTelefono.Location = new System.Drawing.Point(526, 99);
-            this.txtTelefono.Name = "txtTelefono";
-            this.txtTelefono.Size = new System.Drawing.Size(101, 20);
-            this.txtTelefono.TabIndex = 14;
-            // 
-            // txtCorreo
-            // 
-            this.txtCorreo.Location = new System.Drawing.Point(526, 131);
-            this.txtCorreo.Name = "txtCorreo";
-            this.txtCorreo.Size = new System.Drawing.Size(101, 20);
-            this.txtCorreo.TabIndex = 15;
-            // 
-            // txtRespuesta
-            // 
-            this.txtRespuesta.Location = new System.Drawing.Point(238, 317);
+                "Activo",
+                "Inactivo"});
+
+            Panel tarjetaOperacion = CrearTarjeta("Operación", 100, 112);
+            ConfigurarCampo(tarjetaOperacion, this.label1, this.cmbTipoTransaccion, "Tipo de transacción", 16, 0, 216, 0);
+            ConfigurarCampo(tarjetaOperacion, this.label2, this.txtCedulaJuridica, "Cédula jurídica", 248, 0, 216, 1);
+            ConfigurarCampo(tarjetaOperacion, this.label7, this.cmbEstado, "Estado", 480, 0, 216, 2);
+
+            Panel tarjetaDatos = CrearTarjeta("Datos del proveedor", 224, 188);
+            ConfigurarCampo(tarjetaDatos, this.label3, this.txtNombre, "Nombre", 16, 0, 216, 3);
+            ConfigurarCampo(tarjetaDatos, this.label4, this.txtNombreContacto, "Nombre del contacto", 248, 0, 216, 4);
+            ConfigurarCampo(tarjetaDatos, this.label5, this.txtTelefono, "Teléfono", 480, 0, 216, 5);
+            ConfigurarCampo(tarjetaDatos, this.label6, this.txtCorreo, "Correo electrónico", 16, 1, 448, 6);
+
+            this.label8.AutoSize = true;
+            this.label8.Text = "Respuesta del almacén";
+            this.label8.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+            this.label8.ForeColor = ColorTexto;
+            this.label8.Location = new Point(24, 428);
+
             this.txtRespuesta.Multiline = true;
-            this.txtRespuesta.Name = "txtRespuesta";
             this.txtRespuesta.ReadOnly = true;
-            this.txtRespuesta.Size = new System.Drawing.Size(235, 83);
-            this.txtRespuesta.TabIndex = 16;
-            // 
-            // FrmProveedor
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.txtRespuesta);
-            this.Controls.Add(this.txtCorreo);
-            this.Controls.Add(this.txtTelefono);
-            this.Controls.Add(this.txtNombreContacto);
-            this.Controls.Add(this.txtNombre);
-            this.Controls.Add(this.txtCedulaJuridica);
-            this.Controls.Add(this.cmbEstado);
-            this.Controls.Add(this.cmbTipoTransaccion);
-            this.Controls.Add(this.btnEnviar);
-            this.Controls.Add(this.label8);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
+            this.txtRespuesta.ScrollBars = ScrollBars.Vertical;
+            this.txtRespuesta.BackColor = Color.White;
+            this.txtRespuesta.ForeColor = ColorTexto;
+            this.txtRespuesta.Font = new Font("Segoe UI", 10F);
+            this.txtRespuesta.BorderStyle = BorderStyle.FixedSingle;
+            this.txtRespuesta.Location = new Point(24, 450);
+            this.txtRespuesta.Size = new Size(560, 72);
+            this.txtRespuesta.TabStop = false;
+
+            this.btnEnviar.Text = "Enviar";
+            this.btnEnviar.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            this.btnEnviar.ForeColor = Color.White;
+            this.btnEnviar.BackColor = ColorPrimario;
+            this.btnEnviar.FlatStyle = FlatStyle.Flat;
+            this.btnEnviar.FlatAppearance.BorderSize = 0;
+            this.btnEnviar.FlatAppearance.MouseOverBackColor = ColorPrimarioHover;
+            this.btnEnviar.Cursor = Cursors.Hand;
+            this.btnEnviar.Location = new Point(600, 450);
+            this.btnEnviar.Size = new Size(136, 72);
+            this.btnEnviar.TabIndex = 7;
+            this.btnEnviar.UseVisualStyleBackColor = false;
+            this.btnEnviar.Click += new System.EventHandler(this.btnEnviar_Click);
+
+            this.AutoScaleDimensions = new SizeF(96F, 96F);
+            this.AutoScaleMode = AutoScaleMode.Dpi;
+            this.BackColor = ColorFondo;
+            this.ClientSize = new Size(760, 544);
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "FrmProveedor";
-            this.RightToLeftLayout = true;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = FormStartPosition.CenterScreen;
             this.Text = "Mantenimiento de Proveedores";
+
+            this.Controls.Add(this.btnEnviar);
+            this.Controls.Add(this.txtRespuesta);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(tarjetaDatos);
+            this.Controls.Add(tarjetaOperacion);
+            this.Controls.Add(panelEncabezado);
+
             this.Load += new System.EventHandler(this.FrmProveedor_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
-
-        #endregion
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;

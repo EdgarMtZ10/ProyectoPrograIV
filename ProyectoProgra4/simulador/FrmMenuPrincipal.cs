@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 namespace simulador
 {
+    [System.ComponentModel.DesignerCategory("Code")]
     public partial class FrmMenuPrincipal : Form
     {
         public FrmMenuPrincipal()

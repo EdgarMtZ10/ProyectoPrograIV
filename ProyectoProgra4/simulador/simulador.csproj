@@ -46,24 +46,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FrmCliente.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="FrmCliente.cs" />
     <Compile Include="FrmCliente.Designer.cs">
       <DependentUpon>FrmCliente.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrmCompraAlmacen.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FrmCompraVerificador.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="FrmCompraAlmacen.cs" />
+    <Compile Include="FrmCompraVerificador.cs" />
     <Compile Include="FrmCompraVerificador.Designer.cs">
       <DependentUpon>FrmCompraVerificador.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrmEntradaProducto.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="FrmEntradaProducto.cs" />
     <Compile Include="FrmEntradaProducto.Designer.cs">
       <DependentUpon>FrmEntradaProducto.cs</DependentUpon>
     </Compile>
@@ -73,9 +65,7 @@
     <Compile Include="FrmMenuPrincipal.Designer.cs">
       <DependentUpon>FrmMenuPrincipal.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrmProveedor.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="FrmProveedor.cs" />
     <Compile Include="FrmProveedor.Designer.cs">
       <DependentUpon>FrmProveedor.cs</DependentUpon>
     </Compile>
