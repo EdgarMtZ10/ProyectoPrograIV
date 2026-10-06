@@ -3,7 +3,7 @@
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "", # cambiar clave segun cada mysql local  
+    "password": "123456", # cambiar clave segun cada mysql local  
     "database":"SistemaVerificador"
 } 
 PUERTO = 5001
