@@ -4,6 +4,7 @@ import almacen.almacen1.servicio.ProductoServicio;
 import almacen.almacen2.servicio.ProveedorServicio;
 import almacen.almacen3.servicio.CompraServicio;
 import almacen.almacen4.servicio.SalidaServicio;
+import almacen.almacen5.Bitacora;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -48,6 +49,17 @@ public class ClienteHandler implements Runnable {
             // asume que el simulador manda la trama seguida
             // de un salto de linea. 
             String tramaCruda = entrada.readLine();
+
+            // Se registra la trama CRUDA tal cual llego, ANTES de
+            // despacharla a ningun servicio. Esto es a proposito: as
+            // es como el Verificador (servidor.py) ya lo resuelve, y
+            // garantiza que CUALQUIER trama que llegue quede en la
+            // bitacora, incluso una mal formada o rechazada por
+            // validacion -- cumple "se debe registrar bitacora para
+            // todo tipo de transaccion" de forma literal, sin
+            // depender de que cada uno de los 4 servicios recuerde
+            // llamar a la bitacora en todos sus caminos de salida.
+            Bitacora.getInstancia().registrar(tramaCruda);
 
             String respuesta = despachar(tramaCruda, conexion);
 

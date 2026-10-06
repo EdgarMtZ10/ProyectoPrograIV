@@ -79,7 +79,8 @@ def registrar_compra(id_compra, id_cliente, fecha_compra, total_compra, num_tarj
         cursor = conexion.cursor()
         cursor.callproc("SP_INSERTAR_COMPRA", [id_compra, id_cliente, fecha_compra, total_compra, num_tarjeta,
                                                fecha_vencimiento,codigo_verificacion])
-        for id_producto, cantidad in id_producto: 
+        
+        for id_producto, cantidad in productos:   # ahora sí itera sobre el parametro real
             cursor.callproc("SP_INSERTAR_DETALLE_COMPRA", (id_compra, id_producto, cantidad))
         
         conexion.commit() # si todo sale bien se guarda
