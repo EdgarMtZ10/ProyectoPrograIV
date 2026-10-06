@@ -118,10 +118,27 @@ namespace simulador
             this.txtCorreo = new System.Windows.Forms.TextBox();
             this.txtRespuesta = new System.Windows.Forms.TextBox();
             this.btnEnviar = new System.Windows.Forms.Button();
+            this.btnVolver = new System.Windows.Forms.Button();
             this.SuspendLayout();
 
             Panel panelEncabezado = CrearEncabezado("Mantenimiento de proveedores",
                 "Simulador Nova Online - ingreso y modificación de proveedores en el almacén");
+
+            // Configuración botón volver al menú
+            this.btnVolver.Text = "Volver al Menú";
+            this.btnVolver.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+            this.btnVolver.ForeColor = ColorPrimario;
+            this.btnVolver.BackColor = Color.White;
+            this.btnVolver.FlatStyle = FlatStyle.Flat;
+            this.btnVolver.FlatAppearance.BorderSize = 0;
+            this.btnVolver.Cursor = Cursors.Hand;
+            this.btnVolver.Location = new Point(590, 20);
+            this.btnVolver.Size = new Size(140, 40);
+            this.btnVolver.TabIndex = 10;
+            this.btnVolver.UseVisualStyleBackColor = false;
+            this.btnVolver.Click += new System.EventHandler(this.btnVolver_Click);
+
+            panelEncabezado.Controls.Add(this.btnVolver);
 
             this.cmbTipoTransaccion.Items.AddRange(new object[] {
                 "Ingreso",
@@ -146,7 +163,7 @@ namespace simulador
             this.label8.Text = "Respuesta del almacén";
             this.label8.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
             this.label8.ForeColor = ColorTexto;
-            this.label8.Location = new Point(24, 428);
+            this.label8.Location = new Point(24, 476);
 
             this.txtRespuesta.Multiline = true;
             this.txtRespuesta.ReadOnly = true;
@@ -155,7 +172,7 @@ namespace simulador
             this.txtRespuesta.ForeColor = ColorTexto;
             this.txtRespuesta.Font = new Font("Segoe UI", 10F);
             this.txtRespuesta.BorderStyle = BorderStyle.FixedSingle;
-            this.txtRespuesta.Location = new Point(24, 450);
+            this.txtRespuesta.Location = new Point(24, 498);
             this.txtRespuesta.Size = new Size(560, 72);
             this.txtRespuesta.TabStop = false;
 
@@ -167,7 +184,7 @@ namespace simulador
             this.btnEnviar.FlatAppearance.BorderSize = 0;
             this.btnEnviar.FlatAppearance.MouseOverBackColor = ColorPrimarioHover;
             this.btnEnviar.Cursor = Cursors.Hand;
-            this.btnEnviar.Location = new Point(600, 450);
+            this.btnEnviar.Location = new Point(600, 498);
             this.btnEnviar.Size = new Size(136, 72);
             this.btnEnviar.TabIndex = 7;
             this.btnEnviar.UseVisualStyleBackColor = false;
@@ -176,7 +193,7 @@ namespace simulador
             this.AutoScaleDimensions = new SizeF(96F, 96F);
             this.AutoScaleMode = AutoScaleMode.Dpi;
             this.BackColor = ColorFondo;
-            this.ClientSize = new Size(760, 544);
+            this.ClientSize = new Size(760, 590);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "FrmProveedor";
@@ -204,6 +221,7 @@ namespace simulador
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button btnEnviar;
+        private System.Windows.Forms.Button btnVolver;
         private System.Windows.Forms.ComboBox cmbTipoTransaccion;
         private System.Windows.Forms.ComboBox cmbEstado;
         private System.Windows.Forms.TextBox txtCedulaJuridica;

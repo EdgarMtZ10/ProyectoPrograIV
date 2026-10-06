@@ -17,7 +17,17 @@ namespace simulador
         {
             InitializeComponent();
         }
+        private void btnVolver_Click(object sender, EventArgs e)
+        {
+            FrmMenuPrincipal menu = new FrmMenuPrincipal();
+            menu.Show();
+            this.Close(); // o this.Hide() dependiendo de tu lógica de ventanas
+        }
 
+        private void FrmEntradaProducto_Load(object sender, EventArgs e)
+        {
+            // Código inicial que se ejecuta al cargar la ventana (si lo necesitas)
+        }
         private void btnEnviar_Click(object sender, EventArgs e)
         {
             try
