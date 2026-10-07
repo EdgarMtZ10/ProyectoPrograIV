@@ -8,23 +8,14 @@ using System.Windows.Forms;
 
 namespace simulador
 {
-
     [System.ComponentModel.DesignerCategory("Code")]
-
-
     public partial class FrmCompraVerificador : Form
     {
-
         private const string HOST_VERIFICADOR = "127.0.0.1";
         private const int PUERTO_VERIFICADOR = 5001;
 
-
-        // Llave y IV fijos para pruebas. NOTA: ya no hace falta que
-        // coincidan con nada del lado del Verificador -- se confirmo
-        // que Verificador2.py NUNCA descifra la tarjeta, solo valida
-        // que el texto "parezca" cifrado (Base64 valido, multiplo de
-        // 16 bytes) y lo guarda tal cual. Esta llave solo necesita
-        // producir un cifrado con esa forma, nada mas.
+        // Llave y IV fijos para pruebas. El Verificador nunca descifra la tarjeta,
+        // solo valida que parezca cifrada (Base64, multiplo de 16 bytes).
         private static readonly byte[] LLAVE_AES = Encoding.UTF8.GetBytes("12345678901234567890123456789012"); // 32 bytes
         private static readonly byte[] IV_AES = Encoding.UTF8.GetBytes("1234567890123456"); // 16 bytes
 
@@ -33,19 +24,13 @@ namespace simulador
             InitializeComponent();
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void FrmCompraVerificador_Load(object sender, EventArgs e)
         {
-
         }
+
         private void btnVolver_Click(object sender, EventArgs e)
         {
-           
-            this.Close(); // o this.Hide() dependiendo de tu lógica de ventanas
+            this.Close();
         }
 
         private async void btnEnviar_Click(object sender, EventArgs e)
@@ -57,6 +42,11 @@ namespace simulador
                 string respuesta = await Task.Run(() => EnviarTrama(json));
                 txtRespuesta.Text = Traducir(respuesta);
             }
+            catch (InvalidOperationException ex)
+            {
+                // Error de uso (por ejemplo, no agregaron productos): no es un problema de conexion
+                txtRespuesta.Text = ex.Message;
+            }
             catch (Exception ex)
             {
                 txtRespuesta.Text = "Error de conexion: " + ex.Message;
@@ -66,6 +56,7 @@ namespace simulador
                 btnEnviar.Enabled = true;
             }
         }
+
         private static string Esc(string s)
         {
             return (s ?? "").Trim().Replace("\\", "\\\\").Replace("\"", "\\\"");
@@ -79,20 +70,51 @@ namespace simulador
 
             string fechaHoy = DateTime.Now.ToString("yyyyMMdd");
 
-             return "{"
-        + "\"transaccion\": \"compra\","
-        + "\"numero_compra\": \"" + Esc(txtNumeroCompra.Text) + "\","
-        + "\"id_cliente\": \"" + Esc(txtIdCliente.Text) + "\","
-        + "\"fecha_compra\": \"" + fechaHoy + "\","
-        + "\"total_compra\": \"" + Esc(txtTotal.Text).Replace(',', '.') + "\","
-        + "\"num_tarjeta\": \"" + tarjetaCifrada + "\","
-        + "\"fecha_vencimiento\": \"" + fechaCifrada + "\","
-        + "\"codigo_verificacion\": \"" + codigoCifrado + "\","
-        + "\"productos\": [{"
-            + "\"codigo_producto\": \"" + Esc(txtNoProducto.Text) + "\","
-            + "\"cantidad\": \"" + Esc(txtCantidad.Text) + "\""
-        + "}]"
-        + "}";
+            return "{"
+                + "\"transaccion\": \"compra\","
+                + "\"numero_compra\": \"" + Esc(txtNumeroCompra.Text) + "\","
+                + "\"id_cliente\": \"" + Esc(txtIdCliente.Text) + "\","
+                + "\"fecha_compra\": \"" + fechaHoy + "\","
+                + "\"total_compra\": \"" + Esc(txtTotal.Text).Replace(',', '.') + "\","
+                + "\"num_tarjeta\": \"" + tarjetaCifrada + "\","
+                + "\"fecha_vencimiento\": \"" + fechaCifrada + "\","
+                + "\"codigo_verificacion\": \"" + codigoCifrado + "\","
+                + "\"productos\": " + ArmarProductosJson()
+                + "}";
+        }
+
+        /// <summary>
+        /// Lee todas las filas de la grilla y arma la lista de productos en JSON:
+        /// [{"codigo_producto": "...", "cantidad": "..."}, {...}]
+        /// Ignora filas vacias. Si no hay ningun producto, avisa al usuario.
+        /// </summary>
+        private string ArmarProductosJson()
+        {
+            // Confirma la celda que el usuario todavia estaba escribiendo
+            dgvProductos.EndEdit();
+
+            StringBuilder sb = new StringBuilder("[");
+            int lineas = 0;
+
+            foreach (DataGridViewRow fila in dgvProductos.Rows)
+            {
+                if (fila.IsNewRow) continue;
+
+                string codigo = (fila.Cells[0].Value ?? "").ToString().Trim();
+                string cantidad = (fila.Cells[1].Value ?? "").ToString().Trim();
+
+                if (codigo == "" && cantidad == "") continue;
+
+                if (lineas > 0) sb.Append(",");
+                sb.Append("{\"codigo_producto\": \"" + Esc(codigo) + "\", \"cantidad\": \"" + Esc(cantidad) + "\"}");
+                lineas++;
+            }
+
+            if (lineas == 0)
+                throw new InvalidOperationException("Agregue al menos un producto a la compra.");
+
+            sb.Append("]");
+            return sb.ToString();
         }
 
         /// <summary>
@@ -126,16 +148,11 @@ namespace simulador
                 int bytesLeidos = flujo.Read(buffer, 0, buffer.Length);
                 return Encoding.UTF8.GetString(buffer, 0, bytesLeidos).Trim();
             }
-
         }
 
         /// <summary>
-        /// Traduce el JSON crudo que devuelve el Verificador
-        /// ({"status": "OK"|"1"|"2"}) a un mensaje entendible para quien
-        /// esta probando el simulador. No se usa una libreria de JSON
-        /// completa porque la respuesta es siempre un solo campo
-        /// "status" -- una expresion regular simple es suficiente y no
-        /// agrega una dependencia nueva al proyecto.
+        /// Traduce el JSON crudo del Verificador ({"status": "OK"|"1"|"2"})
+        /// a un mensaje entendible para quien prueba el simulador.
         /// </summary>
         private string Traducir(string respuestaJson)
         {
@@ -143,8 +160,6 @@ namespace simulador
 
             if (!coincidencia.Success)
             {
-                // La respuesta no tiene la forma esperada -- se muestra
-                // tal cual para poder depurar que fue lo que llego.
                 return "Respuesta inesperada del verificador: " + respuestaJson;
             }
 
@@ -155,9 +170,9 @@ namespace simulador
                 case "OK":
                     return "La compra se registro correctamente.";
                 case "1":
-                    return "Los datos de la compra no son validos (revise numero de compra, cliente, tarjeta, producto y cantidad).";
+                    return "Los datos de la compra no son validos (revise numero de compra, cliente, tarjeta, productos y cantidades).";
                 case "2":
-                    return "El almacen rechazo la compra (verifique que el producto exista y tenga suficiente inventario).";
+                    return "El almacen rechazo la compra (verifique que los productos existan y tengan suficiente inventario).";
                 default:
                     return "Respuesta desconocida del verificador: " + respuestaJson;
             }
