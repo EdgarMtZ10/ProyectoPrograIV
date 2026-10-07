@@ -1,5 +1,6 @@
 
-CREATE DATABASE SistemaVerificador; 
+   DROP DATABASE IF EXISTS SistemaVerificador;
+   CREATE DATABASE SistemaVerificador;
 
 USE SistemaVerificador;
 

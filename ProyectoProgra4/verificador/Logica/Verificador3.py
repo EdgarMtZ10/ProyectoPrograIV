@@ -17,7 +17,7 @@ def registrar(trama, origen="simulador"):
     ahora = datetime.now()
     registro = {
         "fecha" : ahora.strftime("%Y-%m-%d"),
-        "hora" : ahora.strftime("%H-%M-%S"), 
+        "hora" : ahora.strftime("%H:%M:%S"), 
         "origen" : origen, 
         "trama" : _preparar_trama(trama),
     }

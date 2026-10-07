@@ -4,6 +4,7 @@ import almacen.almacen1.servicio.ProductoServicio;
 import almacen.almacen2.servicio.ProveedorServicio;
 import almacen.almacen3.servicio.CompraServicio;
 import almacen.almacen4.servicio.SalidaServicio;
+import almacen.almacen5.Bitacora;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,31 +34,33 @@ public class ClienteHandler implements Runnable {
         this.conexionFactory = conexionFactory;
     }
 
-    @Override
+        @Override
     public void run() {
-        // se garantiza que el socket Y la conexion a
-        // la base de datos se cierren siempre, incluso si algo lanza
-        // una excepcion a mitad de camino.
         try (
             Socket socket = this.socketCliente;
             BufferedReader entrada = new BufferedReader(
                 new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-            PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
-            Connection conexion = conexionFactory.nuevaConexion()
+            PrintWriter salida = new PrintWriter(socket.getOutputStream(), true)
         ) {
-            // asume que el simulador manda la trama seguida
-            // de un salto de linea. 
+            // asume que el cliente manda la trama seguida de un salto de linea
             String tramaCruda = entrada.readLine();
 
-            String respuesta = despachar(tramaCruda, conexion);
+            // se registra la trama cruda antes de despacharla en json segun lo solicitado 
+            String tipo = (tramaCruda == null || tramaCruda.isEmpty()) ? "" : tramaCruda.substring(0, 1);
+            String cruda = (tramaCruda == null) ? "" : tramaCruda.replace("\\", "\\\\").replace("\"", "\\\"");
+            Bitacora.getInstancia().registrar(
+                "{\"Transaccion\": \"" + tipo + "\", \"Trama recibida\": \"" + cruda + "\"}");
 
-            salida.println(respuesta);
+            // la conexion a SQL Server se abre aparte para que, si falla,
+            // el almacen pueda responder ERROR en vez de quedarse callado
+            try (Connection conexion = conexionFactory.nuevaConexion()) {
+                salida.println(despachar(tramaCruda, conexion));
+            } catch (SQLException e) {
+                System.err.println("Error de base de datos: " + e.getMessage());
+                salida.println("ERROR");
+            }
 
-        } catch (SQLException e) {
-            // Fallo al conectar con SQL Server
-            System.err.println("Error de base de datos: " + e.getMessage());
         } catch (IOException e) {
-            // Fallo de red - No hay a quien responderle.
             System.err.println("Error de conexion con el cliente: " + e.getMessage());
         }
     }
