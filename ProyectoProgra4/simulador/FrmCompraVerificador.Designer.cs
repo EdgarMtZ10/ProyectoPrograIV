@@ -17,14 +17,12 @@ namespace simulador
             base.Dispose(disposing);
         }
 
-        // Paleta de colores del formulario
         private static readonly Color ColorFondo = Color.FromArgb(243, 245, 249);
         private static readonly Color ColorPrimario = Color.FromArgb(37, 99, 235);
         private static readonly Color ColorPrimarioHover = Color.FromArgb(29, 78, 216);
         private static readonly Color ColorTexto = Color.FromArgb(31, 41, 55);
         private static readonly Color ColorSecundario = Color.FromArgb(107, 114, 128);
 
-        // Crea una "tarjeta" blanca con un titulo.
         private Panel CrearTarjeta(string titulo, int y, int alto)
         {
             Panel tarjeta = new Panel();
@@ -43,21 +41,20 @@ namespace simulador
             return tarjeta;
         }
 
-        // Coloca una etiqueta con su caja de texto debajo, dentro de una tarjeta.
         private void ConfigurarCampo(Panel tarjeta, Label etiqueta, TextBox caja,
-                                     string texto, int x, int tabIndex)
+                                     string texto, int x, int fila, int ancho, int tabIndex)
         {
             etiqueta.AutoSize = true;
             etiqueta.Text = texto;
             etiqueta.Font = new Font("Segoe UI", 9F);
             etiqueta.ForeColor = ColorSecundario;
-            etiqueta.Location = new Point(x, 46);
+            etiqueta.Location = new Point(x, 46 + fila * 76);
 
             caja.Font = new Font("Segoe UI", 10.5F);
             caja.ForeColor = ColorTexto;
             caja.BorderStyle = BorderStyle.FixedSingle;
-            caja.Location = new Point(x, 68);
-            caja.Size = new Size(216, 27);
+            caja.Location = new Point(x, 68 + fila * 76);
+            caja.Size = new Size(ancho, 27);
             caja.TabIndex = tabIndex;
 
             tarjeta.Controls.Add(etiqueta);
@@ -88,7 +85,6 @@ namespace simulador
             this.txtRespuesta = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
 
-            // ---------- Encabezado ----------
             Panel panelEncabezado = new Panel();
             panelEncabezado.BackColor = ColorPrimario;
             panelEncabezado.Dock = DockStyle.Top;
@@ -108,7 +104,6 @@ namespace simulador
             lblSubtitulo.ForeColor = Color.FromArgb(219, 234, 254);
             lblSubtitulo.Location = new Point(27, 50);
 
-            // ---------- Botón Volver al Menú ----------
             this.btnVolver.Text = "Volver al Menú";
             this.btnVolver.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
             this.btnVolver.ForeColor = ColorPrimario;
@@ -126,29 +121,25 @@ namespace simulador
             panelEncabezado.Controls.Add(lblSubtitulo);
             panelEncabezado.Controls.Add(this.btnVolver);
 
-            // ---------- Tarjeta 1: datos de la compra ----------
-            Panel tarjetaCompra = CrearTarjeta("Datos de la compra", 100, 112);
-            ConfigurarCampo(tarjetaCompra, this.label1, this.txtNumeroCompra, "Número de compra", 16, 0);
-            ConfigurarCampo(tarjetaCompra, this.label2, this.txtIdCliente, "Identificador del cliente", 248, 1);
-            ConfigurarCampo(tarjetaCompra, this.label3, this.txtTotal, "Total de compra (ej. 15000.00)", 480, 2);
+            Panel tarjetaCompra = CrearTarjeta("Datos de la compra", 100, 188);
+            ConfigurarCampo(tarjetaCompra, this.label1, this.txtNumeroCompra, "Número de compra", 16, 0, 336, 0);
+            ConfigurarCampo(tarjetaCompra, this.label2, this.txtIdCliente, "Identificación (cédula)", 360, 0, 336, 1);
+            ConfigurarCampo(tarjetaCompra, this.label3, this.txtTotal, "Total (ej: 17500.00)", 16, 1, 336, 2);
 
-            // ---------- Tarjeta 2: datos de pago ----------
-            Panel tarjetaPago = CrearTarjeta("Datos de pago", 224, 112);
-            ConfigurarCampo(tarjetaPago, this.label4, this.txtNumeroTarjeta, "Número de tarjeta", 16, 3);
-            ConfigurarCampo(tarjetaPago, this.label5, this.txtFechaVencimiento, "Fecha de vencimiento", 248, 4);
-            ConfigurarCampo(tarjetaPago, this.label6, this.txtCodigoVerificacion, "Código de verificación", 480, 5);
+            Panel tarjetaPago = CrearTarjeta("Datos de pago", 300, 188);
+            ConfigurarCampo(tarjetaPago, this.label4, this.txtNumeroTarjeta, "Número de tarjeta (se envía cifrado)", 16, 0, 336, 3);
+            ConfigurarCampo(tarjetaPago, this.label5, this.txtFechaVencimiento, "Fecha de vencimiento (MM/AA)", 360, 0, 336, 4);
+            ConfigurarCampo(tarjetaPago, this.label6, this.txtCodigoVerificacion, "CVV (3 dígitos, se envía cifrado)", 16, 1, 336, 5);
 
-            // ---------- Tarjeta 3: producto ----------
-            Panel tarjetaProducto = CrearTarjeta("Producto", 348, 112);
-            ConfigurarCampo(tarjetaProducto, this.label7, this.txtNoProducto, "No. Producto", 16, 6);
-            ConfigurarCampo(tarjetaProducto, this.label8, this.txtCantidad, "Cantidad", 248, 7);
+            Panel tarjetaProducto = CrearTarjeta("Producto", 500, 112);
+            ConfigurarCampo(tarjetaProducto, this.label7, this.txtNoProducto, "Número de producto (ej: 3444550000, 10 dígitos)", 16, 0, 336, 6);
+            ConfigurarCampo(tarjetaProducto, this.label8, this.txtCantidad, "Cantidad", 360, 0, 336, 7);
 
-            // ---------- Respuesta ----------
             this.label9.AutoSize = true;
             this.label9.Text = "Respuesta del verificador";
             this.label9.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
             this.label9.ForeColor = ColorTexto;
-            this.label9.Location = new Point(24, 476);
+            this.label9.Location = new Point(24, 624);
 
             this.txtRespuesta.Multiline = true;
             this.txtRespuesta.ReadOnly = true;
@@ -157,11 +148,10 @@ namespace simulador
             this.txtRespuesta.ForeColor = ColorTexto;
             this.txtRespuesta.Font = new Font("Segoe UI", 10F);
             this.txtRespuesta.BorderStyle = BorderStyle.FixedSingle;
-            this.txtRespuesta.Location = new Point(24, 498);
+            this.txtRespuesta.Location = new Point(24, 646);
             this.txtRespuesta.Size = new Size(560, 72);
             this.txtRespuesta.TabStop = false;
 
-            // ---------- Boton Enviar ----------
             this.btnEnviar.Text = "Enviar";
             this.btnEnviar.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             this.btnEnviar.ForeColor = Color.White;
@@ -170,17 +160,16 @@ namespace simulador
             this.btnEnviar.FlatAppearance.BorderSize = 0;
             this.btnEnviar.FlatAppearance.MouseOverBackColor = ColorPrimarioHover;
             this.btnEnviar.Cursor = Cursors.Hand;
-            this.btnEnviar.Location = new Point(600, 498);
+            this.btnEnviar.Location = new Point(600, 646);
             this.btnEnviar.Size = new Size(136, 72);
             this.btnEnviar.TabIndex = 8;
             this.btnEnviar.UseVisualStyleBackColor = false;
             this.btnEnviar.Click += new System.EventHandler(this.btnEnviar_Click);
 
-            // ---------- Formulario ----------
             this.AutoScaleDimensions = new SizeF(96F, 96F);
             this.AutoScaleMode = AutoScaleMode.Dpi;
             this.BackColor = ColorFondo;
-            this.ClientSize = new Size(760, 590);
+            this.ClientSize = new Size(760, 750);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "FrmCompraVerificador";

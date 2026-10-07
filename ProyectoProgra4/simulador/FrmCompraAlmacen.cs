@@ -31,11 +31,9 @@ namespace simulador
         {
             SuspendLayout();
 
-            // ---------- Encabezado ----------
             Panel panelEncabezado = CrearEncabezado("Entrada de productos",
                 "Simulador Nova Online - registrar una compra de productos a un proveedor");
 
-            // ---------- Botón Volver al Menú ----------
             btnVolver = new Button();
             btnVolver.Text = "Volver al Menú";
             btnVolver.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
@@ -52,22 +50,20 @@ namespace simulador
 
             panelEncabezado.Controls.Add(btnVolver);
 
-            // ---------- Tarjeta 1: datos de la compra ----------
-            Panel tarjetaCompra = CrearTarjeta("Datos de la compra", 100, 112);
+            Panel tarjetaCompra = CrearTarjeta("Datos de la compra", 100, 188);
 
             txtNumeroIngreso = new TextBox();
-            AgregarCampo(tarjetaCompra, "Número de ingreso", txtNumeroIngreso, 16, 216, 0);
+            AgregarCampo(tarjetaCompra, "Número de ingreso", txtNumeroIngreso, 16, 0, 336, 0);
 
             dtpFecha = new DateTimePicker();
             dtpFecha.Format = DateTimePickerFormat.Short;
             dtpFecha.MaxDate = DateTime.Today;
-            AgregarCampo(tarjetaCompra, "Fecha de compra", dtpFecha, 248, 216, 1);
+            AgregarCampo(tarjetaCompra, "Fecha de compra", dtpFecha, 360, 0, 336, 1);
 
             txtCedula = new TextBox();
-            AgregarCampo(tarjetaCompra, "Cédula jurídica del proveedor", txtCedula, 480, 216, 2);
+            AgregarCampo(tarjetaCompra, "Cédula jurídica (ej: 3100550000, 10 dígitos)", txtCedula, 16, 1, 336, 2);
 
-            // ---------- Tarjeta 2: productos ----------
-            Panel tarjetaProductos = CrearTarjeta("Productos", 224, 212);
+            Panel tarjetaProductos = CrearTarjeta("Productos", 300, 212);
 
             Label lblPista = new Label();
             lblPista.AutoSize = true;
@@ -108,13 +104,12 @@ namespace simulador
             dgvProductos.Columns.Add("colCantidad", "Cantidad");
             tarjetaProductos.Controls.Add(dgvProductos);
 
-            // ---------- Respuesta ----------
             Label lblRespuesta = new Label();
             lblRespuesta.AutoSize = true;
             lblRespuesta.Text = "Respuesta del almacén";
             lblRespuesta.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
             lblRespuesta.ForeColor = ColorTexto;
-            lblRespuesta.Location = new Point(24, 476);
+            lblRespuesta.Location = new Point(24, 524);
 
             txtRespuesta = new TextBox();
             txtRespuesta.Multiline = true;
@@ -124,11 +119,10 @@ namespace simulador
             txtRespuesta.ForeColor = ColorTexto;
             txtRespuesta.Font = new Font("Segoe UI", 10F);
             txtRespuesta.BorderStyle = BorderStyle.FixedSingle;
-            txtRespuesta.Location = new Point(24, 498);
+            txtRespuesta.Location = new Point(24, 546);
             txtRespuesta.Size = new Size(560, 72);
             txtRespuesta.TabStop = false;
 
-            // ---------- Boton Enviar ----------
             btnEnviar = new Button();
             btnEnviar.Text = "Enviar";
             btnEnviar.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
@@ -138,18 +132,17 @@ namespace simulador
             btnEnviar.FlatAppearance.BorderSize = 0;
             btnEnviar.FlatAppearance.MouseOverBackColor = ColorPrimarioHover;
             btnEnviar.Cursor = Cursors.Hand;
-            btnEnviar.Location = new Point(600, 498);
+            btnEnviar.Location = new Point(600, 546);
             btnEnviar.Size = new Size(136, 72);
             btnEnviar.TabIndex = 4;
             btnEnviar.UseVisualStyleBackColor = false;
             btnEnviar.Click += BtnEnviar_Click;
 
-            // ---------- Formulario ----------
             Text = "Entrada de productos (Compra)";
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = ColorFondo;
-            ClientSize = new Size(760, 590);
+            ClientSize = new Size(760, 640);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             StartPosition = FormStartPosition.CenterScreen;
@@ -164,8 +157,6 @@ namespace simulador
             ResumeLayout(false);
             PerformLayout();
         }
-
-        // ================= AYUDAS DE DISEÑO =================
 
         private Panel CrearEncabezado(string titulo, string subtitulo)
         {
@@ -211,18 +202,18 @@ namespace simulador
         }
 
         private void AgregarCampo(Panel tarjeta, string texto, Control campo,
-                                int x, int ancho, int tabIndex)
+                                int x, int fila, int ancho, int tabIndex)
         {
             Label etiqueta = new Label();
             etiqueta.AutoSize = true;
             etiqueta.Text = texto;
             etiqueta.Font = new Font("Segoe UI", 9F);
             etiqueta.ForeColor = ColorSecundario;
-            etiqueta.Location = new Point(x, 46);
+            etiqueta.Location = new Point(x, 46 + fila * 76);
 
             campo.Font = new Font("Segoe UI", 10.5F);
             campo.ForeColor = ColorTexto;
-            campo.Location = new Point(x, 68);
+            campo.Location = new Point(x, 68 + fila * 76);
             campo.Width = ancho;
             campo.TabIndex = tabIndex;
 
@@ -236,11 +227,8 @@ namespace simulador
             tarjeta.Controls.Add(campo);
         }
 
-        // ================= LOGICA =================
-
         private void BtnVolver_Click(object sender, EventArgs e)
         {
-            // Asume que tu menú principal se llama FrmMenuPrincipal
             FrmMenuPrincipal menu = new FrmMenuPrincipal();
             menu.Show();
             this.Close();

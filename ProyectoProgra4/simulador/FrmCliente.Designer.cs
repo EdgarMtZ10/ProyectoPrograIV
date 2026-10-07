@@ -125,11 +125,9 @@ namespace simulador
             this.btnVolver = new System.Windows.Forms.Button();
             this.SuspendLayout();
 
-            // Encabezado
             Panel panelEncabezado = CrearEncabezado("Mantenimiento de clientes",
                 "Simulador Nova Online - agregar, modificar o borrar un cliente");
 
-            // Configuración botón volver al menú
             this.btnVolver.Text = "Volver al Menú";
             this.btnVolver.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
             this.btnVolver.ForeColor = ColorPrimario;
@@ -150,24 +148,24 @@ namespace simulador
                 "modificar",
                 "borrar"});
 
-            Panel tarjetaOperacion = CrearTarjeta("Operación", 100, 112);
-            ConfigurarCampo(tarjetaOperacion, this.label9, this.cmbTransaccion, "Transacción", 16, 0, 216, 0);
-            ConfigurarCampo(tarjetaOperacion, this.label1, this.txtIdentificacion, "Identificación", 248, 0, 216, 1);
-            ConfigurarCampo(tarjetaOperacion, this.label2, this.txtPais, "País (ej. CR)", 480, 0, 216, 2);
+            Panel tarjetaOperacion = CrearTarjeta("Operación", 100, 188);
+            ConfigurarCampo(tarjetaOperacion, this.label9, this.cmbTransaccion, "Transacción", 16, 0, 336, 0);
+            ConfigurarCampo(tarjetaOperacion, this.label1, this.txtIdentificacion, "Identificación (cédula)", 360, 0, 336, 1);
+            ConfigurarCampo(tarjetaOperacion, this.label2, this.txtPais, "País (ej: CR)", 16, 1, 336, 2);
 
-            Panel tarjetaDatos = CrearTarjeta("Datos del cliente", 224, 188);
-            ConfigurarCampo(tarjetaDatos, this.label3, this.txtNombre, "Nombre", 16, 0, 216, 3);
-            ConfigurarCampo(tarjetaDatos, this.label4, this.txtPrimerApellido, "Primer apellido", 248, 0, 216, 4);
-            ConfigurarCampo(tarjetaDatos, this.label5, this.txtSegundoApellido, "Segundo apellido", 480, 0, 216, 5);
-            ConfigurarCampo(tarjetaDatos, this.label6, this.txtCorreo, "Correo electrónico", 16, 1, 216, 6);
-            ConfigurarCampo(tarjetaDatos, this.label7, this.txtTelefono, "Teléfono", 248, 1, 216, 7);
-            ConfigurarCampo(tarjetaDatos, this.label8, this.txtDireccion, "Dirección", 480, 1, 216, 8);
+            Panel tarjetaDatos = CrearTarjeta("Datos del cliente", 300, 264);
+            ConfigurarCampo(tarjetaDatos, this.label3, this.txtNombre, "Nombre", 16, 0, 336, 3);
+            ConfigurarCampo(tarjetaDatos, this.label4, this.txtPrimerApellido, "Primer apellido", 360, 0, 336, 4);
+            ConfigurarCampo(tarjetaDatos, this.label5, this.txtSegundoApellido, "Segundo apellido", 16, 1, 336, 5);
+            ConfigurarCampo(tarjetaDatos, this.label6, this.txtCorreo, "Correo electrónico (ej: nombre@correo.com)", 360, 1, 336, 6);
+            ConfigurarCampo(tarjetaDatos, this.label7, this.txtTelefono, "Teléfono (ej: 89403536, 8 dígitos)", 16, 2, 336, 7);
+            ConfigurarCampo(tarjetaDatos, this.label8, this.txtDireccion, "Dirección", 360, 2, 336, 8);
 
             this.label10.AutoSize = true;
             this.label10.Text = "Respuesta del verificador";
             this.label10.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
             this.label10.ForeColor = ColorTexto;
-            this.label10.Location = new Point(24, 476);
+            this.label10.Location = new Point(24, 576);
 
             this.txtRespuesta.Multiline = true;
             this.txtRespuesta.ReadOnly = true;
@@ -176,7 +174,7 @@ namespace simulador
             this.txtRespuesta.ForeColor = ColorTexto;
             this.txtRespuesta.Font = new Font("Segoe UI", 10F);
             this.txtRespuesta.BorderStyle = BorderStyle.FixedSingle;
-            this.txtRespuesta.Location = new Point(24, 498);
+            this.txtRespuesta.Location = new Point(24, 598);
             this.txtRespuesta.Size = new Size(560, 72);
             this.txtRespuesta.TabStop = false;
 
@@ -188,7 +186,7 @@ namespace simulador
             this.btnEnviar.FlatAppearance.BorderSize = 0;
             this.btnEnviar.FlatAppearance.MouseOverBackColor = ColorPrimarioHover;
             this.btnEnviar.Cursor = Cursors.Hand;
-            this.btnEnviar.Location = new Point(600, 498);
+            this.btnEnviar.Location = new Point(600, 598);
             this.btnEnviar.Size = new Size(136, 72);
             this.btnEnviar.TabIndex = 9;
             this.btnEnviar.UseVisualStyleBackColor = false;
@@ -197,7 +195,7 @@ namespace simulador
             this.AutoScaleDimensions = new SizeF(96F, 96F);
             this.AutoScaleMode = AutoScaleMode.Dpi;
             this.BackColor = ColorFondo;
-            this.ClientSize = new Size(760, 590);
+            this.ClientSize = new Size(760, 700);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "FrmCliente";
