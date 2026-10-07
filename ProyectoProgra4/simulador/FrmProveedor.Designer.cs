@@ -124,7 +124,6 @@ namespace simulador
             Panel panelEncabezado = CrearEncabezado("Mantenimiento de proveedores",
                 "Simulador Nova Online - ingreso y modificación de proveedores en el almacén");
 
-            // Configuración botón volver al menú
             this.btnVolver.Text = "Volver al Menú";
             this.btnVolver.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
             this.btnVolver.ForeColor = ColorPrimario;
@@ -148,22 +147,22 @@ namespace simulador
                 "Activo",
                 "Inactivo"});
 
-            Panel tarjetaOperacion = CrearTarjeta("Operación", 100, 112);
-            ConfigurarCampo(tarjetaOperacion, this.label1, this.cmbTipoTransaccion, "Tipo de transacción", 16, 0, 216, 0);
-            ConfigurarCampo(tarjetaOperacion, this.label2, this.txtCedulaJuridica, "Cédula jurídica", 248, 0, 216, 1);
-            ConfigurarCampo(tarjetaOperacion, this.label7, this.cmbEstado, "Estado", 480, 0, 216, 2);
+            Panel tarjetaOperacion = CrearTarjeta("Operación", 100, 188);
+            ConfigurarCampo(tarjetaOperacion, this.label1, this.cmbTipoTransaccion, "Tipo de transacción", 16, 0, 336, 0);
+            ConfigurarCampo(tarjetaOperacion, this.label2, this.txtCedulaJuridica, "Cédula jurídica (ej: 3100550000, 10 dígitos)", 360, 0, 336, 1);
+            ConfigurarCampo(tarjetaOperacion, this.label7, this.cmbEstado, "Estado", 16, 1, 336, 2);
 
-            Panel tarjetaDatos = CrearTarjeta("Datos del proveedor", 224, 188);
-            ConfigurarCampo(tarjetaDatos, this.label3, this.txtNombre, "Nombre", 16, 0, 216, 3);
-            ConfigurarCampo(tarjetaDatos, this.label4, this.txtNombreContacto, "Nombre del contacto", 248, 0, 216, 4);
-            ConfigurarCampo(tarjetaDatos, this.label5, this.txtTelefono, "Teléfono", 480, 0, 216, 5);
-            ConfigurarCampo(tarjetaDatos, this.label6, this.txtCorreo, "Correo electrónico", 16, 1, 448, 6);
+            Panel tarjetaDatos = CrearTarjeta("Datos del proveedor", 300, 188);
+            ConfigurarCampo(tarjetaDatos, this.label3, this.txtNombre, "Nombre", 16, 0, 336, 3);
+            ConfigurarCampo(tarjetaDatos, this.label4, this.txtNombreContacto, "Nombre del contacto (ej: Javier Fonseca Alvarado)", 360, 0, 336, 4);
+            ConfigurarCampo(tarjetaDatos, this.label5, this.txtTelefono, "Teléfono (ej: 89403536, 8 dígitos)", 16, 1, 336, 5);
+            ConfigurarCampo(tarjetaDatos, this.label6, this.txtCorreo, "Correo electrónico (ej: nombre@correo.com)", 360, 1, 336, 6);
 
             this.label8.AutoSize = true;
             this.label8.Text = "Respuesta del almacén";
             this.label8.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
             this.label8.ForeColor = ColorTexto;
-            this.label8.Location = new Point(24, 476);
+            this.label8.Location = new Point(24, 500);
 
             this.txtRespuesta.Multiline = true;
             this.txtRespuesta.ReadOnly = true;
@@ -172,7 +171,7 @@ namespace simulador
             this.txtRespuesta.ForeColor = ColorTexto;
             this.txtRespuesta.Font = new Font("Segoe UI", 10F);
             this.txtRespuesta.BorderStyle = BorderStyle.FixedSingle;
-            this.txtRespuesta.Location = new Point(24, 498);
+            this.txtRespuesta.Location = new Point(24, 522);
             this.txtRespuesta.Size = new Size(560, 72);
             this.txtRespuesta.TabStop = false;
 
@@ -184,7 +183,7 @@ namespace simulador
             this.btnEnviar.FlatAppearance.BorderSize = 0;
             this.btnEnviar.FlatAppearance.MouseOverBackColor = ColorPrimarioHover;
             this.btnEnviar.Cursor = Cursors.Hand;
-            this.btnEnviar.Location = new Point(600, 498);
+            this.btnEnviar.Location = new Point(600, 522);
             this.btnEnviar.Size = new Size(136, 72);
             this.btnEnviar.TabIndex = 7;
             this.btnEnviar.UseVisualStyleBackColor = false;
@@ -193,7 +192,7 @@ namespace simulador
             this.AutoScaleDimensions = new SizeF(96F, 96F);
             this.AutoScaleMode = AutoScaleMode.Dpi;
             this.BackColor = ColorFondo;
-            this.ClientSize = new Size(760, 590);
+            this.ClientSize = new Size(760, 620);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "FrmProveedor";
