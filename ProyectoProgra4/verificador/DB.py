@@ -46,7 +46,8 @@ def _ejectutar(procedimiento, parametros):
         conexion.rollback()
         raise
         
-    finally: conexion.close
+    finally: 
+        conexion.close()
 
 
 def existe_cliente(id_cliente):
@@ -56,7 +57,7 @@ def existe_compra(id_compra):
     return _consultar("SP_EXISTE_COMPRA", [id_compra]) > 0
 
 def cliente_tiene_compras(id_cliente):
-    return _consultar("SP_CLIENTE_TIENE_COMPRAS", [id_cliente]) == 1
+        return _consultar("SP_CLIENTE_TIENE_COMPRAS", [id_cliente]) > 0
 
 def registrar_cliente(id_cliente, sig_pais, nombre, prim_apellido, seg_apellido,
                       correo, telefono, direccion):
@@ -87,6 +88,6 @@ def registrar_compra(id_compra, id_cliente, fecha_compra, total_compra, num_tarj
     
     except Exception:
         conexion.rollback() #si falla se regresa todo y no se guarda nada 
-        
+        raise
     finally: 
         conexion.close()

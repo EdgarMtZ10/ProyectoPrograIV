@@ -24,8 +24,6 @@ TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG UM US UY UZ VA VC VE VG VI
 VN VU WF WS YE YT ZA ZM ZW
 """.split())
  
-PROVINCIAS_CR = ("san jose", "alajuela", "cartago", "heredia",
-                 "guanacaste", "puntarenas", "limon")
  
 #ajuste varchar de tabla cliente
 LARGO_NOMBRE = 20
@@ -93,7 +91,7 @@ def leer_fecha_de_hoy(texto):
 
 def leer_monto(texto):
     """decimal si es positivo con maximo dos decimales"""
-    if not re.fullmatch(r"[0-9]+(\.[0-9]{1,2}) ?", texto):
+    if not re.fullmatch(r"[0-9]+(\.[0-9]{1,2})?", texto):
         return None
     monto = Decimal(texto)
     return monto if monto > 0 else None

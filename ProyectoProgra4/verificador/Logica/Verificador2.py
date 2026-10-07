@@ -62,6 +62,9 @@ def _limpiar(datos):
             return None
         compra[campo] = valor.strip()
         
+    if compra["numero_compra"].isdigit():
+        compra["numero_compra"] = str(int(compra["numero_compra"]))
+        
     compra["fecha"] = val.leer_fecha_de_hoy(compra["fecha_compra"])
     compra["total"] = val.leer_monto(compra["total_compra"])
     compra["productos"] = _limpiar_productos(datos.get("productos"))

@@ -44,8 +44,7 @@ namespace simulador
         }
         private void btnVolver_Click(object sender, EventArgs e)
         {
-            FrmMenuPrincipal menu = new FrmMenuPrincipal();
-            menu.Show();
+           
             this.Close(); // o this.Hide() dependiendo de tu lógica de ventanas
         }
 
@@ -67,6 +66,10 @@ namespace simulador
                 btnEnviar.Enabled = true;
             }
         }
+        private static string Esc(string s)
+        {
+            return (s ?? "").Trim().Replace("\\", "\\\\").Replace("\"", "\\\"");
+        }
 
         private string ArmarJson()
         {
@@ -76,20 +79,20 @@ namespace simulador
 
             string fechaHoy = DateTime.Now.ToString("yyyyMMdd");
 
-            return "{"
-         + "\"transaccion\": \"compra\","
-         + "\"numero_compra\": \"" + txtNumeroCompra.Text + "\","
-         + "\"id_cliente\": \"" + txtIdCliente.Text + "\","
-         + "\"fecha_compra\": \"" + fechaHoy + "\","
-         + "\"total_compra\": \"" + txtTotal.Text + "\","
-         + "\"num_tarjeta\": \"" + tarjetaCifrada + "\","
-         + "\"fecha_vencimiento\": \"" + fechaCifrada + "\","
-         + "\"codigo_verificacion\": \"" + codigoCifrado + "\","
-         + "\"productos\": [{"
-             + "\"codigo_producto\": \"" + txtNoProducto.Text + "\","
-             + "\"cantidad\": \"" + txtCantidad.Text + "\""
-         + "}]"
-         + "}";
+             return "{"
+        + "\"transaccion\": \"compra\","
+        + "\"numero_compra\": \"" + Esc(txtNumeroCompra.Text) + "\","
+        + "\"id_cliente\": \"" + Esc(txtIdCliente.Text) + "\","
+        + "\"fecha_compra\": \"" + fechaHoy + "\","
+        + "\"total_compra\": \"" + Esc(txtTotal.Text).Replace(',', '.') + "\","
+        + "\"num_tarjeta\": \"" + tarjetaCifrada + "\","
+        + "\"fecha_vencimiento\": \"" + fechaCifrada + "\","
+        + "\"codigo_verificacion\": \"" + codigoCifrado + "\","
+        + "\"productos\": [{"
+            + "\"codigo_producto\": \"" + Esc(txtNoProducto.Text) + "\","
+            + "\"cantidad\": \"" + Esc(txtCantidad.Text) + "\""
+        + "}]"
+        + "}";
         }
 
         /// <summary>

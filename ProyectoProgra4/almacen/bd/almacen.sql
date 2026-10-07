@@ -228,6 +228,11 @@ BEGIN
                 SET @resultado = 'DUPLICADO';
                 RETURN;
             END
+            IF EXISTS (SELECT 1 FROM proveedor WHERE nombre = LTRIM(RTRIM(@nombre)))
+            BEGIN
+                SET @resultado = 'DATO INVALIDO';
+                RETURN;
+            END
 
             INSERT INTO proveedor (cedula_juridica, nombre, nombre_contacto, telefono, correo, estado)
             VALUES (@cedulaJuridica, @nombre, @nombreContacto, @telefono, @correo, @estado);
@@ -241,7 +246,15 @@ BEGIN
                 SET @resultado = 'PROVEEDOR INVALIDO';
                 RETURN;
             END
-
+            
+            IF EXISTS (SELECT 1 FROM proveedor
+                       WHERE nombre = LTRIM(RTRIM(@nombre))
+                         AND cedula_juridica <> @cedulaJuridica)
+            BEGIN
+                SET @resultado = 'DATO INVALIDO';
+                RETURN;
+            END
+            
             UPDATE proveedor
             SET nombre = @nombre,
                 nombre_contacto = @nombreContacto,
