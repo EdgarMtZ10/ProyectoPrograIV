@@ -41,25 +41,28 @@ namespace simulador
 
         private void btnVolver_Click(object sender, EventArgs e)
         {
-            FrmMenuPrincipal menu = new FrmMenuPrincipal();
-            menu.Show();
+            
             this.Close(); // o this.Hide() dependiendo de tu lógica de ventanas
+        }
+        private static string Esc(string s)
+        {
+            return (s ?? "").Trim().Replace("\\", "\\\\").Replace("\"", "\\\"");
         }
         private string ArmarJson()
         {
-            string transaccion = cmbTransaccion.SelectedItem?.ToString() ?? "agregar";
+        string transaccion = cmbTransaccion.SelectedItem?.ToString() ?? "agregar";
 
-            return "{"
-                + "\"identificacion\": \"" + txtIdentificacion.Text + "\","
-                + "\"pais\": \"" + txtPais.Text + "\","
-                + "\"nombre\": \"" + txtNombre.Text + "\","
-                + "\"primer_apellido\": \"" + txtPrimerApellido.Text + "\","
-                + "\"segundo_apellido\": \"" + txtSegundoApellido.Text + "\","
-                + "\"correo\": \"" + txtCorreo.Text + "\","
-                + "\"telefono\": \"" + txtTelefono.Text + "\","
-                + "\"direccion\": \"" + txtDireccion.Text + "\","
-                + "\"transaccion\": \"" + transaccion + "\""
-                + "}";
+        return "{"
+        + "\"identificacion\": \"" + Esc(txtIdentificacion.Text) + "\","
+        + "\"pais\": \"" + Esc(txtPais.Text) + "\","
+        + "\"nombre\": \"" + Esc(txtNombre.Text) + "\","
+        + "\"primer_apellido\": \"" + Esc(txtPrimerApellido.Text) + "\","
+        + "\"segundo_apellido\": \"" + Esc(txtSegundoApellido.Text) + "\","
+        + "\"correo\": \"" + Esc(txtCorreo.Text) + "\","
+        + "\"telefono\": \"" + Esc(txtTelefono.Text) + "\","
+        + "\"direccion\": \"" + Esc(txtDireccion.Text) + "\","
+        + "\"transaccion\": \"" + transaccion + "\""
+        + "}";
         }
 
         private string EnviarTrama(string trama)
@@ -105,7 +108,7 @@ namespace simulador
 
             // Caso especial: el borrado de un cliente con compras asociadas
             // no devuelve un numero, devuelve este texto completo.
-            if (status.StartsWith("Error: cliente tiene historial", StringComparison.OrdinalIgnoreCase))
+            if (status.StartsWith("Error: cliente", StringComparison.OrdinalIgnoreCase))
             {
                 return "No se puede borrar: el cliente tiene compras registradas.";
             }

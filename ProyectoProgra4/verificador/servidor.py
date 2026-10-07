@@ -19,7 +19,8 @@ def main():
     servidor.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR, 1) #reinciar puerto al iniciar
     servidor.bind((HOST, PUERTO)) #juntar socket a puerto 
     servidor.listen() #socket en modo espera 
-    servidor.settimeout(1.0) 
+    servidor.settimeout(1.0)     
+    print(f"Verificador escuchando en el puerto {PUERTO}...")
     
     try: 
         while True:

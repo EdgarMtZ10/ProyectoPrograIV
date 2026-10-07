@@ -14,7 +14,7 @@ CLIENTE_YA_EXISTE = {"status":"2"}
 CLIENTE_NO_EXISTE = {"status":"3"}
 ERROR_NO_CONTROLADO = {"status":"4"}
 EXITO = {"status":"OK"}
-CON_HISTORIAL = {"status":"Error: cliente tiene historial de compras"}
+CON_HISTORIAL = {"status":"Error: cliente con historial de compras"}
 
 #codigos de error en mysql
 ERR_LLAVE_DUPLICADA = 1062 #INSERT LLAVE PRIMARIA QUE YA EXISTE
@@ -56,12 +56,33 @@ def _argumentos(c):
            c["primer_apellido"], c["segundo_apellido"], c["correo"],
            c["telefono"], c["direccion"])
     
+def _limpiar_borrado(datos):
+    """Para borrar solo hacen falta identificacion y pais"""
+    identificacion = datos.get("identificacion")
+    pais = datos.get("pais")
+    if not (val.es_texto(identificacion) and val.es_texto(pais)):
+        return None
+    cliente = {"identificacion": identificacion.strip(),
+               "pais": pais.strip().upper(),
+               "transaccion": "borrar"}
+    if not (val.pais_valido(cliente["pais"])
+            and val.identificacion_valida(cliente["identificacion"], cliente["pais"])):
+        return None
+    return cliente
+
 def procesar(datos):
     """Punto de entrada: recibe el diccionario de la trama y devuelve el diccionario de respuesta"""
     try: 
-        cliente = _limpiar(datos)
-        if cliente is None or not _datos_validos(cliente):
-            return DATOS_INVALIDADOS
+        es_borrado = (isinstance(datos, dict)
+                      and str(datos.get("transaccion", "")).strip().lower() == "borrar" )
+        if es_borrado: 
+            cliente = _limpiar_borrado(datos)
+            if cliente is None: 
+                return DATOS_INVALIDADOS
+        else: 
+            cliente = _limpiar(datos)
+            if cliente is None or not _datos_validos(cliente):
+                return DATOS_INVALIDADOS
         
         transaccion = cliente["transaccion"]
         existe = DB.existe_cliente(cliente["identificacion"])
@@ -89,7 +110,7 @@ def procesar(datos):
         if error.errno == ERR_LLAVE_FORANEA:
             return CON_HISTORIAL
         print(f"[VERIFICADOR1] Error de MySQL: {error}")
-        return CON_HISTORIAL
+        return ERROR_NO_CONTROLADO
     
     except Exception as error: 
         print(f"[VERIFICADOR1] Error no controlado: {error}")

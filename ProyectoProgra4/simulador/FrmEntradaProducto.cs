@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
+using System.Globalization;
 
 namespace simulador
 {
@@ -19,8 +20,7 @@ namespace simulador
         }
         private void btnVolver_Click(object sender, EventArgs e)
         {
-            FrmMenuPrincipal menu = new FrmMenuPrincipal();
-            menu.Show();
+           
             this.Close(); // o this.Hide() dependiendo de tu lógica de ventanas
         }
 
@@ -55,7 +55,7 @@ namespace simulador
                 .StartsWith("Modif", StringComparison.OrdinalIgnoreCase) ? "2" : "1";
 
             // Rellena/corta el numero de producto a 10 caracteres
-            string noProducto = txtNoProducto.Text.PadRight(10).Substring(0, 10);
+            string noProducto = txtNoProducto.Text.Trim().PadLeft(10, '0');
 
             // Rellena/corta el nombre a 90 caracteres
             string nombre = txtNombre.Text.PadRight(90).Substring(0, 90);
@@ -63,7 +63,8 @@ namespace simulador
             // El precio se manda como entero de 8 digitos, ultimos 2 son decimales
             // Ej: usuario escribe 17500.00 -> se manda como 01750000
             decimal precioDecimal;
-            if (!decimal.TryParse(txtPrecio.Text, out precioDecimal))
+            if (!decimal.TryParse(txtPrecio.Text.Replace(',', '.'), NumberStyles.Number,
+                      CultureInfo.InvariantCulture, out precioDecimal))
             {
                 throw new Exception("El precio no es un numero valido.");
             }

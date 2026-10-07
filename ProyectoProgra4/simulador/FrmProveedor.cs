@@ -19,8 +19,7 @@ namespace simulador
         }
         private void btnVolver_Click(object sender, EventArgs e)
         {
-            FrmMenuPrincipal menu = new FrmMenuPrincipal();
-            menu.Show();
+           
             this.Close(); // o this.Hide() dependiendo de tu lógica de ventanas
         }
 
