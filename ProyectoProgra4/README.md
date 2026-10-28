@@ -27,7 +27,7 @@ pip install mysql-connector-python
 Levante el servidor:
 python servidor.py
 
-
+python servidor.py
 4. Ejecutar el Simulador (C#)
 - Vaya a la carpeta ProyectoProgra4\simulador y haga doble clic en el archivo simulador.slnx para abrirlo en Visual Studio (si no abre, utilice simulador.csproj).
 - Presione F5 para correr la interfaz gráfica.

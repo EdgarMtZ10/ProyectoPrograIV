@@ -45,3 +45,5 @@ env/
 .idea/
 *.iml
 fuentes.txt
+
+packages/
