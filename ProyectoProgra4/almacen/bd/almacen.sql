@@ -74,6 +74,20 @@ CREATE TABLE compra_detalle (
 );
 GO
 
+-- NUEVO: productos que cada proveedor le ha vendido al almacen
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[proveedor_producto]') AND type in (N'U'))
+CREATE TABLE proveedor_producto (
+    cedula_juridica       VARCHAR(10)  NOT NULL,
+    no_producto           VARCHAR(10)  NOT NULL,
+    fecha_primera_compra  DATE         NOT NULL,
+    CONSTRAINT PK_proveedor_producto PRIMARY KEY (cedula_juridica, no_producto),
+    CONSTRAINT FK_provprod_proveedor FOREIGN KEY (cedula_juridica)
+        REFERENCES proveedor (cedula_juridica),
+    CONSTRAINT FK_provprod_producto FOREIGN KEY (no_producto)
+        REFERENCES producto (no_producto)
+);
+GO
+
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[salida]') AND type in (N'U'))
 CREATE TABLE salida (
     numero_factura     BIGINT          NOT NULL,
@@ -111,6 +125,28 @@ BEGIN
     SET inv.cantidad_actual = inv.cantidad_actual + i.cantidad
     FROM inventario inv
     INNER JOIN inserted i ON inv.no_producto = i.no_producto;
+END;
+GO
+
+-- NUEVO: al registrar el detalle de una compra, enlaza ese producto con el
+-- proveedor de la compra (solo si todavia no estaba enlazado)
+CREATE OR ALTER TRIGGER TR_compra_detalle_registra_producto_proveedor
+ON compra_detalle
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO proveedor_producto (cedula_juridica, no_producto, fecha_primera_compra)
+    SELECT c.cedula_juridica, i.no_producto, MIN(c.fecha_compra)
+    FROM inserted i
+    INNER JOIN compra c ON c.numero_ingreso = i.numero_ingreso
+    WHERE NOT EXISTS (
+        SELECT 1 FROM proveedor_producto pp
+        WHERE pp.cedula_juridica = c.cedula_juridica
+          AND pp.no_producto = i.no_producto
+    )
+    GROUP BY c.cedula_juridica, i.no_producto;
 END;
 GO
 
@@ -152,6 +188,7 @@ CREATE OR ALTER PROCEDURE sp_modificar_producto
 AS
 BEGIN
     SET NOCOUNT ON;
+    SET @resultado = 'ERROR';   -- corregido: valor inicial, igual que los demas procedimientos
     BEGIN TRY
         IF NOT EXISTS (SELECT 1 FROM producto WHERE no_producto = @no_producto)
         BEGIN
@@ -484,3 +521,28 @@ BEGIN
     END CATCH
 END;
 GO
+
+-- =====================================================================
+-- NUEVO: llena proveedor_producto con las compras que ya existian.
+-- Es seguro correrlo varias veces (no duplica filas). En una base nueva
+-- no hace nada, porque todavia no hay compras.
+-- =====================================================================
+INSERT INTO proveedor_producto (cedula_juridica, no_producto, fecha_primera_compra)
+SELECT c.cedula_juridica, cd.no_producto, MIN(c.fecha_compra)
+FROM compra_detalle cd
+INNER JOIN compra c ON c.numero_ingreso = cd.numero_ingreso
+WHERE NOT EXISTS (
+    SELECT 1 FROM proveedor_producto pp
+    WHERE pp.cedula_juridica = c.cedula_juridica
+      AND pp.no_producto = cd.no_producto
+)
+GROUP BY c.cedula_juridica, cd.no_producto;
+GO
+
+-- Para consultar (no se ejecuta solo, copiala aparte cuando la necesites):
+-- SELECT pr.nombre AS proveedor, pr.cedula_juridica, p.no_producto,
+--        p.nombre AS producto, pp.fecha_primera_compra
+-- FROM proveedor_producto pp
+-- JOIN proveedor pr ON pr.cedula_juridica = pp.cedula_juridica
+-- JOIN producto p   ON p.no_producto = pp.no_producto
+-- ORDER BY pr.nombre, p.nombre;

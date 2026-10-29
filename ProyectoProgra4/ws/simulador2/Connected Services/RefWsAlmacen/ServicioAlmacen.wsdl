@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="http://novaonline.cr/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://novaonline.cr/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://novaonline.cr/">
+      <s:element name="Ping">
+        <s:complexType />
+      </s:element>
+      <s:element name="PingResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="PingResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="MantenimientoProducto">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="tipoTransaccion" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="numeroProducto" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="nombreProducto" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="precio" type="s:decimal" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="MantenimientoProductoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="MantenimientoProductoResult" type="tns:Respuesta" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Respuesta">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="Resultado" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="Mensaje" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="MantenimientoProveedor">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="tipoTransaccion" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="cedulaJuridica" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="nombreEmpresa" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="nombreContacto" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="telefono" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="correo" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="estado" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="MantenimientoProveedorResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="MantenimientoProveedorResult" type="tns:Respuesta" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RegistrarCompra">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="numeroIngreso" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="fechaCompra" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="cedulaJuridica" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="listaProductos" type="tns:ArrayOfProductoCompra" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfProductoCompra">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ProductoCompra" nillable="true" type="tns:ProductoCompra" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ProductoCompra">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="NoProducto" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Cantidad" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="RegistrarCompraResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RegistrarCompraResult" type="tns:Respuesta" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="PingSoapIn">
+    <wsdl:part name="parameters" element="tns:Ping" />
+  </wsdl:message>
+  <wsdl:message name="PingSoapOut">
+    <wsdl:part name="parameters" element="tns:PingResponse" />
+  </wsdl:message>
+  <wsdl:message name="MantenimientoProductoSoapIn">
+    <wsdl:part name="parameters" element="tns:MantenimientoProducto" />
+  </wsdl:message>
+  <wsdl:message name="MantenimientoProductoSoapOut">
+    <wsdl:part name="parameters" element="tns:MantenimientoProductoResponse" />
+  </wsdl:message>
+  <wsdl:message name="MantenimientoProveedorSoapIn">
+    <wsdl:part name="parameters" element="tns:MantenimientoProveedor" />
+  </wsdl:message>
+  <wsdl:message name="MantenimientoProveedorSoapOut">
+    <wsdl:part name="parameters" element="tns:MantenimientoProveedorResponse" />
+  </wsdl:message>
+  <wsdl:message name="RegistrarCompraSoapIn">
+    <wsdl:part name="parameters" element="tns:RegistrarCompra" />
+  </wsdl:message>
+  <wsdl:message name="RegistrarCompraSoapOut">
+    <wsdl:part name="parameters" element="tns:RegistrarCompraResponse" />
+  </wsdl:message>
+  <wsdl:portType name="ServicioAlmacenSoap">
+    <wsdl:operation name="Ping">
+      <wsdl:input message="tns:PingSoapIn" />
+      <wsdl:output message="tns:PingSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="MantenimientoProducto">
+      <wsdl:input message="tns:MantenimientoProductoSoapIn" />
+      <wsdl:output message="tns:MantenimientoProductoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="MantenimientoProveedor">
+      <wsdl:input message="tns:MantenimientoProveedorSoapIn" />
+      <wsdl:output message="tns:MantenimientoProveedorSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RegistrarCompra">
+      <wsdl:input message="tns:RegistrarCompraSoapIn" />
+      <wsdl:output message="tns:RegistrarCompraSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ServicioAlmacenSoap" type="tns:ServicioAlmacenSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="Ping">
+      <soap:operation soapAction="http://novaonline.cr/Ping" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="MantenimientoProducto">
+      <soap:operation soapAction="http://novaonline.cr/MantenimientoProducto" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="MantenimientoProveedor">
+      <soap:operation soapAction="http://novaonline.cr/MantenimientoProveedor" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RegistrarCompra">
+      <soap:operation soapAction="http://novaonline.cr/RegistrarCompra" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="ServicioAlmacenSoap12" type="tns:ServicioAlmacenSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="Ping">
+      <soap12:operation soapAction="http://novaonline.cr/Ping" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="MantenimientoProducto">
+      <soap12:operation soapAction="http://novaonline.cr/MantenimientoProducto" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="MantenimientoProveedor">
+      <soap12:operation soapAction="http://novaonline.cr/MantenimientoProveedor" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RegistrarCompra">
+      <soap12:operation soapAction="http://novaonline.cr/RegistrarCompra" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ServicioAlmacen">
+    <wsdl:port name="ServicioAlmacenSoap" binding="tns:ServicioAlmacenSoap">
+      <soap:address location="http://localhost:5100/ServicioAlmacen.asmx" />
+    </wsdl:port>
+    <wsdl:port name="ServicioAlmacenSoap12" binding="tns:ServicioAlmacenSoap12">
+      <soap12:address location="http://localhost:5100/ServicioAlmacen.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
