@@ -1,25 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-// Se utiliza el espacio de nombres exacto de tu proyecto y referencia
 using simulador2.RefWsAlmacen;
 
 namespace simulador2
 {
     public partial class FrmCompraAlmacen : Form
     {
-        // Controles de cabecera (transacción)
         private TextBox txtNumeroIngreso;
         private DateTimePicker dtpFechaCompra;
         private TextBox txtCedula;
-
-        // Controles de detalle (ingreso de producto a la lista)
         private TextBox txtNumeroProducto;
         private NumericUpDown numCantidad;
         private Button btnAgregarProducto;
-
-        // Controles de visualización y envío
         private DataGridView dgvProductos;
         private Button btnGuardar;
 
@@ -31,31 +24,34 @@ namespace simulador2
 
         private void ConstruirInterfaz()
         {
+            this.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular);
+            this.BackColor = SystemColors.Control;
             this.Text = "Registro de Compra - Almacén";
-            this.Size = new Size(550, 550);
+            this.Size = new Size(580, 680);
             this.StartPosition = FormStartPosition.CenterScreen;
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
 
-            // --- SECCIÓN CABECERA ---
-            Label lblIngreso = new Label { Text = "Número de Ingreso:", Location = new Point(20, 20), AutoSize = true };
-            txtNumeroIngreso = new TextBox { Location = new Point(150, 16), Width = 150, MaxLength = 10 };
+            // CABECERA
+            Label lblIngreso = new Label { Text = "No. Ingreso (Max 10, Ej: ING-01):", Location = new Point(20, 20), AutoSize = true };
+            txtNumeroIngreso = new TextBox { Location = new Point(20, 45), Width = 160, MaxLength = 10 };
 
-            Label lblFecha = new Label { Text = "Fecha Compra:", Location = new Point(20, 60), AutoSize = true };
-            // DateTimePicker garantiza que el usuario seleccione una fecha válida, evitando errores de formato.
-            dtpFechaCompra = new DateTimePicker { Location = new Point(150, 56), Width = 150, Format = DateTimePickerFormat.Short };
+            Label lblFecha = new Label { Text = "Fecha Compra (Ej: 15/10/2026):", Location = new Point(200, 20), AutoSize = true };
+            dtpFechaCompra = new DateTimePicker { Location = new Point(200, 45), Width = 160, Format = DateTimePickerFormat.Short };
 
-            Label lblCedula = new Label { Text = "Cédula Jurídica:", Location = new Point(20, 100), AutoSize = true };
-            txtCedula = new TextBox { Location = new Point(150, 96), Width = 150, MaxLength = 10 };
+            Label lblCedula = new Label { Text = "Cédula Jurídica (Max 10, Ej: 3101123456):", Location = new Point(20, 90), AutoSize = true };
+            txtCedula = new TextBox { Location = new Point(20, 115), Width = 340, MaxLength = 10 };
 
-            // --- SECCIÓN DETALLE (PRODUCTOS) ---
-            GroupBox gbDetalle = new GroupBox { Text = "Agregar Producto", Location = new Point(20, 140), Size = new Size(490, 80) };
+            // DETALLE
+            GroupBox gbDetalle = new GroupBox { Text = "Agregar Producto a la Lista", Location = new Point(20, 170), Size = new Size(520, 100) };
 
-            Label lblNoProd = new Label { Text = "No. Producto:", Location = new Point(15, 30), AutoSize = true };
-            txtNumeroProducto = new TextBox { Location = new Point(100, 26), Width = 100, MaxLength = 10 };
+            Label lblNoProd = new Label { Text = "No. Producto (Max 10, Ej: P-01):", Location = new Point(15, 30), AutoSize = true };
+            txtNumeroProducto = new TextBox { Location = new Point(15, 55), Width = 200, MaxLength = 10 };
 
-            Label lblCant = new Label { Text = "Cantidad:", Location = new Point(220, 30), AutoSize = true };
-            numCantidad = new NumericUpDown { Location = new Point(280, 26), Width = 80, Minimum = 1, Maximum = 9999999 };
+            Label lblCant = new Label { Text = "Cantidad (Ej: 15):", Location = new Point(230, 30), AutoSize = true };
+            numCantidad = new NumericUpDown { Location = new Point(230, 55), Width = 120, Minimum = 1, Maximum = 9999999 };
 
-            btnAgregarProducto = new Button { Text = "Agregar", Location = new Point(380, 24), Width = 90, Height = 25 };
+            btnAgregarProducto = new Button { Text = "Agregar", Location = new Point(380, 52), Width = 100, Height = 30, UseVisualStyleBackColor = true };
             btnAgregarProducto.Click += new EventHandler(btnAgregarProducto_Click);
 
             gbDetalle.Controls.Add(lblNoProd);
@@ -64,25 +60,24 @@ namespace simulador2
             gbDetalle.Controls.Add(numCantidad);
             gbDetalle.Controls.Add(btnAgregarProducto);
 
-            // --- SECCIÓN GRILLA Y ENVÍO ---
+            // TABLA Y ENVÍO
             dgvProductos = new DataGridView
             {
-                Location = new Point(20, 240),
-                Size = new Size(490, 200),
-                AllowUserToAddRows = false, // Evita la fila vacía al final
+                Location = new Point(20, 290),
+                Size = new Size(520, 250),
+                AllowUserToAddRows = false,
                 ReadOnly = true,
-                SelectionMode = DataGridViewSelectionMode.FullRowSelect
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                BackgroundColor = Color.White
             };
-            // Definición manual de las columnas de la grilla
             dgvProductos.Columns.Add("NoProducto", "Número de Producto");
             dgvProductos.Columns.Add("Cantidad", "Cantidad");
-            dgvProductos.Columns[0].Width = 250;
+            dgvProductos.Columns[0].Width = 300;
             dgvProductos.Columns[1].Width = 150;
 
-            btnGuardar = new Button { Text = "Registrar Compra", Location = new Point(190, 460), Width = 150, Height = 35 };
+            btnGuardar = new Button { Text = "Registrar Compra", Location = new Point(200, 560), Width = 180, Height = 40, UseVisualStyleBackColor = true };
             btnGuardar.Click += new EventHandler(btnGuardar_Click);
 
-            // Agregar a la ventana
             this.Controls.Add(lblIngreso);
             this.Controls.Add(txtNumeroIngreso);
             this.Controls.Add(lblFecha);
@@ -94,7 +89,6 @@ namespace simulador2
             this.Controls.Add(btnGuardar);
         }
 
-        // Lógica para poblar la grilla temporalmente antes de enviar
         private void btnAgregarProducto_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtNumeroProducto.Text))
@@ -102,17 +96,12 @@ namespace simulador2
                 MessageBox.Show("Ingrese un número de producto.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
-            // Agrega una nueva fila al DataGridView con los valores introducidos
             dgvProductos.Rows.Add(txtNumeroProducto.Text.Trim(), numCantidad.Value.ToString());
-
-            // Limpia las cajas de texto de detalle para el siguiente producto
             txtNumeroProducto.Clear();
             numCantidad.Value = 1;
             txtNumeroProducto.Focus();
         }
 
-        // Lógica principal: armado de la lista dinámica y consumo del ASMX
         private void btnGuardar_Click(object sender, EventArgs e)
         {
             try
@@ -122,7 +111,6 @@ namespace simulador2
                     MessageBox.Show("El número de ingreso y la cédula son obligatorios.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-
                 if (dgvProductos.Rows.Count == 0)
                 {
                     MessageBox.Show("Debe agregar al menos un producto a la lista.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -130,27 +118,19 @@ namespace simulador2
                 }
 
                 string numeroIngreso = txtNumeroIngreso.Text.Trim();
-                // El parser de Java espera la fecha en formato YYYYMMDD (8 caracteres), por lo que se formatea el Value del DateTimePicker
                 string fechaCompra = dtpFechaCompra.Value.ToString("yyyyMMdd");
                 string cedula = txtCedula.Text.Trim();
 
-                // Las referencias de servicio en Visual Studio convierten List<T> en arrays (T[]) por defecto.
-                // Inicializamos el array con el tamaño exacto de filas en la grilla.
                 ProductoCompra[] listaProductos = new ProductoCompra[dgvProductos.Rows.Count];
-
-                // Se itera sobre las filas visuales para construir los objetos que viajarán por SOAP
-                // Se itera sobre las filas visuales para construir los objetos que viajarán por SOAP
                 for (int i = 0; i < dgvProductos.Rows.Count; i++)
                 {
                     listaProductos[i] = new ProductoCompra
                     {
                         NoProducto = dgvProductos.Rows[i].Cells["NoProducto"].Value.ToString(),
-                        // Se envía como string respetando tu defensa contra errores HTTP 500
                         Cantidad = dgvProductos.Rows[i].Cells["Cantidad"].Value.ToString()
                     };
                 }
 
-                // Invocación del Web Service
                 ServicioAlmacenSoapClient clienteWs = new ServicioAlmacenSoapClient();
                 Respuesta respuesta = clienteWs.RegistrarCompra(numeroIngreso, fechaCompra, cedula, listaProductos);
 
@@ -177,7 +157,7 @@ namespace simulador2
             txtCedula.Clear();
             txtNumeroProducto.Clear();
             numCantidad.Value = 1;
-            dgvProductos.Rows.Clear(); // Vacía la grilla
+            dgvProductos.Rows.Clear();
             txtNumeroIngreso.Focus();
         }
     }

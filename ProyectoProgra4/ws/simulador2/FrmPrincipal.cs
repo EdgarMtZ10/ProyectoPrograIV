@@ -14,55 +14,104 @@ namespace simulador2
 
         private void ConstruirInterfaz()
         {
-            // 1. Configuración de la ventana maestra
-            this.Text = "Simulador V2 - Módulos del Almacén";
-            this.IsMdiContainer = true; // Convierte el formulario en un contenedor para otras ventanas
-            this.WindowState = FormWindowState.Maximized; // Inicia maximizado
+            this.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular);
+            this.Text = "Nova Online - Sistema de Ventas y Distribución";
+            this.IsMdiContainer = true;
 
-            // 2. Creación del menú superior
-            MenuStrip menuSuperior = new MenuStrip();
+            // Ventana en tamaño normal (no maximizada) centrada en la pantalla
+            this.WindowState = FormWindowState.Normal;
+            this.Size = new Size(950, 850);
+            this.StartPosition = FormStartPosition.CenterScreen;
 
-            // 3. Opción principal del menú
-            ToolStripMenuItem menuAlmacen = new ToolStripMenuItem("Mantenimiento Almacén");
+            foreach (Control control in this.Controls)
+            {
+                if (control is MdiClient)
+                {
+                    control.BackColor = SystemColors.ControlLight;
+                    break;
+                }
+            }
 
-            // 4. Submenús para cada pantalla
-            ToolStripMenuItem itemProducto = new ToolStripMenuItem("1. Productos");
-            itemProducto.Click += (sender, e) => AbrirFormulario<FrmProducto>();
+            Panel panelMenu = new Panel();
+            panelMenu.Dock = DockStyle.Left;
+            panelMenu.Width = 180;
+            panelMenu.BackColor = Color.FromArgb(35, 45, 60);
 
-            ToolStripMenuItem itemProveedor = new ToolStripMenuItem("2. Proveedores");
-            itemProveedor.Click += (sender, e) => AbrirFormulario<FrmProveedor>();
+            Label lblTitulo = new Label();
+            lblTitulo.Text = "NOVA ONLINE";
+            lblTitulo.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            lblTitulo.ForeColor = Color.White;
+            lblTitulo.AutoSize = false;
+            lblTitulo.Width = 180;
+            lblTitulo.Height = 70;
+            lblTitulo.TextAlign = ContentAlignment.MiddleCenter;
 
-            ToolStripMenuItem itemCompra = new ToolStripMenuItem("3. Registro de Compras");
-            itemCompra.Click += (sender, e) => AbrirFormulario<FrmCompraAlmacen>();
+            Button btnProducto = CrearBotonMenu("1. Productos", 70);
+            btnProducto.Click += (sender, e) => AbrirFormulario<FrmProducto>();
 
-            // 5. Ensamblar el menú
-            menuAlmacen.DropDownItems.Add(itemProducto);
-            menuAlmacen.DropDownItems.Add(itemProveedor);
-            menuAlmacen.DropDownItems.Add(itemCompra);
+            Button btnProveedor = CrearBotonMenu("2. Proveedores", 110);
+            btnProveedor.Click += (sender, e) => AbrirFormulario<FrmProveedor>();
 
-            menuSuperior.Items.Add(menuAlmacen);
+            Button btnCompra = CrearBotonMenu("3. Registro de Compras", 150);
+            btnCompra.Click += (sender, e) => AbrirFormulario<FrmCompraAlmacen>();
 
-            // 6. Agregar el menú al formulario
-            this.Controls.Add(menuSuperior);
-            this.MainMenuStrip = menuSuperior;
+            Button btnVerificador = CrearBotonMenu("4. Pago de Compra - Verificador", 190);
+            btnVerificador.Click += (sender, e) => AbrirFormulario<FrmCompraVerificador>();
+
+            panelMenu.Controls.Add(lblTitulo);
+            panelMenu.Controls.Add(btnProducto);
+            panelMenu.Controls.Add(btnProveedor);
+            panelMenu.Controls.Add(btnCompra);
+            panelMenu.Controls.Add(btnVerificador);
+
+            this.Controls.Add(panelMenu);
         }
 
-        // Método genérico para abrir formularios hijos.
-        // Revisa si la ventana ya está abierta para traerla al frente en lugar de duplicarla.
+        private Button CrearBotonMenu(string texto, int posicionY)
+        {
+            Button btn = new Button();
+            btn.Text = texto;
+            btn.Location = new Point(0, posicionY);
+            btn.Width = 180;
+            btn.Height = 40;
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            btn.FlatAppearance.MouseOverBackColor = Color.FromArgb(50, 60, 75);
+            btn.ForeColor = Color.White;
+            btn.BackColor = Color.FromArgb(35, 45, 60);
+            btn.TextAlign = ContentAlignment.MiddleLeft;
+            btn.Padding = new Padding(10, 0, 0, 0);
+            btn.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+            return btn;
+        }
+
         private void AbrirFormulario<T>() where T : Form, new()
         {
+            Form formularioEncontrado = null;
+
             foreach (Form formularioAbierto in this.MdiChildren)
             {
                 if (formularioAbierto.GetType() == typeof(T))
                 {
-                    formularioAbierto.Activate();
-                    return;
+                    formularioEncontrado = formularioAbierto;
+                }
+                else
+                {
+                    formularioAbierto.Close();
                 }
             }
 
-            T nuevoFormulario = new T();
-            nuevoFormulario.MdiParent = this; // Le indica que FrmPrincipal es su contenedor
-            nuevoFormulario.Show();
+            if (formularioEncontrado != null)
+            {
+                formularioEncontrado.Activate();
+            }
+            else
+            {
+                T nuevoFormulario = new T();
+                nuevoFormulario.MdiParent = this;
+                nuevoFormulario.StartPosition = FormStartPosition.CenterScreen;
+                nuevoFormulario.Show();
+            }
         }
     }
 }

@@ -39,7 +39,7 @@ namespace simulador2
             }
         }
 
-        // Método para descifrar textos
+        // Método para descifrar los textos
         public static string Descifrar(string textoCifrado)
         {
             if (string.IsNullOrEmpty(textoCifrado)) return textoCifrado;
