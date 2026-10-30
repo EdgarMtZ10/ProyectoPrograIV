@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-// Se utiliza el espacio de nombres exacto de tu proyecto y referencia
 using simulador2.RefWsAlmacen;
 
 namespace simulador2
 {
     public partial class FrmProveedor : Form
     {
-        // 1. Declaración de las variables para los 7 campos del proveedor
+        // Declaración de las variables para los 7 campos del proveedor
         private RadioButton rbIngreso;
         private RadioButton rbModificacion;
         private TextBox txtCedula;
@@ -21,56 +20,48 @@ namespace simulador2
 
         public FrmProveedor()
         {
-            // Inicialización base del formulario
             InitializeComponent();
-
-            // Llamada al método que dibuja los controles
             ConstruirInterfaz();
         }
 
-        // Método encargado de crear y posicionar todo visualmente sin el diseñador
         private void ConstruirInterfaz()
         {
-            // Configuración general de la ventana
+            // Configuración general de la ventana con diseño limpio y Segoe UI
+            this.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular);
+            this.BackColor = SystemColors.Control;
             this.Text = "Mantenimiento de Proveedor";
-            this.Size = new Size(480, 430);
+            this.Size = new Size(450, 580);
             this.StartPosition = FormStartPosition.CenterScreen;
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
 
-            // Instanciar RadioButtons (1 carácter en la trama)
-            rbIngreso = new RadioButton { Text = "Ingreso", Location = new Point(20, 20), Checked = true };
-            rbModificacion = new RadioButton { Text = "Modificación", Location = new Point(120, 20) };
+            // Instanciar RadioButtons
+            rbIngreso = new RadioButton { Text = "Ingreso", Location = new Point(20, 20), Checked = true, AutoSize = true };
+            rbModificacion = new RadioButton { Text = "Modificación", Location = new Point(120, 20), AutoSize = true };
 
-            // Instanciar Labels y TextBox para Cédula (Max 10 caracteres)
-            Label lblCedula = new Label { Text = "Cédula Jurídica:", Location = new Point(20, 60), AutoSize = true };
-            txtCedula = new TextBox { Location = new Point(170, 56), Width = 250, MaxLength = 10 };
+            // Etiquetas con límites y ejemplos, controles apilados verticalmente
+            Label lblCedula = new Label { Text = "Cédula Jurídica (Max 10, Ej: 3101123456):", Location = new Point(20, 60), AutoSize = true };
+            txtCedula = new TextBox { Location = new Point(20, 85), Width = 390, MaxLength = 10 };
 
-            // Instanciar Labels y TextBox para Nombre Empresa (Max 100 caracteres)
-            Label lblEmpresa = new Label { Text = "Nombre Empresa:", Location = new Point(20, 100), AutoSize = true };
-            txtNombreEmpresa = new TextBox { Location = new Point(170, 96), Width = 250, MaxLength = 100 };
+            Label lblEmpresa = new Label { Text = "Nombre Empresa (Ej: Nova Online):", Location = new Point(20, 130), AutoSize = true };
+            txtNombreEmpresa = new TextBox { Location = new Point(20, 155), Width = 390, MaxLength = 100 };
 
-            // Instanciar Labels y TextBox para Nombre Contacto (Max 75 caracteres)
-            Label lblContacto = new Label { Text = "Nombre Contacto:", Location = new Point(20, 140), AutoSize = true };
-            txtNombreContacto = new TextBox { Location = new Point(170, 136), Width = 250, MaxLength = 75 };
+            Label lblContacto = new Label { Text = "Nombre Contacto (Ej: Juan Pérez):", Location = new Point(20, 200), AutoSize = true };
+            txtNombreContacto = new TextBox { Location = new Point(20, 225), Width = 390, MaxLength = 75 };
 
-            // Instanciar Labels y TextBox para Teléfono (Max 8 caracteres)
-            Label lblTelefono = new Label { Text = "Teléfono:", Location = new Point(20, 180), AutoSize = true };
-            txtTelefono = new TextBox { Location = new Point(170, 176), Width = 250, MaxLength = 8 };
+            Label lblTelefono = new Label { Text = "Teléfono (Ej: 88889999):", Location = new Point(20, 270), AutoSize = true };
+            txtTelefono = new TextBox { Location = new Point(20, 295), Width = 390, MaxLength = 8 };
 
-            // Instanciar Labels y TextBox para Correo (Max 75 caracteres)
-            Label lblCorreo = new Label { Text = "Correo:", Location = new Point(20, 220), AutoSize = true };
-            txtCorreo = new TextBox { Location = new Point(170, 216), Width = 250, MaxLength = 75 };
+            Label lblCorreo = new Label { Text = "Correo (Ej: contacto@empresa.com):", Location = new Point(20, 340), AutoSize = true };
+            txtCorreo = new TextBox { Location = new Point(20, 365), Width = 390, MaxLength = 75 };
 
-            // Instanciar Labels y TextBox para Estado (Max 1 carácter, ej: 'A' o 'I')
-            Label lblEstado = new Label { Text = "Estado (1 letra):", Location = new Point(20, 260), AutoSize = true };
-            txtEstado = new TextBox { Location = new Point(170, 256), Width = 50, MaxLength = 1 };
+            Label lblEstado = new Label { Text = "Estado (1 para Activo, 2 para Inactivo):", Location = new Point(20, 410), AutoSize = true };
+            txtEstado = new TextBox { Location = new Point(20, 435), Width = 390, MaxLength = 1 };
 
-            // Instanciar y configurar el Botón de Guardar
-            btnGuardar = new Button { Text = "Guardar", Location = new Point(170, 310), Width = 100, Height = 35 };
-
-            // Suscribir el botón a su evento de lógica
+            btnGuardar = new Button { Text = "Guardar", Location = new Point(175, 485), Width = 100, Height = 35, UseVisualStyleBackColor = true };
             btnGuardar.Click += new EventHandler(btnGuardar_Click);
 
-            // Agregar todos los controles a la colección de la ventana para hacerlos visibles
+            // Agregar controles a la ventana
             this.Controls.Add(rbIngreso);
             this.Controls.Add(rbModificacion);
             this.Controls.Add(lblCedula);
@@ -88,20 +79,18 @@ namespace simulador2
             this.Controls.Add(btnGuardar);
         }
 
-        // Lógica de consumo del Web Service al presionar el botón
         private void btnGuardar_Click(object sender, EventArgs e)
         {
             try
             {
-                // Verificación de campos clave obligatorios
                 if (string.IsNullOrWhiteSpace(txtCedula.Text) || string.IsNullOrWhiteSpace(txtNombreEmpresa.Text))
                 {
                     MessageBox.Show("La cédula y el nombre de la empresa son obligatorios.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                // 1. Extracción y limpieza de los textos introducidos
-                string tipoTransaccion = rbIngreso.Checked ? "1" : "2";
+                // El Almacén enruta por el primer carácter (3 = ingreso proveedor, 4 = modificación proveedor)
+                string tipoTransaccion = rbIngreso.Checked ? "3" : "4";
                 string cedula = txtCedula.Text.Trim();
                 string empresa = txtNombreEmpresa.Text.Trim();
                 string contacto = txtNombreContacto.Text.Trim();
@@ -109,11 +98,9 @@ namespace simulador2
                 string correo = txtCorreo.Text.Trim();
                 string estado = txtEstado.Text.Trim();
 
-                // 2. Instancia del cliente SOAP y ejecución de la operación del proveedor
                 ServicioAlmacenSoapClient clienteWs = new ServicioAlmacenSoapClient();
                 Respuesta respuesta = clienteWs.MantenimientoProveedor(tipoTransaccion, cedula, empresa, contacto, telefono, correo, estado);
 
-                // 3. Lectura del objeto de respuesta estandarizado
                 if (respuesta.Resultado)
                 {
                     MessageBox.Show(respuesta.Mensaje, "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -130,7 +117,6 @@ namespace simulador2
             }
         }
 
-        // Resetea el formulario a su estado original después de un registro exitoso
         private void LimpiarCampos()
         {
             rbIngreso.Checked = true;
