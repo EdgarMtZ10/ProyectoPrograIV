@@ -1,6 +1,4 @@
 ﻿using simulador2.RefWsAlmacen;
-// Cambia esto por el nombre real de tu referencia y proyecto
-using simulador2.RefWsAlmacen;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -9,7 +7,6 @@ namespace simulador2
 {
     public partial class FrmProducto : Form
     {
-        // 1. Declaración de las variables de los controles a nivel de clase
         private RadioButton rbIngreso;
         private RadioButton rbModificacion;
         private TextBox txtNumeroProducto;
@@ -19,44 +16,37 @@ namespace simulador2
 
         public FrmProducto()
         {
-            // Este método nativo inicializa lo básico del form, déjalo ahí.
             InitializeComponent();
-
-            // Llamamos a nuestro propio método para pintar la interfaz
             ConstruirInterfaz();
         }
 
-        // Método encargado de crear y posicionar todo visualmente
         private void ConstruirInterfaz()
         {
-            // Configuración general de la ventana
+            // Reglas de UI: Segoe UI, sin excesos, colores de sistema
+            this.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular);
+            this.BackColor = SystemColors.Control;
             this.Text = "Mantenimiento de Producto";
-            this.Size = new Size(400, 300);
+            this.Size = new Size(450, 420);
             this.StartPosition = FormStartPosition.CenterScreen;
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
 
-            // Instanciar y configurar RadioButtons (Tipo de transacción)
-            rbIngreso = new RadioButton { Text = "Ingreso", Location = new Point(20, 20), Checked = true };
-            rbModificacion = new RadioButton { Text = "Modificación", Location = new Point(120, 20) };
+            rbIngreso = new RadioButton { Text = "Ingreso", Location = new Point(20, 20), Checked = true, AutoSize = true };
+            rbModificacion = new RadioButton { Text = "Modificación", Location = new Point(120, 20), AutoSize = true };
 
-            // Instanciar Labels y TextBox para Número de Producto
-            Label lblNumero = new Label { Text = "Número de Producto:", Location = new Point(20, 60), AutoSize = true };
-            txtNumeroProducto = new TextBox { Location = new Point(150, 56), Width = 200, MaxLength = 10 };
+            // Etiquetas con límites y ejemplos, controles apilados para mantener el orden y legibilidad
+            Label lblNumero = new Label { Text = "Número de Producto (Max 10, Ej: 1001):", Location = new Point(20, 60), AutoSize = true };
+            txtNumeroProducto = new TextBox { Location = new Point(20, 85), Width = 390, MaxLength = 10 };
 
-            // Instanciar Labels y TextBox para Nombre del Producto
-            Label lblNombre = new Label { Text = "Nombre del Producto:", Location = new Point(20, 100), AutoSize = true };
-            txtNombre = new TextBox { Location = new Point(150, 96), Width = 200, MaxLength = 90 };
+            Label lblNombre = new Label { Text = "Nombre del Producto:", Location = new Point(20, 130), AutoSize = true };
+            txtNombre = new TextBox { Location = new Point(20, 155), Width = 390, MaxLength = 90 };
 
-            // Instanciar Labels y NumericUpDown para el Precio
-            Label lblPrecio = new Label { Text = "Precio:", Location = new Point(20, 140), AutoSize = true };
-            numPrecio = new NumericUpDown { Location = new Point(150, 136), Width = 200, DecimalPlaces = 2, Maximum = 999999.99m };
+            Label lblPrecio = new Label { Text = "Precio:", Location = new Point(20, 200), AutoSize = true };
+            numPrecio = new NumericUpDown { Location = new Point(20, 225), Width = 390, DecimalPlaces = 2, Maximum = 999999.99m };
 
-            // Instanciar y configurar el Botón de Guardar
-            btnGuardar = new Button { Text = "Guardar", Location = new Point(150, 190), Width = 100, Height = 35 };
-
-            // Suscribir el botón al evento Click (esto enlaza el diseño con la lógica)
+            btnGuardar = new Button { Text = "Guardar", Location = new Point(175, 300), Width = 100, Height = 35, UseVisualStyleBackColor = true };
             btnGuardar.Click += new EventHandler(btnGuardar_Click);
 
-            // 3. Agregar todos los controles a la pantalla para que sean visibles
             this.Controls.Add(rbIngreso);
             this.Controls.Add(rbModificacion);
             this.Controls.Add(lblNumero);
@@ -68,7 +58,6 @@ namespace simulador2
             this.Controls.Add(btnGuardar);
         }
 
-        // Lógica del botón (exactamente la misma que usarías con el diseñador visual)
         private void btnGuardar_Click(object sender, EventArgs e)
         {
             try
@@ -84,7 +73,6 @@ namespace simulador2
                 string nombreProducto = txtNombre.Text.Trim();
                 decimal precio = numPrecio.Value;
 
-                // Consumo del Web Service
                 ServicioAlmacenSoapClient clienteWs = new ServicioAlmacenSoapClient();
                 Respuesta respuesta = clienteWs.MantenimientoProducto(tipoTransaccion, numeroProducto, nombreProducto, precio);
 
