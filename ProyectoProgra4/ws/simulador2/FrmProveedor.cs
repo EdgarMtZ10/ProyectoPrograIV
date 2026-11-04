@@ -7,7 +7,6 @@ namespace simulador2
 {
     public partial class FrmProveedor : Form
     {
-        // Declaración de las variables para los 7 campos del proveedor
         private RadioButton rbIngreso;
         private RadioButton rbModificacion;
         private TextBox txtCedula;
@@ -26,42 +25,45 @@ namespace simulador2
 
         private void ConstruirInterfaz()
         {
-            // Configuración general de la ventana con diseño limpio y Segoe UI
             this.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular);
             this.BackColor = SystemColors.Control;
             this.Text = "Mantenimiento de Proveedor";
             this.Size = new Size(450, 580);
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            this.MaximizeBox = false;
 
-            // Instanciar RadioButtons
-            rbIngreso = new RadioButton { Text = "Ingreso", Location = new Point(20, 20), Checked = true, AutoSize = true };
-            rbModificacion = new RadioButton { Text = "Modificación", Location = new Point(120, 20), AutoSize = true };
+            rbIngreso = new RadioButton { Text = "Ingreso", Location = new Point(20, 20), Checked = true, AutoSize = true, TabIndex = 0 };
+            rbModificacion = new RadioButton { Text = "Modificación", Location = new Point(120, 20), AutoSize = true, TabIndex = 1 };
 
-            // Etiquetas con límites y ejemplos, controles apilados verticalmente
-            Label lblCedula = new Label { Text = "Cédula Jurídica (Max 10, Ej: 3101123456):", Location = new Point(20, 60), AutoSize = true };
-            txtCedula = new TextBox { Location = new Point(20, 85), Width = 390, MaxLength = 10 };
+            Label lblCedula = new Label { Text = "* Cédula Jurídica (Max 10, Ej: 3101123456):", Location = new Point(20, 60), AutoSize = true };
+            txtCedula = new TextBox { Location = new Point(20, 85), Width = 390, MaxLength = 10, TabIndex = 2 };
+            txtCedula.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-            Label lblEmpresa = new Label { Text = "Nombre Empresa (Ej: Nova Online):", Location = new Point(20, 130), AutoSize = true };
-            txtNombreEmpresa = new TextBox { Location = new Point(20, 155), Width = 390, MaxLength = 100 };
+            Label lblEmpresa = new Label { Text = "* Nombre Empresa (Ej: Nova Online):", Location = new Point(20, 130), AutoSize = true };
+            txtNombreEmpresa = new TextBox { Location = new Point(20, 155), Width = 390, MaxLength = 100, TabIndex = 3 };
+            txtNombreEmpresa.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
             Label lblContacto = new Label { Text = "Nombre Contacto (Ej: Juan Pérez):", Location = new Point(20, 200), AutoSize = true };
-            txtNombreContacto = new TextBox { Location = new Point(20, 225), Width = 390, MaxLength = 75 };
+            txtNombreContacto = new TextBox { Location = new Point(20, 225), Width = 390, MaxLength = 75, TabIndex = 4 };
+            txtNombreContacto.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
             Label lblTelefono = new Label { Text = "Teléfono (Ej: 88889999):", Location = new Point(20, 270), AutoSize = true };
-            txtTelefono = new TextBox { Location = new Point(20, 295), Width = 390, MaxLength = 8 };
+            txtTelefono = new TextBox { Location = new Point(20, 295), Width = 390, MaxLength = 8, TabIndex = 5 };
+            txtTelefono.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
             Label lblCorreo = new Label { Text = "Correo (Ej: contacto@empresa.com):", Location = new Point(20, 340), AutoSize = true };
-            txtCorreo = new TextBox { Location = new Point(20, 365), Width = 390, MaxLength = 75 };
+            txtCorreo = new TextBox { Location = new Point(20, 365), Width = 390, MaxLength = 75, TabIndex = 6 };
+            txtCorreo.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
             Label lblEstado = new Label { Text = "Estado (1 para Activo, 2 para Inactivo):", Location = new Point(20, 410), AutoSize = true };
-            txtEstado = new TextBox { Location = new Point(20, 435), Width = 390, MaxLength = 1 };
+            txtEstado = new TextBox { Location = new Point(20, 435), Width = 390, MaxLength = 1, TabIndex = 7 };
+            txtEstado.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-            btnGuardar = new Button { Text = "Guardar", Location = new Point(175, 485), Width = 100, Height = 35, UseVisualStyleBackColor = true };
+            btnGuardar = new Button { Text = "Guardar", Location = new Point(310, 490), Width = 100, Height = 35, UseVisualStyleBackColor = true, TabIndex = 8 };
+            btnGuardar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnGuardar.Click += new EventHandler(btnGuardar_Click);
 
-            // Agregar controles a la ventana
+            this.AcceptButton = btnGuardar;
+
             this.Controls.Add(rbIngreso);
             this.Controls.Add(rbModificacion);
             this.Controls.Add(lblCedula);
@@ -89,7 +91,6 @@ namespace simulador2
                     return;
                 }
 
-                // El Almacén enruta por el primer carácter (3 = ingreso proveedor, 4 = modificación proveedor)
                 string tipoTransaccion = rbIngreso.Checked ? "3" : "4";
                 string cedula = txtCedula.Text.Trim();
                 string empresa = txtNombreEmpresa.Text.Trim();
@@ -98,6 +99,7 @@ namespace simulador2
                 string correo = txtCorreo.Text.Trim();
                 string estado = txtEstado.Text.Trim();
 
+                this.Cursor = Cursors.WaitCursor;
                 ServicioAlmacenSoapClient clienteWs = new ServicioAlmacenSoapClient();
                 Respuesta respuesta = clienteWs.MantenimientoProveedor(tipoTransaccion, cedula, empresa, contacto, telefono, correo, estado);
 
@@ -114,6 +116,10 @@ namespace simulador2
             catch (Exception ex)
             {
                 MessageBox.Show("Error de conexión: " + ex.Message, "Error Crítico", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
             }
         }
 
