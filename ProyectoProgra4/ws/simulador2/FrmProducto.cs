@@ -1,7 +1,7 @@
-﻿using simulador2.RefWsAlmacen;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using simulador2.RefWsAlmacen;
 
 namespace simulador2
 {
@@ -22,30 +22,35 @@ namespace simulador2
 
         private void ConstruirInterfaz()
         {
-            // Reglas de UI: Segoe UI, sin excesos, colores de sistema
             this.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular);
             this.BackColor = SystemColors.Control;
             this.Text = "Mantenimiento de Producto";
             this.Size = new Size(450, 420);
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            this.MaximizeBox = false;
 
-            rbIngreso = new RadioButton { Text = "Ingreso", Location = new Point(20, 20), Checked = true, AutoSize = true };
-            rbModificacion = new RadioButton { Text = "Modificación", Location = new Point(120, 20), AutoSize = true };
+            rbIngreso = new RadioButton { Text = "Ingreso", Location = new Point(20, 20), Checked = true, AutoSize = true, TabIndex = 0 };
+            rbModificacion = new RadioButton { Text = "Modificación", Location = new Point(120, 20), AutoSize = true, TabIndex = 1 };
 
-            // Etiquetas con límites y ejemplos, controles apilados para mantener el orden y legibilidad
-            Label lblNumero = new Label { Text = "Número de Producto (Max 10, Ej: 1001):", Location = new Point(20, 60), AutoSize = true };
-            txtNumeroProducto = new TextBox { Location = new Point(20, 85), Width = 390, MaxLength = 10 };
+            // Se agregó asterisco (*) para indicar campo obligatorio
+            Label lblNumero = new Label { Text = "* Número de Producto (Max 10):", Location = new Point(20, 60), AutoSize = true };
+            txtNumeroProducto = new TextBox { Location = new Point(20, 85), Width = 390, MaxLength = 10, TabIndex = 2 };
+            txtNumeroProducto.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right; // Estiramiento horizontal
 
-            Label lblNombre = new Label { Text = "Nombre del Producto:", Location = new Point(20, 130), AutoSize = true };
-            txtNombre = new TextBox { Location = new Point(20, 155), Width = 390, MaxLength = 90 };
+            Label lblNombre = new Label { Text = "* Nombre del Producto:", Location = new Point(20, 130), AutoSize = true };
+            txtNombre = new TextBox { Location = new Point(20, 155), Width = 390, MaxLength = 90, TabIndex = 3 };
+            txtNombre.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
             Label lblPrecio = new Label { Text = "Precio:", Location = new Point(20, 200), AutoSize = true };
-            numPrecio = new NumericUpDown { Location = new Point(20, 225), Width = 390, DecimalPlaces = 2, Maximum = 999999.99m };
+            numPrecio = new NumericUpDown { Location = new Point(20, 225), Width = 390, DecimalPlaces = 2, Maximum = 999999.99m, TabIndex = 4 };
+            numPrecio.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-            btnGuardar = new Button { Text = "Guardar", Location = new Point(175, 300), Width = 100, Height = 35, UseVisualStyleBackColor = true };
+            // Botón alineado a la derecha y anclado abajo
+            btnGuardar = new Button { Text = "Guardar", Location = new Point(310, 320), Width = 100, Height = 35, UseVisualStyleBackColor = true, TabIndex = 5 };
+            btnGuardar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnGuardar.Click += new EventHandler(btnGuardar_Click);
+
+            // Permite que al presionar Enter se dispare el botón Guardar automáticamente
+            this.AcceptButton = btnGuardar;
 
             this.Controls.Add(rbIngreso);
             this.Controls.Add(rbModificacion);
@@ -73,6 +78,7 @@ namespace simulador2
                 string nombreProducto = txtNombre.Text.Trim();
                 decimal precio = numPrecio.Value;
 
+                this.Cursor = Cursors.WaitCursor;
                 ServicioAlmacenSoapClient clienteWs = new ServicioAlmacenSoapClient();
                 Respuesta respuesta = clienteWs.MantenimientoProducto(tipoTransaccion, numeroProducto, nombreProducto, precio);
 
@@ -83,6 +89,7 @@ namespace simulador2
                     txtNumeroProducto.Clear();
                     txtNombre.Clear();
                     numPrecio.Value = 0;
+                    txtNumeroProducto.Focus();
                 }
                 else
                 {
@@ -92,6 +99,10 @@ namespace simulador2
             catch (Exception ex)
             {
                 MessageBox.Show("Error de conexión: " + ex.Message, "Error Crítico", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
             }
         }
     }

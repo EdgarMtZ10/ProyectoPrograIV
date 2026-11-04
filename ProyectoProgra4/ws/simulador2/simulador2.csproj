@@ -54,6 +54,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="Connected Services\RefWsAutenticacion\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="FrmAutenticacion.cs" />
+    <Compile Include="FrmAutenticacion.Designer.cs">
+      <DependentUpon>FrmAutenticacion.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmCompraAlmacen.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -114,6 +123,28 @@
     <None Include="Connected Services\RefWsAlmacen\simulador2.RefWsAlmacen.Respuesta.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
+    <None Include="Connected Services\RefWsAutenticacion\ServicioAutenticacion.wsdl" />
+    <None Include="Connected Services\RefWsAutenticacion\simulador2.RefWsAutenticacion.AutenticarResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\RefWsAutenticacion\simulador2.RefWsAutenticacion.CambiarEstadoUsuarioResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\RefWsAutenticacion\simulador2.RefWsAutenticacion.CrearUsuarioResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\RefWsAutenticacion\simulador2.RefWsAutenticacion.ModificarUsuarioResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\RefWsAutenticacion\simulador2.RefWsAutenticacion.PingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\RefWsAutenticacion\simulador2.RefWsAutenticacion.Respuesta.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\RefWsAutenticacion\simulador2.RefWsAutenticacion.RespuestaLogin.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -132,6 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadataStorage Include="Connected Services\RefWsAlmacen\" />
+    <WCFMetadataStorage Include="Connected Services\RefWsAutenticacion\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Connected Services\RefWsAlmacen\ServicioAlmacen.disco" />
@@ -144,6 +176,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Connected Services\RefWsAlmacen\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\RefWsAutenticacion\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\RefWsAutenticacion\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\RefWsAutenticacion\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
