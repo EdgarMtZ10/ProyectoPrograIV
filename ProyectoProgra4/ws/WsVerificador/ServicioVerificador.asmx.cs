@@ -1,5 +1,7 @@
 ﻿using System;
-using System.Net.WebSockets;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.Services;
 
@@ -45,8 +47,69 @@ namespace WsVerificador
             }, TraducirCliente);
         }
 
-        // Arma el JSON, lo envía al Verificador y traduce la respuesta a Resultado y Mensaje
+        // WS_VERIFICADOR2: registro de una compra y su pago.
         
+        [WebMethod]
+        public Respuesta RegistrarCompraCliente(string numeroCompra, string idCliente, string fechaCompra,
+                                                string totalCompra, string numeroTarjeta, string fechaVencimiento,
+                                                string codigoVerificacion, List<ProductoCompra> listaProductos)
+        {
+            return Ejecutar(PrefijoCompra, () =>
+            {
+                //se descifran los datos generales
+                string compra = Descifrar(numeroCompra, "número de compra");
+                string cliente = Descifrar(idCliente, "identificador del cliente");
+                string fecha = Descifrar(fechaCompra, "fecha de compra");
+                string total = Descifrar(totalCompra, "total de compra").Replace(',', '.');
+
+                //los datos de la tarjeta solo se revisa el cifrado
+                string tarjeta = ValidarCifrado(numeroTarjeta, "número de tarjeta");
+                string vencimiento = ValidarCifrado(fechaVencimiento, "fecha de vencimiento");
+                string codigo = ValidarCifrado(codigoVerificacion, "código de verificación");
+
+                //mismo JSON que arma FrmCompraVerificador del simulador
+                return "{"
+                    + "\"transaccion\": \"compra\","
+                    + "\"numero_compra\": \"" + Esc(compra) + "\","
+                    + "\"id_cliente\": \"" + Esc(cliente) + "\","
+                    + "\"fecha_compra\": \"" + Esc(fecha) + "\","
+                    + "\"total_compra\": \"" + Esc(total) + "\","
+                    + "\"num_tarjeta\": \"" + Esc(tarjeta) + "\","
+                    + "\"fecha_vencimiento\": \"" + Esc(vencimiento) + "\","
+                    + "\"codigo_verificacion\": \"" + Esc(codigo) + "\","
+                    + "\"productos\": " + ArmarProductosJson(listaProductos)
+                    + "}";
+            }, TraducirCompra);
+        }
+
+        // Arma la lista de productos en JSON
+        private static string ArmarProductosJson(List<ProductoCompra> listaProductos)
+        {
+            if (listaProductos == null || listaProductos.Count == 0)
+                throw new FormatException("Debe indicar al menos un producto.");
+
+            StringBuilder sb = new StringBuilder("[");
+            int lineas = 0;
+
+            foreach (ProductoCompra producto in listaProductos)
+            {
+                if (producto == null)
+                    throw new FormatException("La lista de productos tiene una línea vacía.");
+
+                string codigo = Descifrar(producto.CodigoProducto, "código de producto");
+                string cantidad = Descifrar(producto.Cantidad, "cantidad");
+
+                if (lineas > 0) sb.Append(",");
+                sb.Append("{\"codigo_producto\": \"" + Esc(codigo) + "\", \"cantidad\": \"" + Esc(cantidad) + "\"}");
+                lineas++;
+            }
+
+            sb.Append("]");
+            return sb.ToString();
+        }
+
+        // Arma el JSON, lo envía al Verificador y traduce la respuesta a Resultado y Mensaje
+       
         private Respuesta Ejecutar(string prefijoError, Func<string> armarJson, Func<string, string> traducirError)
         {
             Respuesta respuesta = new Respuesta();
@@ -79,17 +142,53 @@ namespace WsVerificador
             return respuesta;
         }
 
-        //se usa para no romper el json como se hacia en el simulador 
+        
         private static string Esc(string s)
         {
             return (s ?? "").Trim().Replace("\\", "\\\\").Replace("\"", "\\\"");
         }
 
-        //se saca el valor de "status" del JSON de respuesta
+        //se saca el valor de "status" del JSON de respuesta, null si no viene
         private static string LeerStatus(string respuestaJson)
         {
             Match coincidencia = Regex.Match(respuestaJson ?? "", "\"status\"\\s*:\\s*\"([^\"]+)\"");
             return coincidencia.Success ? coincidencia.Groups[1].Value : null;
+        }
+
+        //descifra un dato recibido, si no viene cifrado con la llave del sistema falla con un mensaje 
+        private static string Descifrar(string valorCifrado, string nombre)
+        {
+            if (string.IsNullOrWhiteSpace(valorCifrado))
+                throw new FormatException("Falta el dato " + nombre + ".");
+            try
+            {
+                return CifradoAes.Descifrar(valorCifrado.Trim()).Trim();
+            }
+            catch (Exception ex) when (ex is FormatException || ex is CryptographicException)
+            {
+                throw new FormatException("El dato " + nombre + " no viene cifrado correctamente.");
+            }
+        }
+
+        //revisa que el dato se pueda descifrar, pero devuelve el valor cifrado original
+        private static string ValidarCifrado(string valorCifrado, string nombre)
+        {
+            Descifrar(valorCifrado, nombre);
+            return valorCifrado.Trim();
+        }
+
+        //textos de error de VERIFICADOR2 
+        private static string TraducirCompra(string status)
+        {
+            switch (status)
+            {
+                case "1":
+                    return "Los datos de la compra no son válidos (revise número de compra, cliente, fecha del día, total, tarjeta, productos y cantidades).";
+                case "2":
+                    return "El almacén rechazó la compra (verifique que los productos existan y tengan suficiente inventario).";
+                default:
+                    return "Respuesta desconocida del verificador (status " + status + ").";
+            }
         }
 
         //textos de error de VERIFICADOR1 
