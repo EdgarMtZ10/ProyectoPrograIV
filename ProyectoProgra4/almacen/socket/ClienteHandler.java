@@ -47,18 +47,23 @@ public class ClienteHandler implements Runnable {
 
             // se registra la trama cruda antes de despacharla en json segun lo solicitado 
             String tipo = (tramaCruda == null || tramaCruda.isEmpty()) ? "" : tramaCruda.substring(0, 1);
-            String cruda = (tramaCruda == null) ? "" : tramaCruda.replace("\\", "\\\\").replace("\"", "\\\"");
+            String cruda = Bitacora.escapar(tramaCruda);
             Bitacora.getInstancia().registrar(
-                "{\"Transaccion\": \"" + tipo + "\", \"Trama recibida\": \"" + cruda + "\"}");
+                "{\"Movimiento\": \"entrada\", \"Transaccion\": \"" + tipo + "\", \"Trama recibida\": \"" + cruda + "\"}");
 
             // la conexion a SQL Server se abre aparte para que, si falla,
             // el almacen pueda responder ERROR en vez de quedarse callado
+            String respuesta;
             try (Connection conexion = conexionFactory.nuevaConexion()) {
-                salida.println(despachar(tramaCruda, conexion));
+                respuesta = despachar(tramaCruda, conexion);
             } catch (SQLException e) {
                 System.err.println("Error de base de datos: " + e.getMessage());
-                salida.println("ERROR");
+                respuesta = "ERROR";
             }
+            salida.println(respuesta);
+
+            // se registra la trama de respuesta (movimiento de salida) para todo tipo de respuesta
+            Bitacora.getInstancia().registrarRespuesta(tipo, respuesta);
 
         } catch (IOException e) {
             System.err.println("Error de conexion con el cliente: " + e.getMessage());
