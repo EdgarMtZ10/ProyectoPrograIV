@@ -59,6 +59,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="Connected Services\RefWsVerificador\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
     <Compile Include="FrmAutenticacion.cs" />
     <Compile Include="FrmAutenticacion.Designer.cs">
       <DependentUpon>FrmAutenticacion.cs</DependentUpon>
@@ -145,6 +150,19 @@
     <None Include="Connected Services\RefWsAutenticacion\simulador2.RefWsAutenticacion.RespuestaLogin.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
+    <None Include="Connected Services\RefWsVerificador\ServicioVerificador.wsdl" />
+    <None Include="Connected Services\RefWsVerificador\simulador2.RefWsVerificador.MantenimientoClienteResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\RefWsVerificador\simulador2.RefWsVerificador.PingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\RefWsVerificador\simulador2.RefWsVerificador.RegistrarCompraClienteResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\RefWsVerificador\simulador2.RefWsVerificador.Respuesta.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -164,6 +182,7 @@
   <ItemGroup>
     <WCFMetadataStorage Include="Connected Services\RefWsAlmacen\" />
     <WCFMetadataStorage Include="Connected Services\RefWsAutenticacion\" />
+    <WCFMetadataStorage Include="Connected Services\RefWsVerificador\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Connected Services\RefWsAlmacen\ServicioAlmacen.disco" />
@@ -188,6 +207,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Connected Services\RefWsAutenticacion\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\RefWsVerificador\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\RefWsVerificador\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\RefWsVerificador\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
