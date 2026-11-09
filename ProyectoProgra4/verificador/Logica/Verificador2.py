@@ -92,8 +92,9 @@ def _registrar(c):
         return ERROR_VALIDACION
     
     trama = Almacen.armar_trama_salida(c["numero_compra"], c["fecha_compra"], c["productos"])
+    bitacora.registrar_salida(trama, destino="Almacen") #llamada interna al almacen
     respuesta = Almacen.enviar(trama)
-    bitacora.registrar(respuesta, origen="Almacen")
+    bitacora.registrar(respuesta, origen="Almacen") #respuesta del almacen
     
     if respuesta != Almacen.EXITOSO:
         print(f"[VERIFICADOR2] EL almacen rechazo la compra {c['numero_compra']}: {respuesta}")
@@ -121,4 +122,4 @@ def procesar(datos):
     except Exception as error:
         print(f"[VERIFICADOR2] Error al procesar la compra: {error}")
         traceback.print_exc()
-        return ERROR_PROCESO        
+        return ERROR_PROCESO

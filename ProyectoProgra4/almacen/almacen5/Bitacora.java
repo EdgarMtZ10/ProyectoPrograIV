@@ -14,13 +14,14 @@ import java.util.concurrent.LinkedBlockingQueue;
  * la ejecucion de los servicios. Las solicitudes de escritura se
  * encolan para acceder al archivo de forma ordenada.
  *
- * Formato de cada linea: dd/MM/yyyy HH:mm:ss: {json}
+ * Formato de cada linea: una linea JSON con la fecha como primer dato
+ * {"fecha": "yyyy-MM-dd HH:mm:ss", ...detalle de la transaccion...}
  */
 public class Bitacora {
 
     private static final String RUTA_ARCHIVO = "bitacora_almacen.txt";
     private static final DateTimeFormatter FORMATO_FECHA =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private static final Bitacora INSTANCIA = new Bitacora();
 
@@ -49,9 +50,33 @@ public class Bitacora {
                         proveedor, compra o salida)
      */
     public void registrar(String jsonDetalle) {
-        String fecha = LocalDateTime.now().format(FORMATO_FECHA);
-        String linea = fecha + ": " + jsonDetalle;
+        String fecha = "\"fecha\": \"" + LocalDateTime.now().format(FORMATO_FECHA) + "\"";
+        String detalle = (jsonDetalle == null) ? "" : jsonDetalle.trim();
+
+        // la fecha se coloca como primer dato dentro del mismo objeto JSON
+        String linea;
+        if (detalle.startsWith("{") && detalle.endsWith("}")) {
+            String contenido = detalle.substring(1, detalle.length() - 1).trim();
+            linea = contenido.isEmpty() ? "{" + fecha + "}" : "{" + fecha + ", " + contenido + "}";
+        } else {
+            // si el detalle no viene en JSON se guarda como texto
+            linea = "{" + fecha + ", \"detalle\": \"" + escapar(detalle) + "\"}";
+        }
         cola.offer(linea);
+    }
+
+    /*
+      Registra la trama de respuesta (movimiento de salida) que el almacen
+      devuelve por el socket para la transaccion indicada.
+     */
+    public void registrarRespuesta(String tipoTransaccion, String tramaRespuesta) {
+        registrar("{\"Movimiento\": \"salida\", \"Transaccion\": \"" + escapar(tipoTransaccion)
+                + "\", \"Trama respuesta\": \"" + escapar(tramaRespuesta) + "\"}");
+    }
+
+    // escapa barras y comillas para no romper el JSON
+    public static String escapar(String texto) {
+        return (texto == null) ? "" : texto.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
     /*
