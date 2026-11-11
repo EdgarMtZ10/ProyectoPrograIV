@@ -31,11 +31,15 @@ namespace simulador2
             this.StartPosition = FormStartPosition.CenterScreen;
 
             // CABECERA
-            Label lblIngreso = new Label { Text = "* No. Ingreso (Max 10, Ej: ING-01):", Location = new Point(20, 20), AutoSize = true };
+            // CORRECCIÓN 1: Cambio de etiqueta para evitar letras en el BIGINT
+            Label lblIngreso = new Label { Text = "* No. Ingreso (Solo números, Ej: 1001):", Location = new Point(20, 20), AutoSize = true };
             txtNumeroIngreso = new TextBox { Location = new Point(20, 45), Width = 160, MaxLength = 10, TabIndex = 0 };
 
             Label lblFecha = new Label { Text = "Fecha Compra:", Location = new Point(200, 20), AutoSize = true };
             dtpFechaCompra = new DateTimePicker { Location = new Point(200, 45), Width = 160, Format = DateTimePickerFormat.Short, TabIndex = 1 };
+
+            // CORRECCIÓN 2: Bloquear fechas futuras para no violar la regla GETDATE() de SQL Server
+            dtpFechaCompra.MaxDate = DateTime.Now;
 
             Label lblCedula = new Label { Text = "* Cédula Jurídica (Max 10, Ej: 3101123456):", Location = new Point(20, 90), AutoSize = true };
             txtCedula = new TextBox { Location = new Point(20, 115), Width = 340, MaxLength = 10, TabIndex = 2 };
@@ -69,7 +73,6 @@ namespace simulador2
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
                 BackgroundColor = Color.White,
                 TabIndex = 6,
-                // Mejoras visuales de la tabla
                 RowHeadersVisible = false,
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
                 Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right
@@ -98,12 +101,21 @@ namespace simulador2
 
         private void btnAgregarProducto_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtNumeroProducto.Text))
+            string codigoProducto = txtNumeroProducto.Text.Trim();
+            if (string.IsNullOrWhiteSpace(codigoProducto))
             {
                 MessageBox.Show("Ingrese un número de producto.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            dgvProductos.Rows.Add(txtNumeroProducto.Text.Trim(), numCantidad.Value.ToString());
+
+            // CORRECCIÓN 3: Prevenir que el usuario escriba letras en el producto (Regla: '%[^0-9]%')
+            if (!long.TryParse(codigoProducto, out _))
+            {
+                MessageBox.Show("El código de producto debe ser puramente numérico (Ej: 3030303030).", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            dgvProductos.Rows.Add(codigoProducto, numCantidad.Value.ToString());
             txtNumeroProducto.Clear();
             numCantidad.Value = 1;
             txtNumeroProducto.Focus();
@@ -118,6 +130,14 @@ namespace simulador2
                     MessageBox.Show("El número de ingreso y la cédula son obligatorios.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
+
+                // CORRECCIÓN 4: Prevenir que la base de datos estalle al intentar meter letras en un BIGINT
+                if (!long.TryParse(txtNumeroIngreso.Text.Trim(), out _))
+                {
+                    MessageBox.Show("El número de ingreso de la compra debe ser puramente numérico.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 if (dgvProductos.Rows.Count == 0)
                 {
                     MessageBox.Show("Debe agregar al menos un producto a la lista.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);

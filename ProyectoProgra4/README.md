@@ -35,7 +35,8 @@ pip install mysql-connector-python pymongo
 Levante el servidor:
 
 PowerShell
-python servidor.py
+cd verificador
+py servidor.py
 3. Levantar los Web Services SOAP 
 El simulador se comunica mediante servicios intermediarios (WsAlmacen y WsVerificador).
 

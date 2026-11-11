@@ -85,9 +85,16 @@ namespace simulador2
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(txtCedula.Text) || string.IsNullOrWhiteSpace(txtNombreEmpresa.Text))
+                if (string.IsNullOrWhiteSpace(txtCedula.Text) || string.IsNullOrWhiteSpace(txtNombreEmpresa.Text) ||
+                     string.IsNullOrWhiteSpace(txtNombreContacto.Text) || string.IsNullOrWhiteSpace(txtEstado.Text))
                 {
-                    MessageBox.Show("La cédula y el nombre de la empresa son obligatorios.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("La cédula, empresa, contacto y estado son obligatorios.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (txtEstado.Text.Trim() != "1" && txtEstado.Text.Trim() != "2")
+                {
+                    MessageBox.Show("El estado debe ser obligatoriamente 1 (Activo) o 2 (Inactivo).", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
