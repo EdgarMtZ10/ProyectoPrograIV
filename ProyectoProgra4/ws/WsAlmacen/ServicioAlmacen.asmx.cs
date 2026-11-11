@@ -44,9 +44,9 @@ namespace WsAlmacen
             return Ejecutar("Problemas con el proveedor. ", () =>
                 Campo(tipoTransaccion, 1, false, "tipo de transacción") +
                 Campo(cedulaJuridica, 10, true, "cédula jurídica") +
-                Campo(nombreEmpresa, 100, false, "nombre de la empresa") +
-                Campo(nombreContacto, 75, false, "nombre del contacto") +
-                Campo(telefono, 8, false, "teléfono") +
+                Campo(nombreEmpresa, 100, false, "nombre de la empresa") + // Verifica en SSMS si esto no es 50
+                Campo(nombreContacto, 75, false, "nombre del contacto") +  // Verifica en SSMS si esto no es 50
+                Campo(telefono, 8, false, "teléfono") + // El teléfono se rompe si los de arriba están mal
                 Campo(correo, 75, false, "correo electrónico") +
                 Campo(estado, 1, false, "estado"));
         }
