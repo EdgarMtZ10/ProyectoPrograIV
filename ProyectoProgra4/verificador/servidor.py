@@ -45,28 +45,34 @@ def atender_cliente(conexion, direccion):
                 return
             trama = datos.decode("utf-8")
             bitacora.registrar(trama, origen=direccion[0])
-            respuesta = procesar(trama)
+            operacion, respuesta_dict = _procesar(trama)
+            respuesta = json.dumps(respuesta_dict, ensure_ascii=False)
+            bitacora.registrar_resultado(operacion, respuesta_dict, destino=direccion[0])
             conexion.sendall(respuesta.encode("utf-8"))
         except (OSError, UnicodeDecodeError) as error:
             print(f"Error atendiendo a {direccion}: {error}")
 
 #marcador temporal 
-def procesar(trama): 
-   """Convierte la trama a diccionario y la envia a la historia que corresponde"""
-   try: 
-       datos = json.loads(trama)
-   except json.JSONDecodeError:
-        return json.dumps({"status": "1"})
-    
-   if not isinstance(datos, dict):
-        respuesta = {"status":"1"}
-   elif datos.get("transaccion") == "compra":
-       respuesta = Verificador2.procesar(datos)
-   elif "transaccion" in datos:
-       respuesta = Verificador1.procesar(datos)
-   else: 
-       respuesta = {"status": "1"}
-   return json.dumps(respuesta, ensure_ascii=False)
+def _procesar(trama):
+    """Convierte la trama a diccionario, la envia a la historia que corresponde
+    y devuelve (operacion, respuesta) para registrar el resultado en la bitacora"""
+    try:
+        datos = json.loads(trama)
+    except json.JSONDecodeError:
+        return "desconocida", {"status": "1", "errores": [
+            {"campo": "trama", "detalle": "La trama no es un JSON válido."}]}
+
+    if not isinstance(datos, dict) or "transaccion" not in datos:
+        return "desconocida", {"status": "1", "errores": [
+            {"campo": "transaccion", "detalle": "Falta el tipo de transacción."}]}
+
+    if datos.get("transaccion") == "compra":
+        return "compra", Verificador2.procesar(datos)
+    return "cliente_" + str(datos.get("transaccion", "")).strip().lower(), Verificador1.procesar(datos)
+
+def procesar(trama):
+    """Se mantiene por compatibilidad: devuelve la respuesta ya en texto JSON"""
+    return json.dumps(_procesar(trama)[1], ensure_ascii=False)
 
 if __name__ == "__main__":
     main()
