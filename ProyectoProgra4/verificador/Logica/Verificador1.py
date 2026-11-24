@@ -9,46 +9,58 @@ CAMPOS = ("identificacion", "pais", "nombre", "primer_apellido",
           "segundo_apellido", "correo", "telefono", "direccion", "transaccion")
 TRANSACCIONES = ("agregar", "modificar", "borrar")
 
-DATOS_INVALIDADOS = {"status":"1"}
-CLIENTE_YA_EXISTE = {"status":"2"}
-CLIENTE_NO_EXISTE = {"status":"3"}
-ERROR_NO_CONTROLADO = {"status":"4"}
+#se agrega errores con el campo exacto
+def _error(status, errores):
+    return {"status": status,
+            "errores": [{"campo": campo, "detalle": detalle} for campo, detalle in errores]}
+
+CLIENTE_YA_EXISTE = _error("2", [("identificacion", "Ya existe un cliente con esa identificación.")])
+CLIENTE_NO_EXISTE = _error("3", [("identificacion", "No existe ningún cliente con esa identificación.")])
+ERROR_NO_CONTROLADO = _error("4", [("verificador", "Ocurrió un error no controlado al procesar la solicitud.")])
 EXITO = {"status":"OK"}
-CON_HISTORIAL = {"status":"Error: cliente con historial de compras"}
+CON_HISTORIAL = _error("Error: cliente con historial de compras",
+                       [("identificacion", "No se puede borrar: el cliente tiene compras registradas.")])
 
 #codigos de error en mysql
 ERR_LLAVE_DUPLICADA = 1062 #INSERT LLAVE PRIMARIA QUE YA EXISTE
 ERR_LLAVE_FORANEA = 1451 #DELETE UN CLIENTE QUE TIENE COMPRAS 
 
-def _limpiar(datos):
-    """Revisa que vengas todos los campos como texto no vacio y devuelve una copia"""
+def _validar(datos):
+    """Revisa todos los campos y devuelve (cliente, errores) acumulando cada campo que falla"""
     if not isinstance(datos, dict):
-        return None
+        return None, [("trama", "La trama del cliente no tiene el formato correcto.")]
+    errores = []
     cliente = {}
     for campo in CAMPOS:
         valor = datos.get(campo)
         if not val.es_texto(valor):
-            return None
-        cliente[campo] = valor.strip()
+            errores.append((campo, "Es obligatorio."))
+            cliente[campo] = ""
+        else:
+            cliente[campo] = valor.strip()
     cliente["pais"] = cliente["pais"].upper()
     cliente["transaccion"] = cliente["transaccion"].lower()
-    
-    telefono = val.normalizar_telefono(cliente["telefono"])
-    if telefono is None:
-        return None
-    cliente["telefono"] = telefono 
-    return cliente
 
-def _datos_validos(c): 
-    """Devuelve true solo si todos los datos cumplen las validaciones"""
-    return (c["transaccion"] in TRANSACCIONES 
-            and val.pais_valido(c["pais"])
-            and val.identificacion_valida(c["identificacion"], c["pais"])
-            and val.nombre_valido(c["nombre"])
-            and val.nombre_valido(c["primer_apellido"])
-            and val.nombre_valido(c["segundo_apellido"])
-            and val.correo_valido(c["correo"])
-            and val.direccion_valida(c["direccion"]))
+    if cliente["transaccion"] and cliente["transaccion"] not in TRANSACCIONES:
+        errores.append(("transaccion", "Debe ser agregar, modificar o borrar."))
+    if cliente["pais"] and not val.pais_valido(cliente["pais"]):
+        errores.append(("pais", "Debe ser un código de país de 2 letras (ISO), por ejemplo CR."))
+    if cliente["identificacion"] and cliente["pais"] and val.pais_valido(cliente["pais"]) \
+            and not val.identificacion_valida(cliente["identificacion"], cliente["pais"]):
+        errores.append(("identificacion", "Para CR: cédula física de 9 dígitos o jurídica de 10 que inicia en 3. "
+                                          "Otros países: 6 a 20 letras o números."))
+    for campo in ("nombre", "primer_apellido", "segundo_apellido"):
+        if cliente[campo] and not val.nombre_valido(cliente[campo]):
+            errores.append((campo, f"Solo letras, máximo {val.LARGO_NOMBRE} caracteres."))
+    if cliente["correo"] and not val.correo_valido(cliente["correo"]):
+        errores.append(("correo", f"Debe ser un correo válido de máximo {val.LARGO_CORREO} caracteres."))
+    if cliente["telefono"]:
+        telefono = val.normalizar_telefono(cliente["telefono"])
+        if telefono is None:
+            errores.append(("telefono", "Debe ser un teléfono de Costa Rica de 8 dígitos."))
+        else:
+            cliente["telefono"] = telefono
+    return cliente, errores
             
 def _argumentos(c):
     """Datos en orden exato a los parametros del procedimiento"""
@@ -56,19 +68,25 @@ def _argumentos(c):
            c["primer_apellido"], c["segundo_apellido"], c["correo"],
            c["telefono"], c["direccion"])
     
-def _limpiar_borrado(datos):
+def _validar_borrado(datos):
     """Para borrar solo hacen falta identificacion y pais"""
+    errores = []
     identificacion = datos.get("identificacion")
     pais = datos.get("pais")
-    if not (val.es_texto(identificacion) and val.es_texto(pais)):
-        return None
+    if not val.es_texto(identificacion):
+        errores.append(("identificacion", "Es obligatorio."))
+    if not val.es_texto(pais):
+        errores.append(("pais", "Es obligatorio."))
+    if errores:
+        return None, errores
     cliente = {"identificacion": identificacion.strip(),
                "pais": pais.strip().upper(),
                "transaccion": "borrar"}
-    if not (val.pais_valido(cliente["pais"])
-            and val.identificacion_valida(cliente["identificacion"], cliente["pais"])):
-        return None
-    return cliente
+    if not val.pais_valido(cliente["pais"]):
+        errores.append(("pais", "Debe ser un código de país de 2 letras (ISO), por ejemplo CR."))
+    elif not val.identificacion_valida(cliente["identificacion"], cliente["pais"]):
+        errores.append(("identificacion", "La identificación no es válida para el país indicado."))
+    return cliente, errores
 
 def procesar(datos):
     """Punto de entrada: recibe el diccionario de la trama y devuelve el diccionario de respuesta"""
@@ -76,13 +94,11 @@ def procesar(datos):
         es_borrado = (isinstance(datos, dict)
                       and str(datos.get("transaccion", "")).strip().lower() == "borrar" )
         if es_borrado: 
-            cliente = _limpiar_borrado(datos)
-            if cliente is None: 
-                return DATOS_INVALIDADOS
+            cliente, errores = _validar_borrado(datos)
         else: 
-            cliente = _limpiar(datos)
-            if cliente is None or not _datos_validos(cliente):
-                return DATOS_INVALIDADOS
+            cliente, errores = _validar(datos)
+        if errores:
+            return _error("1", errores)
         
         transaccion = cliente["transaccion"]
         existe = DB.existe_cliente(cliente["identificacion"])
