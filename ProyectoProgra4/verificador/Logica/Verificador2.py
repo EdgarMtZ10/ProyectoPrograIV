@@ -12,16 +12,33 @@ CAMPOS = ("numero_compra","id_cliente","fecha_compra", "total_compra", "num_tarj
           "codigo_verificacion")
 CAMPOS_CIFRADOS = ("num_tarjeta", "fecha_vencimiento", "codigo_verificacion")
 #respuestas a acciones
-ERROR_VALIDACION = {"status":"1"}
-ERROR_PROCESO = {"status":"2"}
+STATUS_VALIDACION = "1"
+STATUS_PROCESO = "2"
 EXITO = {"status":"OK"}
 #limites de trama 
 MAX_DIGITOS_COMPRA = 10
 MAX_DIGITOS_PRODUCTO = 10
 MAX_DIGITOS_CANTIDAD = 7
+MAX_LARGO_CLIENTE = 20          # ID_CLIENTE VARCHAR(20)
+MAX_TOTAL = 99999999.99         # TOTAL_COMPRA DECIMAL(10,2)
+
+#respuestas del almacen
+ERRORES_ALMACEN = {
+    "DATO INVALIDO": ("productos", "El almacén rechazó el formato de los productos."),
+    "PRODUCTO INVALIDO": ("productos", "Uno de los productos no existe en el almacén."),
+    "CANTIDAD INSUF": ("productos", "No hay inventario suficiente para uno de los productos."),
+    "ERROR": ("numero_compra", "El almacén no pudo registrar la salida (el número de compra podría existir ya en el almacén)."),
+}
+
 #numeros de compra en hilos 
 _en_proceso = set()
 _candado = threading.Lock()
+
+
+def _error(status, errores):
+    """Respuesta de error con la lista de campos que fallaron"""
+    return {"status": status,
+            "errores": [{"campo": campo, "detalle": detalle} for campo, detalle in errores]}
 
 def _reservar(numero):
     """Marca el numero en proceso y regresa false si otro hilo lo tiene ya"""
@@ -35,70 +52,110 @@ def _liberar(numero):
     with _candado:
         _en_proceso.discard(numero)
         
-def _limpiar_productos(lista):
-    """Lista de tuplas en texto, regresa none si falta algo"""
+def _validar_productos(lista, errores):
+    """Revisa cada linea y devuelve la lista de tuplas (codigo, cantidad); anota todos los errores"""
     if not isinstance(lista, list) or not lista:
-        return None
+        errores.append(("productos", "Debe incluir al menos un producto."))
+        return []
     productos = []
-    for item in lista: 
+    vistos = set()
+    for numero, item in enumerate(lista, start=1):
+        prefijo = f"productos[{numero}]"
         if not isinstance(item, dict):
-            return None 
+            errores.append((prefijo, "La línea no tiene el formato correcto."))
+            continue
         codigo = item.get("codigo_producto")
         cantidad = item.get("cantidad")
-        if not (val.es_texto(codigo) and val.es_texto(cantidad)):
-            return None
-        productos.append((codigo.strip(), cantidad.strip()))
+        codigo = codigo.strip() if val.es_texto(codigo) else ""
+        cantidad = cantidad.strip() if val.es_texto(cantidad) else ""
+
+        linea_ok = True
+        if not val.entero_positivo(codigo, MAX_DIGITOS_PRODUCTO):
+            errores.append((prefijo + ".codigo_producto",
+                            f"Debe ser numérico, mayor que cero y de máximo {MAX_DIGITOS_PRODUCTO} dígitos."))
+            linea_ok = False
+        elif codigo.zfill(MAX_DIGITOS_PRODUCTO) in vistos:
+            #el almacen revisa el inventario linea por linea: un codigo repetido podria vender de mas
+            errores.append((prefijo + ".codigo_producto", f"El producto {codigo} está repetido en la compra."))
+            linea_ok = False
+        if not val.entero_positivo(cantidad, MAX_DIGITOS_CANTIDAD):
+            errores.append((prefijo + ".cantidad",
+                            f"Debe ser numérica, mayor que cero y de máximo {MAX_DIGITOS_CANTIDAD} dígitos."))
+            linea_ok = False
+        if linea_ok:
+            vistos.add(codigo.zfill(MAX_DIGITOS_PRODUCTO))
+            productos.append((codigo, cantidad))
     return productos
 
-def _limpiar(datos): 
-    """Revisa que esten todos los campos y convierte fecha y total, regresa un diccionario listo para usar"""
+def _validar(datos):
+    """Revisa todos los campos y devuelve (compra, errores). Se acumulan todos los errores, no solo el primero"""
+    errores = []
     if not isinstance(datos, dict):
-        return None
-    
+        return None, [("trama", "La trama de la compra no tiene el formato correcto.")]
+
     compra = {}
     for campo in CAMPOS:
         valor = datos.get(campo)
         if not val.es_texto(valor):
-            return None
-        compra[campo] = valor.strip()
-        
-    if compra["numero_compra"].isdigit():
-        compra["numero_compra"] = str(int(compra["numero_compra"]))
-        
-    compra["fecha"] = val.leer_fecha_de_hoy(compra["fecha_compra"])
-    compra["total"] = val.leer_monto(compra["total_compra"])
-    compra["productos"] = _limpiar_productos(datos.get("productos"))
-    
-    if None in (compra["fecha"], compra["total"], compra["productos"]):
-        return None
-    return compra
+            errores.append((campo, "Es obligatorio."))
+            compra[campo] = ""
+        else:
+            compra[campo] = valor.strip()
 
-def _datos_validos(c):
-    """reglas para datos"""
-    if not val.entero_positivo(c["numero_compra"], MAX_DIGITOS_COMPRA):
-        return False
+    numero = compra["numero_compra"]
+    if numero:
+        if not val.entero_positivo(numero, MAX_DIGITOS_COMPRA):
+            errores.append(("numero_compra", f"Debe ser numérico, mayor que cero y de máximo {MAX_DIGITOS_COMPRA} dígitos."))
+        else:
+            compra["numero_compra"] = str(int(numero))
+
+    if compra["id_cliente"] and len(compra["id_cliente"]) > MAX_LARGO_CLIENTE:
+        errores.append(("id_cliente", f"Máximo {MAX_LARGO_CLIENTE} caracteres."))
+
+    compra["fecha"] = None
+    if compra["fecha_compra"]:
+        compra["fecha"] = val.leer_fecha_de_hoy(compra["fecha_compra"])
+        if compra["fecha"] is None:
+            errores.append(("fecha_compra", "Debe tener formato yyyyMMdd y ser la fecha de hoy."))
+
+    compra["total"] = None
+    if compra["total_compra"]:
+        compra["total"] = val.leer_monto(compra["total_compra"])
+        if compra["total"] is None:
+            errores.append(("total_compra", "Debe ser un monto positivo con punto y máximo 2 decimales."))
+        elif compra["total"] > MAX_TOTAL:
+            errores.append(("total_compra", "Supera el monto máximo permitido."))
+
     for campo in CAMPOS_CIFRADOS:
-        if not val.parece_cifrado(c[campo]):
-            return False
-    for codigo,cantidad in c["productos"]:
-        if not (val.entero_positivo(codigo, MAX_DIGITOS_PRODUCTO)
-                and val.entero_positivo(cantidad, MAX_DIGITOS_CANTIDAD)):
-            return False
-    return True
+        if compra[campo] and not val.parece_cifrado(compra[campo]):
+            errores.append((campo, "No viene cifrado correctamente."))
+
+    compra["productos"] = _validar_productos(datos.get("productos"), errores)
+    return compra, errores
     
 def _registrar(c):
     """validaciones con la base, consulta al almacen y guardado"""
-    if DB.existe_compra(c["numero_compra"]) or not DB.existe_cliente(c["id_cliente"]):
-        return ERROR_VALIDACION
+    errores = []
+    if DB.existe_compra(c["numero_compra"]):
+        errores.append(("numero_compra", "Ya existe una compra con ese número."))
+    if not DB.existe_cliente(c["id_cliente"]):
+        errores.append(("id_cliente", "El cliente no está registrado en el verificador."))
+    if errores:
+        return _error(STATUS_VALIDACION, errores)
     
     trama = Almacen.armar_trama_salida(c["numero_compra"], c["fecha_compra"], c["productos"])
     bitacora.registrar_salida(trama, destino="Almacen") #llamada interna al almacen
-    respuesta = Almacen.enviar(trama)
+    try:
+        respuesta = Almacen.enviar(trama)
+    except OSError:
+        bitacora.registrar("SIN RESPUESTA", origen="Almacen")
+        return _error(STATUS_PROCESO, [("almacen", "No se pudo conectar con el almacén. Verifique que esté encendido.")])
     bitacora.registrar(respuesta, origen="Almacen") #respuesta del almacen
     
     if respuesta != Almacen.EXITOSO:
         print(f"[VERIFICADOR2] EL almacen rechazo la compra {c['numero_compra']}: {respuesta}")
-        return ERROR_PROCESO
+        campo, detalle = ERRORES_ALMACEN.get(respuesta, ("almacen", f"El almacén rechazó la compra ({respuesta})."))
+        return _error(STATUS_PROCESO, [(campo, detalle)])
     
     productos = [(codigo, int(cantidad)) for codigo, cantidad in c["productos"]]
     DB.registrar_compra(c["numero_compra"], c["id_cliente"], c["fecha"], c["total"], 
@@ -108,18 +165,19 @@ def _registrar(c):
 def procesar(datos):
     """recibe el diccionario de la trama y devuelve el diccionario de respuesta"""
     try: 
-        compra = _limpiar(datos)
-        if compra is None or not _datos_validos(compra):
-            return ERROR_VALIDACION
+        compra, errores = _validar(datos)
+        if errores:
+            return _error(STATUS_VALIDACION, errores)
         numero = compra["numero_compra"]
         if not _reservar(numero):
-            return ERROR_VALIDACION
+            return _error(STATUS_VALIDACION, [("numero_compra", "Esa compra ya se está procesando.")])
         try: 
             return _registrar(compra)
         finally: 
             _liberar(numero)
             
     except Exception as error:
-        print(f"[VERIFICADOR2] Error al procesar la compra: {error}")
+        #nunca se imprime la trama: podria llevar datos de la tarjeta
+        print(f"[VERIFICADOR2] Error al procesar la compra: {type(error).__name__}: {error}")
         traceback.print_exc()
-        return ERROR_PROCESO
+        return _error(STATUS_PROCESO, [("verificador", "Error no controlado al registrar la compra.")])
