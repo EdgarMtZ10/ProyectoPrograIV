@@ -11,7 +11,7 @@ from config import PUERTO
 from Logica import Verificador3 as bitacora 
 
 HOST= "0.0.0.0"
-TAMANO_BUFFER = 4096
+TAMANO_BUFFER = 65536
 
 def main(): 
     bitacora.iniciar() # arranca el hilo

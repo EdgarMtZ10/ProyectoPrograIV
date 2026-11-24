@@ -18,7 +18,7 @@ namespace simulador2
             this.Text = "Nova Online - Sistema de Ventas y Distribución";
             this.IsMdiContainer = true;
 
-            // Ventana en tamaño normal (no maximizada) centrada en la pantalla
+            // Ventana principal en tamaño normal centrada en pantalla
             this.WindowState = FormWindowState.Normal;
             this.Size = new Size(950, 850);
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -58,11 +58,15 @@ namespace simulador2
             Button btnVerificador = CrearBotonMenu("4. Pago de Compra - Verificador", 190);
             btnVerificador.Click += (sender, e) => AbrirFormulario<FrmCompraVerificador>();
 
+            Button btnAutenticacion = CrearBotonMenu("5. Autenticación y usuarios", 230);
+            btnAutenticacion.Click += (sender, e) => AbrirFormulario<FrmAutenticacion>();
+
             panelMenu.Controls.Add(lblTitulo);
             panelMenu.Controls.Add(btnProducto);
             panelMenu.Controls.Add(btnProveedor);
             panelMenu.Controls.Add(btnCompra);
             panelMenu.Controls.Add(btnVerificador);
+            panelMenu.Controls.Add(btnAutenticacion);
 
             this.Controls.Add(panelMenu);
         }
@@ -109,7 +113,6 @@ namespace simulador2
             {
                 T nuevoFormulario = new T();
                 nuevoFormulario.MdiParent = this;
-                nuevoFormulario.StartPosition = FormStartPosition.CenterScreen;
                 nuevoFormulario.Show();
             }
         }

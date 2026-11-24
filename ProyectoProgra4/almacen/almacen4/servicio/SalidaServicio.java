@@ -4,6 +4,7 @@ import almacen.almacen4.datos.Salida;
 import almacen.almacen4.datos.SalidaDetalle;
 import almacen.almacen4.datos.SalidaParser;
 import almacen.almacen4.validaciones.SalidaValidador;
+import almacen.almacen5.Bitacora;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -11,51 +12,44 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
-import almacen.almacen5.Bitacora;
-
 /**
-    * Flujo de procesamiento:
-    * 1. Extrae los datos de la trama dinámica.
-    * 2. Valida las reglas de negocio.
-    * 3. Ejecuta la transacción en la base de datos.
-    * 4. Devuelve el texto exacto de respuesta. 
-    * 5. Registra la transacción en la bitácora en formato JSON.
- **/
+ * Procesa la trama de salida de inventario (ALMACEN4) contra SQL Server.
+ */
 public class SalidaServicio {
 
     private final SalidaParser parser;
     private final SalidaValidador validador;
     private final Connection conexion;
 
+    // Constructor que recibe la conexion activa a SQL Server
     public SalidaServicio(Connection conexion) {
         this.parser = new SalidaParser();
         this.validador = new SalidaValidador();
         this.conexion = conexion;
     }
 
+    // Parsea la trama, valida campos y descuenta inventario en una transaccion
     public String procesar(String tramaCruda) {
         SalidaParser.TramaSalida tramaParseada;
-        //recibe el texto original (tramaCruda) y declara una variable para guardar el resultado estructurado.
 
-        /*Intenta convertir el texto crudo en un objeto Java. Si el parser encuentra un formato irreconocible
-        el parser encuentra un formato irreconocible, lanza un IllegalArgumentException.
-         Se atrapa y devuelve directamente "DATO INVALIDO". */
+        // Si falla el parser devuelve DATO INVALIDO con el detalle exacto
         try {
             tramaParseada = parser.parsear(tramaCruda);
         } catch (IllegalArgumentException e) {
-            return "DATO INVALIDO";
+            return "DATO INVALIDO: " + e.getMessage();
         }
 
         Salida salida = tramaParseada.getSalida();
 
-        //muestra los errores de validación de reglas de negocio, si los hay. Si hay errores, devuelve "DATO INVALIDO".
+        // Si falla el validador informa todos los campos invalidos separados por ' | '
         List<String> errores = validador.validar(salida);
         if (!errores.isEmpty()) {
-            return "DATO INVALIDO";
+            return "DATO INVALIDO: " + String.join(" | ", errores);
         }
 
-                String resultado;
+        String resultado;
         try {
+            // Inicia transaccion manual para revertir si algun producto no tiene stock
             conexion.setAutoCommit(false);
 
             String resultadoCabecera = registrarCabecera(salida);
@@ -69,7 +63,7 @@ public class SalidaServicio {
             String resultadoFinal = "EXITOSO";
             boolean huboError = false;
 
-            // Registrar cada detalle de la salida
+            // Registra cada producto de la salida
             for (SalidaDetalle detalle : salida.getDetalles()) {
                 String resultadoDetalle = agregarDetalle(salida.getNumeroFactura(), detalle);
 
@@ -102,8 +96,8 @@ public class SalidaServicio {
         registrarBitacora(salida);
         return resultado;
     }
-    
-    //Metodos de acceso a BD
+
+    // Ejecuta sp_salida_registrar para insertar el encabezado de salida
     private String registrarCabecera(Salida salida) throws SQLException {
         String sql = "{call sp_salida_registrar(?, ?, ?)}";
 
@@ -117,8 +111,8 @@ public class SalidaServicio {
             return llamada.getString(3);
         }
     }
-    
-    //agrega un detalle de salida a la base de datos, llamando al procedimiento almacenado correspondiente. Devuelve el resultado del procedimiento.
+
+    // Ejecuta sp_salida_detalle_agregar para registrar la linea y bajar inventario
     private String agregarDetalle(long numeroFactura, SalidaDetalle detalle) throws SQLException {
         String sql = "{call sp_salida_detalle_agregar(?, ?, ?, ?)}";
 
@@ -134,8 +128,8 @@ public class SalidaServicio {
         }
     }
 
-    //registra la transacción en la bitácora en formato JSON
-        private void registrarBitacora(Salida salida) {
+    // Guarda el movimiento estructurado en la bitacora JSON
+    private void registrarBitacora(Salida salida) {
         StringBuilder productosJson = new StringBuilder("[");
         List<SalidaDetalle> detalles = salida.getDetalles();
         for (int i = 0; i < detalles.size(); i++) {

@@ -4,6 +4,7 @@ import almacen.almacen3.datos.Compra;
 import almacen.almacen3.datos.CompraDetalle;
 import almacen.almacen3.datos.CompraParser;
 import almacen.almacen3.validaciones.CompraValidador;
+import almacen.almacen5.Bitacora;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -11,57 +12,46 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
-import almacen.almacen5.Bitacora;
-
-/*
- *flujo de procesamiento:
- * 1. Extrae los datos de la trama dinámica.
- * 2. Valida las reglas de negocio.
- * 3. Ejecuta la transacción en la base de datos.
- * 4. Devuelve el texto exacto de respuesta.
+/**
+ * Procesa la trama de compra (ALMACEN3), valida reglas y ejecuta la transaccion en SQL Server.
  */
 public class CompraServicio {
 
-    // Atributos de la clase CompraServicio
     private final CompraParser parser;
     private final CompraValidador validador;
     private final Connection conexion;
 
-    // Constructor que recibe la conexión a la base de datos
+    // Constructor que recibe la conexion activa a SQL Server
     public CompraServicio(Connection conexion) {
         this.parser = new CompraParser();
         this.validador = new CompraValidador();
         this.conexion = conexion;
     }
 
-    /**
-     * Procesa la trama completa y maneja la transacción de base de datos.
-     */
+    // Parsea la trama, valida campos y ejecuta cabecera + lineas dentro de una transaccion
     public String procesar(String tramaCruda) {
         CompraParser.TramaCompra tramaParseada;
 
-        //bloque de validacion
-        // Parser de la trama (Si la longitud o formato base falla, es DATO INVÁLIDO)
+        // Si falla el parser devuelve DATO INVALIDO con el detalle exacto
         try {
             tramaParseada = parser.parsear(tramaCruda);
         } catch (IllegalArgumentException e) {
-            return "DATO INVALIDO";
+            return "DATO INVALIDO: " + e.getMessage();
         }
 
-        Compra compra = tramaParseada.getCompra();// Extrae el objeto Compra del resultado del parser
+        Compra compra = tramaParseada.getCompra();
 
-        //Validación de reglas de negocio (sin tocar BD)
+        // Si falla el validador informa todos los campos invalidos separados por ' | '
         List<String> errores = validador.validar(compra);
         if (!errores.isEmpty()) {
-            return "DATO INVALIDO";
+            return "DATO INVALIDO: " + String.join(" | ", errores);
         }
 
-        // Ejecución en base de datos con manejo de Transacciones
-                String resultado;
+        String resultado;
         try {
+            // Inicia transaccion manual para revertir si falla alguna linea
             conexion.setAutoCommit(false);
 
-            // Registrar la cabecera de la compra
             String resultadoCabecera = registrarCabecera(compra);
             if (!resultadoCabecera.equals("EXITOSO")) {
                 conexion.rollback();
@@ -70,11 +60,10 @@ public class CompraServicio {
                 return resultado;
             }
 
-            //si la cabecera fue exitosa, registrar cada detalle de producto
             String resultadoFinal = "EXITOSO";
             boolean huboError = false;
 
-            // Registrar cada detalle de la compra
+            // Registra cada producto de la lista de compra
             for (CompraDetalle detalle : compra.getDetalles()) {
                 String resultadoDetalle = agregarDetalle(compra.getNumeroIngreso(), detalle);
 
@@ -104,25 +93,19 @@ public class CompraServicio {
             }
         }
 
-        // Registrar la transacción en la bitácora
         registrarBitacora(compra);
         return resultado;
     }
 
-    /**
-     * Llama a sp_compra_registrar para guardar el encabezado.
-     */
+    // Ejecuta sp_compra_registrar para insertar el encabezado
     private String registrarCabecera(Compra compra) throws SQLException {
-        String sql = "{call sp_compra_registrar(?, ?, ?, ?)}";//consulta a procedimiento almacenado
+        String sql = "{call sp_compra_registrar(?, ?, ?, ?)}";
 
-        try (CallableStatement llamada = conexion.prepareCall(sql)) {//apertura de la llamada al procedimiento almacenado
+        try (CallableStatement llamada = conexion.prepareCall(sql)) {
             llamada.setLong(1, compra.getNumeroIngreso());
-            // Convertimos el LocalDate a java.sql.Date para SQL Server
-            //parametros de entrada
             llamada.setDate(2, java.sql.Date.valueOf(compra.getFechaCompra()));
             llamada.setString(3, compra.getCedulaJuridica());
-            
-            //parametros de salida
+
             llamada.registerOutParameter(4, Types.VARCHAR);
             llamada.execute();
 
@@ -130,10 +113,7 @@ public class CompraServicio {
         }
     }
 
-    /**
-     * Llama a sp_compra_detalle_agregar para guardar un producto.
-     * El trigger en SQL Server se encargará de subir el inventario automáticamente.
-     */
+    // Ejecuta sp_compra_detalle_agregar para insertar una linea de producto
     private String agregarDetalle(long numeroIngreso, CompraDetalle detalle) throws SQLException {
         String sql = "{call sp_compra_detalle_agregar(?, ?, ?, ?)}";
 
@@ -141,7 +121,7 @@ public class CompraServicio {
             llamada.setLong(1, numeroIngreso);
             llamada.setString(2, detalle.getNoProducto());
             llamada.setInt(3, detalle.getCantidad());
-            
+
             llamada.registerOutParameter(4, Types.VARCHAR);
             llamada.execute();
 
@@ -149,8 +129,8 @@ public class CompraServicio {
         }
     }
 
-        //registra la transacción en la bitácora en formato JSON
-        private void registrarBitacora(Compra compra) {
+    // Guarda el movimiento estructurado en la bitacora JSON
+    private void registrarBitacora(Compra compra) {
         StringBuilder productosJson = new StringBuilder("[");
         List<CompraDetalle> detalles = compra.getDetalles();
         for (int i = 0; i < detalles.size(); i++) {
@@ -165,8 +145,6 @@ public class CompraServicio {
         }
         productosJson.append("]");
 
-        // Formatear la información de la compra en JSON
-        // Se escapan las comillas dobles de los nombres y se registra el estado como su codigo de trama.
         String json = String.format(
             "{\"Transaccion\": \"5\", \"Numero Ingreso\": \"%s\", \"Fecha compra\": \"%s\", " +
             "\"Cedula Juridica\": \"%s\", \"Productos\": %s}",
@@ -177,5 +155,4 @@ public class CompraServicio {
         );
         Bitacora.getInstancia().registrar(json);
     }
-
 }
