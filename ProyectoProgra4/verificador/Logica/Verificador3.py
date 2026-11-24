@@ -8,6 +8,8 @@ from datetime import datetime
 
 ARCHIVO_BITACORA = "bitacora.txt"
 FORMATO_FECHA = "%Y-%m-%d %H:%M:%S"
+CAMPOS_OCULTOS = ("num_tarjeta", "fecha_vencimiento", "codigo_verificacion")
+OCULTO = "[oculto]"
 
 _cola = queue.Queue()
 _FIN = None
@@ -17,10 +19,19 @@ def registrar(trama, origen="simulador"):
     """Movimiento de entrada: trama que llega al verificador (o respuesta que llega del almacen)"""
     _encolar("entrada", "origen", origen, trama)
 
-def registrar_salida(trama, destino="simulador"):
-    """Movimiento de salida: respuesta que envia el verificador o trama que envia a otro componente"""
-    _encolar("salida", "destino", destino, trama)
 
+def registrar_resultado(operacion, respuesta, destino="simulador"):
+    """Resultado final de un proceso: EXITOSO o ERROR, con el detalle por campo si hubo error"""
+    exitoso = isinstance(respuesta, dict) and respuesta.get("status") == "OK"
+    registro = {
+        "fecha": datetime.now().strftime(FORMATO_FECHA),
+        "movimiento": "resultado",
+        "destino": destino,
+        "operacion": operacion,
+        "resultado": "EXITOSO" if exitoso else "ERROR",
+        "respuesta": respuesta,
+    }
+    _cola.put(registro)
 def _encolar(movimiento, clave, valor, trama):
     """Arma el registro con la fecha de primero y lo deja en la cola para el hilo"""
     registro = {
@@ -31,10 +42,20 @@ def _encolar(movimiento, clave, valor, trama):
     }
     _cola.put(registro)
 
+def _ocultar(datos):
+    """Reemplaza los datos de la tarjeta antes de guardar"""
+    if isinstance(datos, dict):
+        return {k: (OCULTO if k in CAMPOS_OCULTOS else _ocultar(v)) for k, v in datos.items()}
+    if isinstance(datos, list):
+        return [_ocultar(v) for v in datos]
+    return datos
+
 def _preparar_trama(trama):
-    """Si la trama llega en json se guarda, si llega en otro formato se guarda como texto"""
+    """Si la trama llega en json se guarda (sin datos de tarjeta), si llega en otro formato se guarda como texto"""
+    if isinstance(trama, (dict, list)):
+        return _ocultar(trama)
     try:
-        return json.loads(trama)
+        return _ocultar(json.loads(trama))
     except (json.JSONDecodeError, TypeError):
         return trama
 
