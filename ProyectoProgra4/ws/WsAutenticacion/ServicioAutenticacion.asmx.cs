@@ -28,25 +28,44 @@ namespace WsAutenticacion
         }
 
         //  WS_AUTENTICACION1
+
         [WebMethod]
         public RespuestaLogin Autenticar(string usuario, string contrasena, string tipoUsuario)
         {
-            var resp = new RespuestaLogin { Resultado = false, Id = "", Mensaje = MsgLoginFallo };
+            var resp = new RespuestaLogin
+            {
+                Resultado = false,
+                Id = "",
+                Correo = "",
+                Mensaje = MsgLoginFallo
+            };
+
             try
             {
                 string u = Descifrar(usuario);
                 string p = Descifrar(contrasena);
 
-                if (!string.IsNullOrEmpty(u) && !string.IsNullOrEmpty(p) && Validador.TipoValido(tipoUsuario))
+                if (!string.IsNullOrEmpty(u)
+                    && !string.IsNullOrEmpty(p)
+                    && Validador.TipoValido(tipoUsuario))
                 {
                     var repo = new UsuarioRepositorio();
+
                     BsonDocument doc = repo.BuscarCredenciales(
-                        CifradoAes.Cifrar(u), CifradoAes.Cifrar(p), int.Parse(tipoUsuario));
+                        CifradoAes.Cifrar(u),
+                        CifradoAes.Cifrar(p),
+                        int.Parse(tipoUsuario));
 
                     if (doc != null)
                     {
                         resp.Resultado = true;
                         resp.Id = doc["identificacion"].ToString();
+
+                        // NUEVO: obtener correo desde MongoDB.
+                        resp.Correo = doc.Contains("correo")
+                            ? doc["correo"].ToString()
+                            : "";
+
                         resp.Mensaje = MsgExitoso;
                     }
                 }
@@ -55,22 +74,27 @@ namespace WsAutenticacion
             {
                 resp.Resultado = false;
                 resp.Id = "";
+                resp.Correo = "";
                 resp.Mensaje = MsgLoginFallo;
             }
 
             var solicitud = new Dictionary<string, object>
-            {
-                { "usuario", ParaBitacora(usuario) },
-                { "contrasena", ParaBitacora(contrasena) },
-                { "tipoUsuario", tipoUsuario }
-            };
+    {
+        { "usuario", ParaBitacora(usuario) },
+        { "contrasena", ParaBitacora(contrasena) },
+        { "tipoUsuario", tipoUsuario }
+    };
+
             var respuesta = new Dictionary<string, object>
-            {
-                { "Resultado", resp.Resultado },
-                { "Id", resp.Id },
-                { "Mensaje", resp.Mensaje }
-            };
+    {
+        { "Resultado", resp.Resultado },
+        { "Id", resp.Id },
+        { "Correo", resp.Correo },
+        { "Mensaje", resp.Mensaje }
+    };
+
             Bitacora.Registrar("Autenticar", solicitud, respuesta);
+
             return resp;
         }
 
