@@ -1,0 +1,223 @@
+﻿@* Vista para registrar una compra con 1 a N lineas de producto (Historia ADM4) *@
+@model WebAdmin.Models.CompraRegistroViewModel
+@{
+    ViewBag.Title = "Registrar Compra";
+    var listaProveedores = ViewBag.Proveedores as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
+    var listaProductos = ViewBag.Productos as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+<link href="@Url.Content("~/Content/almacen.css")" rel="stylesheet" type="text/css" />
+
+<div class="ed-shell">
+    <header class="ed-header">
+        <span class="ed-kicker">Almacen / Ingresos</span>
+        <h2>Registrar Compra a Proveedor</h2>
+    </header>
+
+    @if (ViewBag.ErrorServicio != null)
+    {
+        <div class="ed-notice ed-notice--error">@ViewBag.ErrorServicio</div>
+    }
+
+    @using (Html.BeginForm("Registrar", "Compras", FormMethod.Post, new { id = "formCompra", @class = "ed-form--wide" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="ed-form">
+            <div class="ed-field">
+                @Html.LabelFor(m => m.NumeroIngreso, new { @class = "ed-label" })
+                @Html.TextBoxFor(m => m.NumeroIngreso, new { @class = "ed-input", maxlength = "10", placeholder = "Ej: 1001" })
+                @Html.ValidationMessageFor(m => m.NumeroIngreso, "", new { @class = "ed-error-text" })
+            </div>
+
+            <div class="ed-field">
+                @Html.LabelFor(m => m.FechaCompra, new { @class = "ed-label" })
+                @Html.TextBoxFor(m => m.FechaCompra, new { @class = "ed-input", maxlength = "10", placeholder = "dd/MM/yyyy" })
+                @Html.ValidationMessageFor(m => m.FechaCompra, "", new { @class = "ed-error-text" })
+            </div>
+
+            <div class="ed-field">
+                @Html.LabelFor(m => m.CedulaJuridica, "Proveedor Activo", new { @class = "ed-label" })
+                @Html.DropDownListFor(m => m.CedulaJuridica, listaProveedores, "-- Seleccione un proveedor --", new { @class = "ed-select" })
+                @Html.ValidationMessageFor(m => m.CedulaJuridica, "", new { @class = "ed-error-text" })
+            </div>
+        </div>
+
+        <h3 class="ed-section-title">Detalle de Productos</h3>
+        @Html.ValidationMessage("Lineas", "", new { @class = "ed-error-text" })
+
+        <div class="ed-table-wrap">
+            <table class="ed-table" id="tablaLineas">
+                <thead>
+                    <tr>
+                        <th style="width: 58%;">Producto (10 digitos)</th>
+                        <th style="width: 24%;">Cantidad</th>
+                        <th style="width: 18%;">Accion</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpoLineas">
+                    @for (int i = 0; i < Model.Lineas.Count; i++)
+                    {
+                        <tr class="fila-linea">
+                            <td>
+                                <select name="Lineas[@i].NoProducto" class="ed-select campo-producto">
+                                    <option value="">-- Seleccione un producto --</option>
+                                    @foreach (var prod in listaProductos)
+                                    {
+                                        if (prod.Value == Model.Lineas[i].NoProducto)
+                                        {
+                                            <option value="@prod.Value" selected="selected">@prod.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@prod.Value">@prod.Text</option>
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessage("Lineas[" + i + "].NoProducto", "", new { @class = "ed-error-text" })
+                            </td>
+                            <td>
+                                <input type="text" name="Lineas[@i].Cantidad" value="@Model.Lineas[i].Cantidad"
+                                       class="ed-input campo-cantidad" maxlength="7" placeholder="Ej: 10" />
+                                @Html.ValidationMessage("Lineas[" + i + "].Cantidad", "", new { @class = "ed-error-text" })
+                            </td>
+                            <td>
+                                <button type="button" class="ed-btn ed-btn--sm btn-quitar">Quitar</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="ed-actions">
+            <button type="button" id="btnAgregarLinea" class="ed-btn">+ Agregar Producto</button>
+            <button type="submit" class="ed-btn ed-btn--accent">Guardar Compra</button>
+            <a href="@Url.Action("Index", "Compras")" class="ed-btn">Cancelar</a>
+        </div>
+    }
+</div>
+
+@* Plantilla oculta para clonar nuevas filas de producto *@
+<select id="plantillaProductos" style="display: none;">
+    <option value="">-- Seleccione un producto --</option>
+    @foreach (var prod in listaProductos)
+    {
+        <option value="@prod.Value">@prod.Text</option>
+    }
+</select>
+
+<script type="text/javascript">
+        // Administra dinamicamente las lineas de producto manteniendo indices consecutivos Lineas[i]
+        (function () {
+            // Reordena los atributos name como Lineas[0], Lineas[1], etc. para MVC
+            function reindexarFilas() {
+                var tbody = document.getElementById("cuerpoLineas");
+                if (!tbody) {
+                    return;
+                }
+                var filas = tbody.getElementsByTagName("tr");
+                for (var i = 0; i < filas.length; i++) {
+                    var selects = filas[i].getElementsByTagName("select");
+                    var inputs = filas[i].getElementsByTagName("input");
+                    if (selects.length > 0) {
+                        selects[0].name = "Lineas[" + i + "].NoProducto";
+                    }
+                    if (inputs.length > 0) {
+                        inputs[0].name = "Lineas[" + i + "].Cantidad";
+                    }
+                }
+            }
+
+            // Crea una fila nueva copiando las opciones de productos disponibles
+            function crearFila() {
+                var tbody = document.getElementById("cuerpoLineas");
+                var plantilla = document.getElementById("plantillaProductos");
+                if (!tbody || !plantilla) {
+                    return;
+                }
+
+                var tr = document.createElement("tr");
+                tr.className = "fila-linea";
+
+                // Celda de selector de producto
+                var tdProd = document.createElement("td");
+                var select = document.createElement("select");
+                select.className = "ed-select campo-producto";
+
+                var opciones = plantilla.getElementsByTagName("option");
+                for (var j = 0; j < opciones.length; j++) {
+                    var optNueva = document.createElement("option");
+                    optNueva.value = opciones[j].getAttribute("value") || "";
+                    optNueva.textContent = opciones[j].textContent || "";
+                    select.appendChild(optNueva);
+                }
+                tdProd.appendChild(select);
+
+                // Celda de cantidad numerica
+                var tdCant = document.createElement("td");
+                var input = document.createElement("input");
+                input.type = "text";
+                input.className = "ed-input campo-cantidad";
+                input.maxLength = 7;
+                input.placeholder = "Ej: 10";
+                tdCant.appendChild(input);
+
+                // Celda con boton para eliminar la fila
+                var tdAccion = document.createElement("td");
+                var btnQuitar = document.createElement("button");
+                btnQuitar.type = "button";
+                btnQuitar.className = "ed-btn ed-btn--sm btn-quitar";
+                btnQuitar.textContent = "Quitar";
+                tdAccion.appendChild(btnQuitar);
+
+                tr.appendChild(tdProd);
+                tr.appendChild(tdCant);
+                tr.appendChild(tdAccion);
+                tbody.appendChild(tr);
+                reindexarFilas();
+            }
+
+            var btnAgregar = document.getElementById("btnAgregarLinea");
+            if (btnAgregar) {
+                btnAgregar.onclick = function () {
+                    crearFila();
+                };
+            }
+
+            var cuerpo = document.getElementById("cuerpoLineas");
+            if (cuerpo) {
+                cuerpo.onclick = function (e) {
+                    var objetivo = e ? e.target : null;
+                    if (!(objetivo instanceof HTMLElement)) {
+                        return;
+                    }
+
+                    if (objetivo.className.indexOf("btn-quitar") !== -1) {
+                        var tbody = document.getElementById("cuerpoLineas");
+                        if (!tbody) {
+                            return;
+                        }
+                        var filas = tbody.getElementsByTagName("tr");
+                        if (filas.length > 1) {
+                            var nodo = objetivo.parentNode;
+                            while (nodo instanceof HTMLElement && nodo !== tbody && nodo.tagName !== "TR") {
+                                nodo = nodo.parentNode;
+                            }
+                            if (nodo instanceof HTMLElement && nodo.tagName === "TR") {
+                                tbody.removeChild(nodo);
+                                reindexarFilas();
+                            }
+                        }
+                    }
+                };
+
+                if (cuerpo.getElementsByTagName("tr").length === 0) {
+                    crearFila();
+                }
+            }
+        })();
+</script>

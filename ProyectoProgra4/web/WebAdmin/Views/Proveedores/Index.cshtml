@@ -1,0 +1,79 @@
+﻿@* Vista de listado y busqueda de proveedores (Historia ADM3) *@
+@model IEnumerable<WebAdmin.WsConsultasAlmacenRef.ProveedorDto>
+@{
+    ViewBag.Title = "Proveedores";
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+<link href="@Url.Content("~/Content/almacen.css")" rel="stylesheet" type="text/css" />
+
+<div class="ed-shell">
+    <header class="ed-header">
+        <span class="ed-kicker">Almacen / Abastecimiento</span>
+        <h1>Mantenimiento de Proveedores</h1>
+    </header>
+
+    @if (TempData["MensajeExito"] != null)
+    {
+        <div class="ed-notice ed-notice--ok">@TempData["MensajeExito"]</div>
+    }
+    @if (ViewBag.ErrorServicio != null)
+    {
+        <div class="ed-notice ed-notice--error">@ViewBag.ErrorServicio</div>
+    }
+
+    <div class="ed-toolbar">
+        @using (Html.BeginForm("Index", "Proveedores", FormMethod.Get, new { @class = "ed-filter-form" }))
+        {
+            <input type="text" name="filtro" value="@ViewBag.Filtro" class="ed-input ed-input--search"
+                   maxlength="100" placeholder="Cedula, empresa, contacto o correo..." />
+            <button type="submit" class="ed-btn">Buscar</button>
+            <a href="@Url.Action("Index", "Proveedores")" class="ed-btn">Limpiar</a>
+        }
+        <a href="@Url.Action("Crear", "Proveedores")" class="ed-btn ed-btn--accent">Nuevo Proveedor</a>
+    </div>
+
+    <div class="ed-table-wrap">
+        <table class="ed-table">
+            <thead>
+                <tr>
+                    <th>Cedula Juridica</th>
+                    <th>Empresa</th>
+                    <th>Contacto</th>
+                    <th>Telefono</th>
+                    <th>Correo</th>
+                    <th>Estado</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.CedulaJuridica</td>
+                            <td>@item.Nombre</td>
+                            <td>@item.NombreContacto</td>
+                            <td>@item.Telefono</td>
+                            <td>@item.Correo</td>
+                            <td>@(item.Estado == "1" ? "Activo" : "Inactivo")</td>
+                            <td>
+                                <a href="@Url.Action("Editar", "Proveedores", new { id = item.CedulaJuridica })"
+                                   class="ed-link-action">Editar</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7">No se encontraron proveedores registrados.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

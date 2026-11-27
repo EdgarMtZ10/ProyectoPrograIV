@@ -1,0 +1,335 @@
+﻿/* Variables globales de diseno editorial para el modulo de Almacen */
+:root {
+    --bg-canvas: #FAF9F6;
+    --text-main: #18181B;
+    --border-hairline: #E4E4E7;
+    --accent-primary: #D94E1F;
+    --text-on-accent: #FAF9F6;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Manrope', sans-serif;
+    --size-h1: clamp(1.75rem, 2.6vw, 2.35rem);
+    --size-h2: clamp(1.4rem, 2.1vw, 1.85rem);
+    --size-h3: clamp(1.05rem, 1.4vw, 1.25rem);
+    --size-body: clamp(0.9375rem, 1vw, 1rem);
+    --size-label: 0.8125rem;
+    --size-sm: 0.875rem;
+    --space-xs: 0.375rem;
+    --space-sm: 0.75rem;
+    --space-md: 1.25rem;
+    --space-lg: 2rem;
+    --space-xl: 2.75rem;
+    --rule-1px: 1px solid var(--border-hairline);
+    --rule-accent: 1px solid var(--accent-primary);
+    --radius-sharp: 0rem;
+    --container-max: 68rem;
+    --form-max: 36rem;
+}
+
+/* Base general sobre el lienzo calido */
+body {
+    background-color: var(--bg-canvas);
+    color: var(--text-main);
+    font-family: var(--font-body);
+    font-size: var(--size-body);
+    line-height: 1.55;
+    margin: 0;
+}
+
+/* Contenedor principal alineado a la izquierda sin sombras ni degradados */
+.ed-shell {
+    max-width: var(--container-max);
+    margin-left: 0;
+    margin-right: auto;
+    padding: var(--space-lg) var(--space-md);
+    text-align: left;
+    background-color: var(--bg-canvas);
+    color: var(--text-main);
+}
+
+/* Encabezado editorial con linea divisoria de 1px */
+.ed-header {
+    border-bottom: var(--rule-1px);
+    padding-bottom: var(--space-md);
+    margin-bottom: var(--space-lg);
+    text-align: left;
+}
+
+.ed-kicker {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--size-label);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.ed-shell h1,
+.ed-shell h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+    line-height: 1.2;
+    text-align: left;
+}
+
+.ed-shell h1 {
+    font-size: var(--size-h1);
+}
+
+.ed-shell h2 {
+    font-size: var(--size-h2);
+}
+
+.ed-section-title {
+    font-family: var(--font-body);
+    font-size: var(--size-h3);
+    font-weight: 700;
+    color: var(--text-main);
+    border-bottom: var(--rule-1px);
+    padding-bottom: var(--space-xs);
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-md);
+    text-align: left;
+}
+
+/* Mensajes planos con borde de 1px y sin sombras */
+.ed-notice {
+    border: var(--rule-1px);
+    border-left: 0.25rem solid var(--text-main);
+    background-color: var(--bg-canvas);
+    color: var(--text-main);
+    padding: var(--space-sm) var(--space-md);
+    margin-bottom: var(--space-md);
+    border-radius: var(--radius-sharp);
+    box-shadow: none;
+    text-align: left;
+}
+
+.ed-notice--error {
+    border-color: var(--accent-primary);
+    border-left: 0.25rem solid var(--accent-primary);
+}
+
+.ed-notice--ok {
+    border-color: var(--border-hairline);
+    border-left: 0.25rem solid var(--text-main);
+}
+
+/* Barra de filtro y accion principal alineada a la izquierda */
+.ed-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: var(--space-sm);
+    padding-bottom: var(--space-md);
+    margin-bottom: var(--space-md);
+    border-bottom: var(--rule-1px);
+}
+
+.ed-filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: 0;
+}
+
+/* Botones planos sin degradados ni sombras */
+.ed-btn {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: var(--size-sm);
+    font-weight: 600;
+    line-height: 1.2;
+    padding: 0.625rem 1.125rem;
+    border: var(--rule-1px);
+    border-radius: var(--radius-sharp);
+    background-color: var(--bg-canvas);
+    color: var(--text-main);
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: none;
+}
+
+    .ed-btn:hover,
+    .ed-btn:focus {
+        border-color: var(--text-main);
+        color: var(--text-main);
+        text-decoration: none;
+        outline: none;
+    }
+
+.ed-btn--accent {
+    background-color: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: var(--text-on-accent);
+}
+
+    .ed-btn--accent:hover,
+    .ed-btn--accent:focus {
+        background-color: var(--text-main);
+        border-color: var(--text-main);
+        color: var(--text-on-accent);
+    }
+
+.ed-btn--sm {
+    padding: 0.375rem 0.75rem;
+    font-size: var(--size-label);
+}
+
+/* Tablas editoriales con lineas horizontales de 1px y alineacion izquierda */
+.ed-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.ed-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: var(--space-lg);
+    background-color: var(--bg-canvas);
+    text-align: left;
+}
+
+    .ed-table th {
+        font-family: var(--font-body);
+        font-size: var(--size-label);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-main);
+        padding: var(--space-sm) var(--space-sm);
+        border-top: var(--rule-1px);
+        border-bottom: 1px solid var(--text-main);
+        text-align: left;
+    }
+
+    .ed-table td {
+        padding: var(--space-sm) var(--space-sm);
+        border-bottom: var(--rule-1px);
+        color: var(--text-main);
+        vertical-align: middle;
+        text-align: left;
+    }
+
+.ed-link-action {
+    font-weight: 600;
+    font-size: var(--size-sm);
+    color: var(--accent-primary);
+    text-decoration: none;
+    border-bottom: var(--rule-accent);
+    padding-bottom: 0.125rem;
+}
+
+    .ed-link-action:hover {
+        color: var(--text-main);
+        border-bottom-color: var(--text-main);
+        text-decoration: none;
+    }
+
+/* Formularios editoriales en columna unica alineados a la izquierda */
+.ed-form {
+    max-width: var(--form-max);
+    text-align: left;
+}
+
+.ed-form--wide {
+    max-width: var(--container-max);
+    text-align: left;
+}
+
+.ed-field {
+    padding-bottom: var(--space-md);
+    margin-bottom: var(--space-md);
+    border-bottom: var(--rule-1px);
+    text-align: left;
+}
+
+.ed-label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--size-sm);
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: var(--space-xs);
+    text-align: left;
+}
+
+.ed-input,
+.ed-select {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    font-family: var(--font-body);
+    font-size: var(--size-body);
+    color: var(--text-main);
+    background-color: var(--bg-canvas);
+    border: var(--rule-1px);
+    border-radius: var(--radius-sharp);
+    padding: 0.5625rem 0.75rem;
+    box-shadow: none;
+    box-sizing: border-box;
+}
+
+.ed-input--search {
+    width: 20rem;
+    max-width: 100%;
+}
+
+.ed-input:focus,
+.ed-select:focus {
+    border-color: var(--accent-primary);
+    outline: none;
+    box-shadow: none;
+}
+
+.ed-input[readonly] {
+    border-style: dashed;
+    opacity: 0.85;
+}
+
+.ed-error-text {
+    display: block;
+    margin-top: var(--space-xs);
+    font-size: var(--size-sm);
+    font-weight: 600;
+    color: var(--accent-primary);
+}
+
+.ed-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    padding-top: var(--space-sm);
+    text-align: left;
+}
+
+/* Ficha de detalle de compra con lineas divisorias de 1px */
+.ed-meta-list {
+    max-width: var(--form-max);
+    border-top: var(--rule-1px);
+    margin-bottom: var(--space-lg);
+}
+
+.ed-meta-row {
+    display: flex;
+    justify-content: flex-start;
+    gap: var(--space-md);
+    padding: var(--space-sm) 0;
+    border-bottom: var(--rule-1px);
+}
+
+.ed-meta-term {
+    width: 12rem;
+    font-weight: 700;
+    font-size: var(--size-sm);
+    color: var(--text-main);
+}
+
+.ed-meta-val {
+    color: var(--text-main);
+}

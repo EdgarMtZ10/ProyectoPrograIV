@@ -1,0 +1,88 @@
+﻿@* Formulario compartido para registrar y editar proveedores (Historia ADM3) *@
+@model WebAdmin.Models.ProveedorViewModel
+@{
+    ViewBag.Title = Model.EsEdicion ? "Editar Proveedor" : "Nuevo Proveedor";
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+<link href="@Url.Content("~/Content/almacen.css")" rel="stylesheet" type="text/css" />
+
+<div class="ed-shell">
+    <header class="ed-header">
+        <span class="ed-kicker">Almacen / Proveedores</span>
+        <h2>@ViewBag.Title</h2>
+    </header>
+
+    @if (ViewBag.ErrorServicio != null)
+    {
+        <div class="ed-notice ed-notice--error">@ViewBag.ErrorServicio</div>
+    }
+
+    @using (Html.BeginForm(Model.EsEdicion ? "Editar" : "Crear", "Proveedores", FormMethod.Post, new { @class = "ed-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.EsEdicion)
+
+        <div class="ed-field">
+            @Html.LabelFor(m => m.CedulaJuridica, new { @class = "ed-label" })
+            @if (Model.EsEdicion)
+            {
+                @Html.TextBoxFor(m => m.CedulaJuridica, new { @class = "ed-input", @readonly = "readonly" })
+            }
+            else
+            {
+                @Html.TextBoxFor(m => m.CedulaJuridica, new { @class = "ed-input", maxlength = "10", placeholder = "10 digitos numericos" })
+            }
+            @Html.ValidationMessageFor(m => m.CedulaJuridica, "", new { @class = "ed-error-text" })
+        </div>
+
+        <div class="ed-field">
+            @Html.LabelFor(m => m.NombreEmpresa, new { @class = "ed-label" })
+            @Html.TextBoxFor(m => m.NombreEmpresa, new { @class = "ed-input", maxlength = "100" })
+            @Html.ValidationMessageFor(m => m.NombreEmpresa, "", new { @class = "ed-error-text" })
+        </div>
+
+        <div class="ed-field">
+            @Html.LabelFor(m => m.NombreContacto, new { @class = "ed-label" })
+            @Html.TextBoxFor(m => m.NombreContacto, new { @class = "ed-input", maxlength = "75" })
+            @Html.ValidationMessageFor(m => m.NombreContacto, "", new { @class = "ed-error-text" })
+        </div>
+
+        <div class="ed-field">
+            @Html.LabelFor(m => m.Telefono, new { @class = "ed-label" })
+            @Html.TextBoxFor(m => m.Telefono, new { @class = "ed-input", maxlength = "8", placeholder = "8 digitos sin guion" })
+            @Html.ValidationMessageFor(m => m.Telefono, "", new { @class = "ed-error-text" })
+        </div>
+
+        <div class="ed-field">
+            @Html.LabelFor(m => m.Correo, new { @class = "ed-label" })
+            @Html.TextBoxFor(m => m.Correo, new { @class = "ed-input", maxlength = "75", placeholder = "correo@empresa.com" })
+            @Html.ValidationMessageFor(m => m.Correo, "", new { @class = "ed-error-text" })
+        </div>
+
+        <div class="ed-field">
+            @Html.LabelFor(m => m.Estado, new { @class = "ed-label" })
+            @if (Model.EsEdicion)
+            {
+                @Html.DropDownListFor(m => m.Estado, new List<SelectListItem>
+                {
+                    new SelectListItem { Text = "Activo", Value = "1", Selected = Model.Estado == "1" },
+                    new SelectListItem { Text = "Inactivo", Value = "2", Selected = Model.Estado == "2" }
+                }, new { @class = "ed-select" })
+            }
+            else
+            {
+                <input type="text" class="ed-input" value="Activo" readonly="readonly" />
+                @Html.Hidden("Estado", "1")
+            }
+            @Html.ValidationMessageFor(m => m.Estado, "", new { @class = "ed-error-text" })
+        </div>
+
+        <div class="ed-actions">
+            <button type="submit" class="ed-btn ed-btn--accent">Guardar</button>
+            <a href="@Url.Action("Index", "Proveedores")" class="ed-btn">Cancelar</a>
+        </div>
+    }
+</div>

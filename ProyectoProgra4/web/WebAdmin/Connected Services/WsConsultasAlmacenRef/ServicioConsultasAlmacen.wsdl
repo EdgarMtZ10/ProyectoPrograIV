@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="http://novaonline.cr/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://novaonline.cr/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://novaonline.cr/">
+      <s:element name="ListarProductos">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="filtro" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ListarProductosResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ListarProductosResult" type="tns:ArrayOfProductoDto" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfProductoDto">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ProductoDto" nillable="true" type="tns:ProductoDto" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ProductoDto">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="NoProducto" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Nombre" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Precio" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Cantidad" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="ObtenerProducto">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="noProducto" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObtenerProductoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ObtenerProductoResult" type="tns:ProductoDto" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ListarProveedores">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="filtro" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ListarProveedoresResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ListarProveedoresResult" type="tns:ArrayOfProveedorDto" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfProveedorDto">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ProveedorDto" nillable="true" type="tns:ProveedorDto" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ProveedorDto">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="CedulaJuridica" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Nombre" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="NombreContacto" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Telefono" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Correo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Estado" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="ObtenerProveedor">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="cedulaJuridica" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObtenerProveedorResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ObtenerProveedorResult" type="tns:ProveedorDto" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ListarUltimasCompras">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="filtro" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ListarUltimasComprasResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ListarUltimasComprasResult" type="tns:ArrayOfCompraResumenDto" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfCompraResumenDto">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="CompraResumenDto" nillable="true" type="tns:CompraResumenDto" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="CompraResumenDto">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="NumeroIngreso" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FechaCompra" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CedulaJuridica" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="NombreEmpresa" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="ObtenerCompra">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="numeroIngreso" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObtenerCompraResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ObtenerCompraResult" type="tns:CompraDetalleDto" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="CompraDetalleDto">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="NumeroIngreso" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FechaCompra" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CedulaJuridica" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="NombreEmpresa" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Lineas" type="tns:ArrayOfLineaDto" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfLineaDto">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="LineaDto" nillable="true" type="tns:LineaDto" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="LineaDto">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Codigo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Nombre" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Cantidad" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="ListarProductosSoapIn">
+    <wsdl:part name="parameters" element="tns:ListarProductos" />
+  </wsdl:message>
+  <wsdl:message name="ListarProductosSoapOut">
+    <wsdl:part name="parameters" element="tns:ListarProductosResponse" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerProductoSoapIn">
+    <wsdl:part name="parameters" element="tns:ObtenerProducto" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerProductoSoapOut">
+    <wsdl:part name="parameters" element="tns:ObtenerProductoResponse" />
+  </wsdl:message>
+  <wsdl:message name="ListarProveedoresSoapIn">
+    <wsdl:part name="parameters" element="tns:ListarProveedores" />
+  </wsdl:message>
+  <wsdl:message name="ListarProveedoresSoapOut">
+    <wsdl:part name="parameters" element="tns:ListarProveedoresResponse" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerProveedorSoapIn">
+    <wsdl:part name="parameters" element="tns:ObtenerProveedor" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerProveedorSoapOut">
+    <wsdl:part name="parameters" element="tns:ObtenerProveedorResponse" />
+  </wsdl:message>
+  <wsdl:message name="ListarUltimasComprasSoapIn">
+    <wsdl:part name="parameters" element="tns:ListarUltimasCompras" />
+  </wsdl:message>
+  <wsdl:message name="ListarUltimasComprasSoapOut">
+    <wsdl:part name="parameters" element="tns:ListarUltimasComprasResponse" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerCompraSoapIn">
+    <wsdl:part name="parameters" element="tns:ObtenerCompra" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerCompraSoapOut">
+    <wsdl:part name="parameters" element="tns:ObtenerCompraResponse" />
+  </wsdl:message>
+  <wsdl:portType name="ServicioConsultasAlmacenSoap">
+    <wsdl:operation name="ListarProductos">
+      <wsdl:input message="tns:ListarProductosSoapIn" />
+      <wsdl:output message="tns:ListarProductosSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerProducto">
+      <wsdl:input message="tns:ObtenerProductoSoapIn" />
+      <wsdl:output message="tns:ObtenerProductoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ListarProveedores">
+      <wsdl:input message="tns:ListarProveedoresSoapIn" />
+      <wsdl:output message="tns:ListarProveedoresSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerProveedor">
+      <wsdl:input message="tns:ObtenerProveedorSoapIn" />
+      <wsdl:output message="tns:ObtenerProveedorSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ListarUltimasCompras">
+      <wsdl:input message="tns:ListarUltimasComprasSoapIn" />
+      <wsdl:output message="tns:ListarUltimasComprasSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerCompra">
+      <wsdl:input message="tns:ObtenerCompraSoapIn" />
+      <wsdl:output message="tns:ObtenerCompraSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ServicioConsultasAlmacenSoap" type="tns:ServicioConsultasAlmacenSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="ListarProductos">
+      <soap:operation soapAction="http://novaonline.cr/ListarProductos" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerProducto">
+      <soap:operation soapAction="http://novaonline.cr/ObtenerProducto" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListarProveedores">
+      <soap:operation soapAction="http://novaonline.cr/ListarProveedores" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerProveedor">
+      <soap:operation soapAction="http://novaonline.cr/ObtenerProveedor" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListarUltimasCompras">
+      <soap:operation soapAction="http://novaonline.cr/ListarUltimasCompras" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerCompra">
+      <soap:operation soapAction="http://novaonline.cr/ObtenerCompra" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="ServicioConsultasAlmacenSoap12" type="tns:ServicioConsultasAlmacenSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="ListarProductos">
+      <soap12:operation soapAction="http://novaonline.cr/ListarProductos" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerProducto">
+      <soap12:operation soapAction="http://novaonline.cr/ObtenerProducto" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListarProveedores">
+      <soap12:operation soapAction="http://novaonline.cr/ListarProveedores" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerProveedor">
+      <soap12:operation soapAction="http://novaonline.cr/ObtenerProveedor" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListarUltimasCompras">
+      <soap12:operation soapAction="http://novaonline.cr/ListarUltimasCompras" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerCompra">
+      <soap12:operation soapAction="http://novaonline.cr/ObtenerCompra" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ServicioConsultasAlmacen">
+    <wsdl:port name="ServicioConsultasAlmacenSoap" binding="tns:ServicioConsultasAlmacenSoap">
+      <soap:address location="http://localhost:5400/ServicioConsultasAlmacen.asmx" />
+    </wsdl:port>
+    <wsdl:port name="ServicioConsultasAlmacenSoap12" binding="tns:ServicioConsultasAlmacenSoap12">
+      <soap12:address location="http://localhost:5400/ServicioConsultasAlmacen.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

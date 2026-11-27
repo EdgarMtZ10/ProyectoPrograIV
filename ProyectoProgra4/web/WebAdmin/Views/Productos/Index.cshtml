@@ -1,0 +1,75 @@
+﻿@* Vista de listado y busqueda de productos (Historia ADM2) *@
+@model IEnumerable<WebAdmin.WsConsultasAlmacenRef.ProductoDto>
+@{
+    ViewBag.Title = "Productos";
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+<link href="@Url.Content("~/Content/almacen.css")" rel="stylesheet" type="text/css" />
+
+<div class="ed-shell">
+    <header class="ed-header">
+        <span class="ed-kicker">Almacen / Catalogo</span>
+        <h1>Mantenimiento de Productos</h1>
+    </header>
+
+    @if (TempData["MensajeExito"] != null)
+    {
+        <div class="ed-notice ed-notice--ok">@TempData["MensajeExito"]</div>
+    }
+    @if (ViewBag.ErrorServicio != null)
+    {
+        <div class="ed-notice ed-notice--error">@ViewBag.ErrorServicio</div>
+    }
+
+    <div class="ed-toolbar">
+        @using (Html.BeginForm("Index", "Productos", FormMethod.Get, new { @class = "ed-filter-form" }))
+        {
+            <input type="text" name="filtro" value="@ViewBag.Filtro" class="ed-input ed-input--search"
+                   maxlength="100" placeholder="Codigo, nombre, precio o stock..." />
+            <button type="submit" class="ed-btn">Buscar</button>
+            <a href="@Url.Action("Index", "Productos")" class="ed-btn">Limpiar</a>
+        }
+        <a href="@Url.Action("Crear", "Productos")" class="ed-btn ed-btn--accent">Nuevo Producto</a>
+    </div>
+
+    <div class="ed-table-wrap">
+        <table class="ed-table">
+            <thead>
+                <tr>
+                    <th>Numero de Producto</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Existencia</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.NoProducto</td>
+                            <td>@item.Nombre</td>
+                            <td>@item.Precio</td>
+                            <td>@item.Cantidad</td>
+                            <td>
+                                <a href="@Url.Action("Editar", "Productos", new { id = item.NoProducto })"
+                                   class="ed-link-action">Editar</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5">No se encontraron productos registrados.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
