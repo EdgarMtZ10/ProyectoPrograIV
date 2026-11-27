@@ -1,0 +1,58 @@
+﻿@* Formulario compartido para crear y editar productos (Historia ADM2) *@
+@model WebAdmin.Models.ProductoViewModel
+@{
+    ViewBag.Title = Model.EsEdicion ? "Editar Producto" : "Nuevo Producto";
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+<link href="@Url.Content("~/Content/almacen.css")" rel="stylesheet" type="text/css" />
+
+<div class="ed-shell">
+    <header class="ed-header">
+        <span class="ed-kicker">Almacen / Productos</span>
+        <h2>@ViewBag.Title</h2>
+    </header>
+
+    @if (ViewBag.ErrorServicio != null)
+    {
+        <div class="ed-notice ed-notice--error">@ViewBag.ErrorServicio</div>
+    }
+
+    @using (Html.BeginForm(Model.EsEdicion ? "Editar" : "Crear", "Productos", FormMethod.Post, new { @class = "ed-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.EsEdicion)
+
+        <div class="ed-field">
+            @Html.LabelFor(m => m.NoProducto, new { @class = "ed-label" })
+            @if (Model.EsEdicion)
+            {
+                @Html.TextBoxFor(m => m.NoProducto, new { @class = "ed-input", @readonly = "readonly" })
+            }
+            else
+            {
+                @Html.TextBoxFor(m => m.NoProducto, new { @class = "ed-input", maxlength = "10", placeholder = "10 digitos numericos (Ej: 0000000101)" })
+            }
+            @Html.ValidationMessageFor(m => m.NoProducto, "", new { @class = "ed-error-text" })
+        </div>
+
+        <div class="ed-field">
+            @Html.LabelFor(m => m.Nombre, new { @class = "ed-label" })
+            @Html.TextBoxFor(m => m.Nombre, new { @class = "ed-input", maxlength = "90", placeholder = "Nombre del producto" })
+            @Html.ValidationMessageFor(m => m.Nombre, "", new { @class = "ed-error-text" })
+        </div>
+
+        <div class="ed-field">
+            @Html.LabelFor(m => m.Precio, new { @class = "ed-label" })
+            @Html.TextBoxFor(m => m.Precio, new { @class = "ed-input", maxlength = "10", placeholder = "Ej: 15500.00" })
+            @Html.ValidationMessageFor(m => m.Precio, "", new { @class = "ed-error-text" })
+        </div>
+
+        <div class="ed-actions">
+            <button type="submit" class="ed-btn ed-btn--accent">Guardar</button>
+            <a href="@Url.Action("Index", "Productos")" class="ed-btn">Cancelar</a>
+        </div>
+    }
+</div>

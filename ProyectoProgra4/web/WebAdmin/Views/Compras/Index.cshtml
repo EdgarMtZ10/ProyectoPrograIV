@@ -1,0 +1,79 @@
+﻿@* Vista de consulta de las ultimas 10 compras a proveedores (Historia ADM4) *@
+@model IEnumerable<WebAdmin.WsConsultasAlmacenRef.CompraResumenDto>
+@{
+    ViewBag.Title = "Compras a Proveedores";
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+<link href="@Url.Content("~/Content/almacen.css")" rel="stylesheet" type="text/css" />
+
+<div class="ed-shell">
+    <header class="ed-header">
+        <span class="ed-kicker">Almacen / Ingresos</span>
+        <h1>Compras a Proveedores</h1>
+    </header>
+
+    @if (TempData["MensajeExito"] != null)
+    {
+        <div class="ed-notice ed-notice--ok">@TempData["MensajeExito"]</div>
+    }
+    @if (ViewBag.ErrorServicio != null)
+    {
+        <div class="ed-notice ed-notice--error">@ViewBag.ErrorServicio</div>
+    }
+
+    <div class="ed-toolbar">
+        @using (Html.BeginForm("Index", "Compras", FormMethod.Get, new { @class = "ed-filter-form" }))
+        {
+            <input type="text" name="filtro" value="@ViewBag.Filtro" class="ed-input ed-input--search"
+                   maxlength="100" placeholder="Ingreso, fecha (dd/MM/yyyy), cedula o empresa..." />
+            <button type="submit" class="ed-btn">Buscar</button>
+            <a href="@Url.Action("Index", "Compras")" class="ed-btn">Limpiar</a>
+        }
+        <a href="@Url.Action("Registrar", "Compras")" class="ed-btn ed-btn--accent">Registrar Compra</a>
+    </div>
+
+    <div class="ed-table-wrap">
+        <table class="ed-table">
+            <thead>
+                <tr>
+                    <th>Numero de Ingreso</th>
+                    <th>Fecha de Compra</th>
+                    <th>Cedula Juridica</th>
+                    <th>Proveedor</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        string fechaMostrar = (item.FechaCompra != null && item.FechaCompra.Length == 8)
+                            ? item.FechaCompra.Substring(6, 2) + "/" + item.FechaCompra.Substring(4, 2) + "/" + item.FechaCompra.Substring(0, 4)
+                            : item.FechaCompra;
+
+                        <tr>
+                            <td>@item.NumeroIngreso</td>
+                            <td>@fechaMostrar</td>
+                            <td>@item.CedulaJuridica</td>
+                            <td>@item.NombreEmpresa</td>
+                            <td>
+                                <a href="@Url.Action("Detalle", "Compras", new { id = item.NumeroIngreso })"
+                                   class="ed-link-action">Ver Detalle</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5">No se encontraron compras registradas.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
